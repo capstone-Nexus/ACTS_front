@@ -173,7 +173,7 @@ export default function RegisterPage() {
               required
               minLength={5}
               maxLength={16}
-              placeholder="5~16자"
+              placeholder='5~16글자 사이로 입력해주세요'
               className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE]"
             />
             {form.user_id && (form.user_id.length < 5 || form.user_id.length > 16) && (
@@ -194,6 +194,7 @@ export default function RegisterPage() {
                 value={form.email}
                 onChange={handleChange}
                 required
+                placeholder='example@gmail.com'
                 className="border-1 px-3 rounded-[10px] w-full h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE]"
               />
               <button
