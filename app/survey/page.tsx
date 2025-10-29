@@ -65,7 +65,7 @@ export default function Survey() {
               className="ml-auto w-[110px] h-[50px] flex items-center justify-center rounded-[60px] bg-green-500 cursor-pointer hover:bg-green-600 duration-200"
               onClick={() => {
                 console.log('설문 완료!', answers);
-                router.push('/test');
+                router.push('/cat/before');
               }}
             >
               <p className="text-[18px] font-semibold text-white">제출</p>

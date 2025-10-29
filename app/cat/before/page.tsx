@@ -29,7 +29,7 @@ export default function CatBefore() {
         },
     ];
     return (
-        <div className="w-full min-h-screen flex justify-center items-start bg-[#F9FAFB]">
+        <div className="w-full min-h-screen flex justify-center items-center bg-[#F9FAFB]">
             <div className="mt-[150px] w-[900px] h-[850px] bg-[#ffffff] border border-[#CCCCCC] items-center flex flex-col">
                 <div className="mt-12 text-[32px] font-bold">CAT 종합 주의력 검사</div>
                 <div className="text-[18px] text-[#737373]">comprehensive attention test</div>

@@ -11,8 +11,8 @@ export default function Test3() {
 
     if (currentScreen === "intro") {
         return (
-            <div className="w-full h-screen flex flex-col items-center bg-gray-50">
-                <div className="mt-[150px] w-[900px] h-[873px] flex flex-col items-center bg-white border border-[#CDD0D4]">
+            <div className="w-full h-full flex flex-col items-center bg-gray-50">
+                <div className="mt-[150px] mb-15 w-[900px] h-[753px] flex flex-col items-center bg-white border border-[#CDD0D4]">
                     <p className="text-[32px] font-bold mt-12">단순 선택 주의력 검사</p>
                     <p className="mt-2 tex`t-[18px] text-[#737373]">Simple Selective Attention</p>
                     <div className="mt-10 w-[800px] h-[1px] bg-[#CDD0D4]" />

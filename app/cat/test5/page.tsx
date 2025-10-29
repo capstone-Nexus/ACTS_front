@@ -12,7 +12,7 @@ export default function Test5() {
     if (currentScreen === "intro") {
         return (
             <div className="w-full h-screen flex flex-col items-center bg-gray-50">
-                <div className="mt-[150px] w-[900px] h-[873px] flex flex-col items-center bg-white border border-[#CDD0D4]">
+                <div className="mt-[150px] w-[900px] h-[753px] flex flex-col items-center bg-white border border-[#CDD0D4]">
                     <p className="text-[32px] font-bold mt-12">단순 선택 주의력 검사</p>
                     <p className="mt-2 tex`t-[18px] text-[#737373]">Simple Selective Attention</p>
                     <div className="mt-10 w-[800px] h-[1px] bg-[#CDD0D4]" />
@@ -49,7 +49,7 @@ export default function Test5() {
     return (
         <div className="w-full h-screen flex justify-center items-center">
             작업 기억력 검사 페이지
-            <Link href="/cat/test2" className="mt-11 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
+            <Link href="/result" className="mt-11 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
                     <p className="text-[14px] font-medium text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
                         다음 →
                     </p>
