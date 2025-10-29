@@ -37,7 +37,7 @@ export default function MainHeader() {
         </div>
       </div>
 
-      <div className="w-[160px] h-full mr-[50px] gap-[40px] flex flex-row items-center">
+      <div className="w-auto h-full mr-[50px] gap-[40px] flex flex-row items-center">
         <Link href="/signin">
           <p className={`text-[18px] font-medium ${isScrolled ? 'text-[#4A8AEE] hover:text-[#4a76ee]' : 'text-white'}`}>로그인</p>
         </Link>
