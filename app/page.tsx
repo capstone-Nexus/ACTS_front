@@ -1,4 +1,6 @@
 'use client';
+
+import Link from 'next/link';
 import MainHeader from '@/components/MainHeader';
 import Background1 from '../public/images/background1.jpg';
 import Image from 'next/image';
@@ -70,7 +72,9 @@ export default function Home() {
         <p className="text-[40px] font-medium text-[#4A8AEE] mt-[111px]">Discover yourself with ACTS.</p>
         <p className="text-[18px] text-[#474747] mt-[31px]">ACTS를 통해 ADHD 검사 결과를 쉽고 정확하게 확인하고,</p>
         <p className="text-[18px] text-[#474747] mt-1">결과를 바탕으로 스스로를 더 깊이 이해할 수 있는 인사이트를 얻어보세요.</p>
-        <SectionButton text="검사 바로가기" />
+        <Link href="/test">
+          <SectionButton text="검사 바로가기" />
+        </Link>
       </div>
 
       {/* 섹션3 */}
@@ -90,8 +94,16 @@ export default function Home() {
       <div className="w-full h-[750px] bg-black/45 px-[100px] py-[80px]">
         <div className="w-[900px] h-full flex flex-col">
           <p className="text-white text-[28px] font-medium">Main Service</p>
-          <p className="text-white text-[55px] font-medium leading-[80px] mt-[40px]"><span className="font-black">ACTS</span>에서 검사하고<br />자신이 <span className="font-black">ADHD</span>인지 알아보세요</p>
-          <p className="text-[18px] text-white font-medium leading-[40px] mt-[25px]">CAT 검사(Cognitive Ability Test) 는 개인의 주의력, 인지 처리 능력, 사고력, 집중력 등을 종합적으로 평가하는 인지능력<br />검사입니다. 특히 ADHD(주의력결핍 과잉행동장애) 와 같은 주의력 문제를 객관적으로 파악하는 데에 활용됩니다.</p>
+          <p className="text-white text-[55px] font-medium leading-[80px] mt-[40px]">
+            <span className="font-black">ACTS</span>에서 검사하고
+            <br />
+            자신이 <span className="font-black">ADHD</span>인지 알아보세요
+          </p>
+          <p className="text-[18px] text-white font-medium leading-[40px] mt-[25px]">
+            CAT 검사(Cognitive Ability Test) 는 개인의 주의력, 인지 처리 능력, 사고력, 집중력 등을 종합적으로 평가하는 인지능력
+            <br />
+            검사입니다. 특히 ADHD(주의력결핍 과잉행동장애) 와 같은 주의력 문제를 객관적으로 파악하는 데에 활용됩니다.
+          </p>
           <div className="w-full h-[160px] mt-auto flex flex-row gap-[110px]">
             {stats.map((stat, idx) => (
               <StatCard key={idx} {...stat} />
@@ -105,7 +117,13 @@ export default function Home() {
         <div className="w-[1200px] h-[500px] flex flex-row justify-between items-center">
           <div className="w-auto h-full flex flex-col justify-center gap-[30px]">
             <p className="font-bold text-[28px] text-[#4A8AEE]">나만의 ADHD 관리 시작하기</p>
-            <p className="font-bold text-[50px] text-black leading-[75px]">내 ADHD 관리,<br />검사부터 솔루션까지<br />간편하게</p>
+            <p className="font-bold text-[50px] text-black leading-[75px]">
+              내 ADHD 관리,
+              <br />
+              검사부터 솔루션까지
+              <br />
+              간편하게
+            </p>
           </div>
           <Image src={Mockup} alt="mockup" className="w-[700px]" />
         </div>
@@ -114,7 +132,11 @@ export default function Home() {
       {/* 섹션6 */}
       <div className="w-full h-[400px] bg-[#2F2880] relative overflow-hidden flex flex-row">
         <div className="w-[555px] h-full ml-[120px] flex flex-col justify-center">
-          <p className="text-[50px] text-white leading-[70px]"><span className="font-bold">AI 챗봇</span>에게<br /><span className="font-bold">궁금한 점</span>을 물어보세요!</p>
+          <p className="text-[50px] text-white leading-[70px]">
+            <span className="font-bold">AI 챗봇</span>에게
+            <br />
+            <span className="font-bold">궁금한 점</span>을 물어보세요!
+          </p>
           <p className="text-[24px] text-white mt-[35px]">최신 정보를 바탕으로 정확하고 빠른 답변을 제공합니다.</p>
         </div>
         <Image src={Robot} alt="robot" className="w-[470px] h-[470px] mt-[100px] ml-[70px]" />
