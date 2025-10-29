@@ -1,184 +1,129 @@
 'use client';
-
-import Link from 'next/link';
+import MainHeader from '@/components/MainHeader';
+import Background1 from '../public/images/background1.jpg';
+import Image from 'next/image';
 import Footer from '@/components/footer';
-import Image, { StaticImageData } from 'next/image';
-import Plant from '@/public/images/plant.png';
 import Dotbogi from '@/public/images/dotbogi.png';
-import Computer from '@/public/images/computer.png';
-import Bogo from '@/public/images/bogo.png';
-import Background from '@/public/images/background.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { faImages } from '@fortawesome/free-regular-svg-icons';
-import { faRobot, faPalette } from '@fortawesome/free-solid-svg-icons';
-import { useRef } from 'react';
-
-const buttonPrimary = 'w-[170px] h-[60px] flex justify-center items-center bg-white rounded-[60px] hover:scale-105 transition duration-300';
-const buttonSecondary = 'w-[170px] h-[60px] flex justify-center items-center rounded-[60px] border-2 border-white hover:bg-white/20 hover:scale-105 transition duration-300';
-
-type Test = { title: string; subtitle: string; icon: any; path: string };
-type Feature = { icon: string; title: string; description: string };
-type Section4Card = { img: StaticImageData; alt: string; label: string };
-
-const tests: Test[] = [
-  { title: 'Stroop', subtitle: '테스트', icon: faPalette, path: '/stroop' },
-  { title: 'N-back', subtitle: '테스트', icon: faImages, path: '/NBack' },
-  { title: '시간 감각', subtitle: '테스트', icon: faClock, path: '/test' },
-  { title: '상담 챗봇', subtitle: '테스트', icon: faRobot, path: '/consultation' }
-];
-
-const features: Feature[] = [
-  {
-    icon: '💡',
-    title: '과학적 검증',
-    description: 'DSM-5 기준과 국제 표준 진단 도구를 바탕\n으로 한 신뢰할 수 있는 진단 시스템을 제공\n합니다.'
-  },
-  {
-    icon: '🤖',
-    title: 'AI 상담 서비스',
-    description: '24시간 언제든지 이용 가능한 개인화된 AI\n상담으로 즉시 도움과 가이드라인을 받을 수\n있습니다.'
-  },
-  {
-    icon: '📊',
-    title: '종합적 분석',
-    description: '다양한 측면에서 ADHD 증상을 분석하고\n개인별 맞춤 결과와 개선 방안을\n제시합니다.'
-  }
-];
-
-const section4Cards: Section4Card[] = [
-  { img: Dotbogi, alt: '돋보기이미지', label: '상태 파악' },
-  { img: Computer, alt: '컴퓨터이미지', label: '분석 인사이트' },
-  { img: Plant, alt: '새싹이미지', label: '자기 이해' },
-  { img: Bogo, alt: '보고서이미지', label: '데이터 활용' }
-];
-
-const chunkArray = <T,>(arr: T[], size: number): T[][] => {
-  const chunks: T[][] = [];
-  for (let i = 0; i < arr.length; i += size) chunks.push(arr.slice(i, i + size));
-  return chunks;
-};
-
-const TestCard: React.FC<Test> = ({ title, subtitle, icon }) => (
-  <div className="w-[215px] h-full bg-white rounded-[10px] shadow-[0_4px_10px_rgba(0,0,0,0.15)] cursor-pointer hover:scale-105 transition duration-300 p-[20px] relative">
-    <p className="text-[20px]">
-      <span className="text-[#4A8AEE] font-bold">{title}</span>
-      <span className="text-[#000000] font-medium"> {subtitle}</span>
-    </p>
-    <p className="text-[20px] font-medium">바로가기</p>
-    <FontAwesomeIcon icon={icon} className="absolute bottom-3 right-3 text-[#4A8AEE] text-[50px]" />
-  </div>
-);
-
-const FeatureCard: React.FC<Feature> = ({ icon, title, description }) => (
-  <div className="w-[380px] h-full rounded-[20px] bg-white flex flex-col justify-center items-center shadow-[0_4px_10px_rgba(0,0,0,0.15)] cursor-pointer gap-4 p-4 hover:scale-105 transition duration-300">
-    <div className="w-[80px] h-[80px] bg-[#C8EDFF] rounded-full flex justify-center items-center">
-      <p className="text-[50px]">{icon}</p>
-    </div>
-    <p className="text-[24px] font-bold text-center">{title}</p>
-    <p className="text-[16px] text-[#64748B] text-center whitespace-pre-line">{description}</p>
-  </div>
-);
-
-const ImageCard: React.FC<Section4Card> = ({ img, alt, label }) => (
-  <div className="w-[25%] h-full flex flex-col items-center">
-    <div className="w-full h-[180px] bg-white overflow-hidden">
-      <Image src={img} alt={alt} className="h-[180px] cursor-pointer" />
-    </div>
-    <p className="text-[18px] text-[#3C3C3C] font-medium mt-[7px] text-center">{label}</p>
-  </div>
-);
+import Mockup from '@/public/images/mockup.png';
+import Right from '@/public/images/right.svg';
+import Robot from '@/public/images/robot.png';
 
 export default function Home() {
-  const section3Ref = useRef<HTMLDivElement>(null);
+  const processList = [
+    { title: '설문 조사', description: '총 20문항으로 이루어진\nDSM-5를 기반으로 한 설문 진행', icon: '📋' },
+    { title: 'CAT 검사', description: '총 5가지 테스트로 이루어진\n종합 인지능력 검사를 진행', icon: '🧠', mt: 'mt-[120px]' },
+    { title: '진단 및 솔루션', description: '테스트 결과를 종합하여\nADHD진단 및 솔루션 제공', icon: '🔍' },
+    { title: 'AI 상담 챗봇', description: 'ADHD 증상 및 솔루션에 관한\nAI 기반 맞춤형 상담 제공', icon: '🗣️', mt: 'mt-[120px]' }
+  ];
 
-  const handleScrollToSection3 = () => {
-    section3Ref.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const stats = [
+    { title: '누적 검사 참여자', value: '45,000', subtitle: '전 세계 4만 5천 명 이상이 검사함', highlight: '+' },
+    { title: '참여 기관 및 학교', value: '60', subtitle: '많은 공공기관도 사용함', highlight: '+' },
+    { title: '검사 정확도', value: '95', subtitle: '정확도가 굉장히 높음', highlight: '+' }
+  ];
+
+  const ProcessCard = ({ title, description, icon, mt }: { title: string; description: string; icon: string; mt?: string }) => (
+    <div className={`w-[320px] h-[370px] rounded-[20px] py-[50px] px-[40px] cursor-pointer transition-transform duration-300 hover:-translate-y-[10px] ${mt || ''}`} style={{ boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.15)' }}>
+      <p className="text-[24px] font-bold text-black">{title}</p>
+      <p className="text-[16px] font-medium text-[#474747] leading-[23px] mt-[10px]">{description}</p>
+      <p className="text-[100px] mt-[50px]">{icon}</p>
+    </div>
+  );
+
+  const StatCard = ({ title, value, subtitle, highlight }: { title: string; value: string; subtitle: string; highlight?: string }) => (
+    <div className="w-auto h-full flex flex-col">
+      <p className="text-[28px] text-white font-bold">{title}</p>
+      <p className="text-[70px] text-white font-bold">
+        {value}
+        {highlight && <span className="text-[50px] text-[#87B6FF]">{highlight}</span>}
+      </p>
+      <p className="text-[18px] text-white font-bold">{subtitle}</p>
+    </div>
+  );
+
+  const SectionButton = ({ text, onClick }: { text: string; onClick?: () => void }) => (
+    <div onClick={onClick} className="w-[200px] h-[60px] center border-2 border-[#4A8AEE] bg-[#F9FAFB] cursor-pointer mt-[40px] duration-200 hover:bg-[#4A8AEE] hover:text-white text-[18px] text-[#4A8AEE] font-light flex items-center justify-center">
+      {text}
+    </div>
+  );
 
   return (
-    <div className="w-full h-auto flex flex-col">
-      {/* 섹션 1 */}
-      <div className="w-full h-screen flex items-center bg-cover bg-center" style={{ backgroundImage: `url(${Background.src})` }}>
-        <div className="w-full h-[400px]">
-          <div className="w-[500px] h-full ml-[150px] flex flex-col justify-center gap-[35px]">
-            <p className="text-[50px] text-white font-extrabold leading-[70px]">
-              ADHD 자가진단의
-              <br />
-              새로운 기준
-            </p>
-            <p className="text-[25px] text-white font-medium leading-[40px]">
-              과학적이고 정확한 진단을 위한 종합적인 테스트와
-              <br />
-              개인화된 AI상담 서비스를 제공합니다
-            </p>
-            <div className="w-[380px] h-[60px] flex flex-row justify-between">
-              <Link href="/test" className={buttonPrimary}>
-                <p className="text-[20px] text-[#3C3C3C] font-medium">진단 시작하기</p>
-              </Link>
-              <button onClick={handleScrollToSection3} className={buttonSecondary}>
-                <p className="text-[20px] text-white font-medium">더 알아보기</p>
-              </button>
-            </div>
-          </div>
+    <>
+      <MainHeader />
+      <Image src={Dotbogi} alt="backgroundimg" className="fixed z-[-1]" />
+
+      {/* 섹션1 */}
+      <div className="w-full h-[800px] bg-black relative overflow-hidden">
+        <Image src={Background1} alt="background1" fill className="object-cover object-[center_35%]" />
+        <div className="absolute inset-0 bg-black/40 flex flex-col items-center">
+          <p className="text-[70px] text-white font-medium mt-[214px]">
+            <span className="font-black">ADHD</span> 자가진단의
+          </p>
+          <p className="text-[70px] text-white font-medium">새로운 기준</p>
+          <p className="text-[22px] font-medium text-white mt-8">과학적이고 정확한 진단을 위한 종합적인 테스트와</p>
+          <p className="text-[22px] font-medium text-white mt-1">개인화된 AI상담 서비스를 제공합니다</p>
         </div>
       </div>
 
-      {/* 섹션 2 */}
-      <div className="w-full h-[700px] flex items-center bg-white">
-        <div className="w-full h-[450px] flex flex-row justify-center gap-[50px]">
-          <div className="w-[735px] h-full bg-[#f5f5f5] rounded-[20px] flex justify-center items-center">최근 분석 결과 차트</div>
-          <div className="w-[470px] h-full flex flex-col justify-between">
-            {chunkArray<Test>(tests, 2).map((group, i) => (
-              <div key={i} className="w-full h-[210px] flex flex-row justify-between">
-                {group.map((item, j) => (
-                  <Link key={j} href={item.path} className="w-[215px]">
-                    <TestCard title={item.title} subtitle={item.subtitle} icon={item.icon} path={item.path} />
-                  </Link>
-                ))}
-              </div>
+      {/* 섹션2 */}
+      <div className="w-full h-[450px] bg-[#F9FAFB] flex flex-col items-center">
+        <p className="text-[40px] font-medium text-[#4A8AEE] mt-[111px]">Discover yourself with ACTS.</p>
+        <p className="text-[18px] text-[#474747] mt-[31px]">ACTS를 통해 ADHD 검사 결과를 쉽고 정확하게 확인하고,</p>
+        <p className="text-[18px] text-[#474747] mt-1">결과를 바탕으로 스스로를 더 깊이 이해할 수 있는 인사이트를 얻어보세요.</p>
+        <SectionButton text="검사 바로가기" />
+      </div>
+
+      {/* 섹션3 */}
+      <div className="w-full h-[1000px] bg-white flex flex-col justify-center px-[160px]">
+        <div className="w-full h-[60px] flex flex-col justify-between">
+          <p className="text-[14px] font-medium text-[#4A8AEE]">한눈에 보는 검사 프로세스</p>
+          <p className="text-[28px] font-bold text-[#474747]">검사 진행 과정</p>
+        </div>
+        <div className="w-full h-[490px] mt-[55px] flex flex-row justify-center gap-[25px]">
+          {processList.map((process, idx) => (
+            <ProcessCard key={idx} {...process} />
+          ))}
+        </div>
+      </div>
+
+      {/* 섹션4 */}
+      <div className="w-full h-[750px] bg-black/45 px-[100px] py-[80px]">
+        <div className="w-[900px] h-full flex flex-col">
+          <p className="text-white text-[28px] font-medium">Main Service</p>
+          <p className="text-white text-[55px] font-medium leading-[80px] mt-[40px]"><span className="font-black">ACTS</span>에서 검사하고<br />자신이 <span className="font-black">ADHD</span>인지 알아보세요</p>
+          <p className="text-[18px] text-white font-medium leading-[40px] mt-[25px]">CAT 검사(Cognitive Ability Test) 는 개인의 주의력, 인지 처리 능력, 사고력, 집중력 등을 종합적으로 평가하는 인지능력<br />검사입니다. 특히 ADHD(주의력결핍 과잉행동장애) 와 같은 주의력 문제를 객관적으로 파악하는 데에 활용됩니다.</p>
+          <div className="w-full h-[160px] mt-auto flex flex-row gap-[110px]">
+            {stats.map((stat, idx) => (
+              <StatCard key={idx} {...stat} />
             ))}
           </div>
         </div>
       </div>
 
-      {/* 섹션 3 */}
-      <div ref={section3Ref} className="w-full h-[750px] bg-[#F5F5F5] flex justify-center">
-        <div className="w-[1210px] h-full flex flex-col justify-center gap-[85px]">
-          <div className="w-full h-[125px] flex flex-col justify-center gap-4">
-            <p className="text-[36px] font-bold bg-gradient-to-r from-[#59C0EE] to-[#4E59F4] bg-clip-text text-transparent text-center">왜 우리 서비스를 선택해야 할까요?</p>
-            <p className="text-[18px] font-medium text-[#737373] text-center">
-              전문적이고 신뢰할 수 있는 ADHD 진단 도구와 맞춤형 상담 서비스를 통해
-              <br />
-              정확한 자가진단과 전문적인 가이드라인을 제공합니다.
-            </p>
+      {/* 섹션5 */}
+      <div className="w-full h-screen bg-white center">
+        <div className="w-[1200px] h-[500px] flex flex-row justify-between items-center">
+          <div className="w-auto h-full flex flex-col justify-center gap-[30px]">
+            <p className="font-bold text-[28px] text-[#4A8AEE]">나만의 ADHD 관리 시작하기</p>
+            <p className="font-bold text-[50px] text-black leading-[75px]">내 ADHD 관리,<br />검사부터 솔루션까지<br />간편하게</p>
           </div>
-          <div className="w-full h-[310px] flex flex-row justify-center items-center gap-[40px]">
-            {features.map((item, i) => (
-              <FeatureCard key={i} icon={item.icon} title={item.title} description={item.description} />
-            ))}
-          </div>
+          <Image src={Mockup} alt="mockup" className="w-[700px]" />
         </div>
       </div>
 
-      {/* 섹션 4 */}
-      <div className="w-full h-[660px] bg-white flex justify-center">
-        <div className="w-[1000px] h-full flex flex-col justify-center gap-[85px]">
-          <div className="w-full h-[125px] flex flex-col justify-center gap-4">
-            <p className="text-[36px] font-bold bg-gradient-to-r from-[#59C0EE] to-[#4E59F4] bg-clip-text text-transparent text-center">우리 서비스와 함께라면</p>
-            <p className="text-[18px] font-medium text-[#737373] text-center">
-              ACTS를 통해 ADHD 검사 결과를 쉽고 정확하게 확인하고, <br />그 결과를 바탕으로 스스로를 더 깊이 이해할 수 있는 구체적인 분석과 인사이트를 얻어보세요.
-            </p>
-          </div>
-          <div className="w-full h-[225px] flex flex-row justify-center gap-[0]">
-            {section4Cards.map((card, i) => (
-              <ImageCard key={i} img={card.img} alt={card.alt} label={card.label} />
-            ))}
-          </div>
+      {/* 섹션6 */}
+      <div className="w-full h-[400px] bg-[#2F2880] relative overflow-hidden flex flex-row">
+        <div className="w-[555px] h-full ml-[120px] flex flex-col justify-center">
+          <p className="text-[50px] text-white leading-[70px]"><span className="font-bold">AI 챗봇</span>에게<br /><span className="font-bold">궁금한 점</span>을 물어보세요!</p>
+          <p className="text-[24px] text-white mt-[35px]">최신 정보를 바탕으로 정확하고 빠른 답변을 제공합니다.</p>
+        </div>
+        <Image src={Robot} alt="robot" className="w-[470px] h-[470px] mt-[100px] ml-[70px]" />
+        <div className="w-[80px] h-[80px] rounded-[80px] bg-white center ml-auto mr-[50px] mt-auto mb-[60px] cursor-pointer">
+          <Image src={Right} alt="right" className="w-[35px]" />
         </div>
       </div>
 
       <Footer />
-    </div>
+    </>
   );
 }

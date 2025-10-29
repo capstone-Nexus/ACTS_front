@@ -15,7 +15,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve", // ✅ react-jsx 로 고정
+    "jsx": "preserve",
     "incremental": true,
     "plugins": [
       {
@@ -27,7 +27,7 @@
       "next",
       "react",
       "react-dom"
-    ], // ✅ react, react-dom 추가
+    ],
     "paths": {
       "@/*": [
         "./*"
