@@ -41,7 +41,7 @@ export default function RegisterPage() {
     if (!form.email) return alert('이메일을 입력해주세요.');
 
     try {
-      const res = await fetch(`${API_URL}/auth/code/send`, {
+      const res = await fetch(`${API_URL}/auth/send-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: form.email }),
@@ -59,7 +59,7 @@ export default function RegisterPage() {
     if (!form.code) return alert('인증번호를 입력해주세요.');
 
     try {
-      const res = await fetch(`${API_URL}/auth/code/verify`, {
+      const res = await fetch(`${API_URL}/auth/verify-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: form.email, code: form.code }),
