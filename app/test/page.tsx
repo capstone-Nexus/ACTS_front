@@ -50,7 +50,7 @@ export default function Test() {
           </div>
         ))}
       </div>
-      <div className="w-[990px] h-[100px] bg-[#FFFBEB] border-1 border-[#FEF3C7] rounded-[10px] mt-[70px] flex flex-col justify-center p-8 gap-[5px]">
+      <div className="w-auto h-[100px] bg-[#FFFBEB] border-1 border-[#FEF3C7] rounded-[10px] mt-[70px] flex flex-col justify-center p-8 gap-[5px]">
         <p className="text-[14px] text-[#78350F] font-semibold">💡 안내사항</p>
         <li className="ml-6 text-[14px] text-[#78350F] font-medium">이 검사는 테스트 진행 중 웹캠을 통해 자세나 움직임(예: 목 기울임, 자리이탈 등)을 인식합니다.<br/>영상은 화면에 표시되지 않으며, 검사 분석용으로만 사용됩니다. 영상 촬영이 부담스러우신 경우 검사를 진행하지 않으셔도 됩니다.</li>
       </div>

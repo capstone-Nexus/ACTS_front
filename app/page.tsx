@@ -144,7 +144,6 @@ export default function Home() {
           <Image src={Right} alt="right" className="w-[35px]" />
         </div>
       </div>
-
       <Footer />
     </>
   );

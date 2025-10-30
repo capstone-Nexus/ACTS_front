@@ -64,8 +64,7 @@ export default function SignInPage() {
 
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen"
-      style={{ background: 'linear-gradient(rgba(89,192,238,1), rgba(78,89,244,1))' }}
+      className="flex flex-col items-center justify-center min-h-screen bg-[#F9FAFB]"
     >
       <div className="mt-[188px] bg-white shadow-lg rounded-4xl p-8 w-[500px] h-auto mb-[110px]">
         <Image src={logo} alt="Logo" width={180} height={120} className="mx-auto mt-5 mb-4" />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SurveyCard from '@/components/SurveyCard';
 
@@ -8,32 +8,23 @@ const surveyQuestions = ['나는 세심한 것에 주의를 기울이지 못해�
 
 export default function Survey() {
   const [answers, setAnswers] = useState<(number | null)[]>(Array(surveyQuestions.length).fill(null));
-  const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
-
-  const questionsPerPage = 5;
-  const totalPages = Math.ceil(surveyQuestions.length / questionsPerPage);
-
-  const startIndex = (currentPage - 1) * questionsPerPage;
-  const endIndex = startIndex + questionsPerPage;
-  const currentQuestions = surveyQuestions.slice(startIndex, endIndex);
-
-  const allAnswered = currentQuestions.every((_, idx) => answers[startIndex + idx] !== null);
-
+  
+  //문항 선택 로직
   const handleAnswer = (index: number, value: number) => {
     const newAnswers = [...answers];
     newAnswers[index] = value;
     setAnswers(newAnswers);
+
+    //스크롤
+    window.scrollBy({ top: 200, behavior: 'smooth' });
   };
 
+  const allAnswered = answers.every(a => a !== null);
   const progress = (answers.filter(a => a !== null).length / surveyQuestions.length) * 100;
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [currentPage]);
-
   return (
-    <div className="w-full min-h-screen bg-[#F5F5F5] flex flex-col items-center py-12">
+    <div className="w-full min-h-screen bg-[#F9FAFB] flex flex-col items-center py-12">
       {/* 헤더 */}
       <div className="w-[950px] h-[180px] bg-white mt-[100px] rounded-[30px] flex flex-col items-center justify-center gap-3 shadow-[0_4px_10px_rgba(0,0,0,0.15)]">
         <p className="text-[32px] font-bold bg-gradient-to-r from-[#59C0EE] to-[#4E59F4] bg-clip-text text-transparent">ADHD 자가진단 설문</p>
@@ -44,33 +35,26 @@ export default function Survey() {
       </div>
 
       {/* 본문 */}
-      <div className="w-[950px] min-h-[600px] bg-white rounded-[30px] mt-[35px] shadow-[0_4px_10px_rgba(0,0,0,0.15)] flex flex-col items-center p-[50px]">
-        <p className="text-[28px] font-bold self-start">🎯 집중력 체크</p>
+      <div className="w-[950px] bg-white rounded-[30px] mt-[35px] shadow-[0_4px_10px_rgba(0,0,0,0.15)] flex flex-col items-center p-[50px]">
+        <p className="text-[28px] font-bold self-start mb-6">🎯 집중력 체크</p>
 
-        {currentQuestions.map((question, index) => (
-          <SurveyCard key={startIndex + index} title={question} selected={answers[startIndex + index] ?? undefined} onSelect={value => handleAnswer(startIndex + index, value)} />
+        {surveyQuestions.map((question, index) => (
+          <div key={index} className="w-full">
+            <SurveyCard title={question} selected={answers[index] ?? undefined} onSelect={value => handleAnswer(index, value)} />
+          </div>
         ))}
 
-        {/* 페이지 네비게이션 */}
-        <div className="w-full h-[50px] mt-[40px] flex items-center px-4 relative">
-          <p className="absolute left-1/2 -translate-x-1/2 text-[18px] font-semibold text-[#737373]">
-            {currentPage} / {totalPages}
-          </p>
-          {currentPage < totalPages ? (
-            <div onClick={() => allAnswered && setCurrentPage(prev => prev + 1)} className={`ml-auto w-[110px] h-[50px] flex items-center justify-center rounded-[60px] duration-200 ${allAnswered ? 'bg-[#4A8AEE] cursor-pointer hover:bg-[#4077CE]' : 'bg-gray-300 cursor-not-allowed'}`}>
-              <p className="text-[18px] font-semibold text-white">다음 →</p>
-            </div>
-          ) : (
-            <div
-              className="ml-auto w-[110px] h-[50px] flex items-center justify-center rounded-[60px] bg-green-500 cursor-pointer hover:bg-green-600 duration-200"
-              onClick={() => {
-                console.log('설문 완료!', answers);
-                router.push('/test');
-              }}
-            >
-              <p className="text-[18px] font-semibold text-white">제출</p>
-            </div>
-          )}
+        {/* 제출 버튼 */}
+        <div
+          className={`w-[150px] h-[55px] mt-[50px] flex items-center justify-center rounded-[60px] text-white text-[18px] font-semibold transition-all duration-200 ${allAnswered ? 'bg-[#4A8AEE] cursor-pointer hover:bg-[#4077CE]' : 'bg-gray-300 cursor-not-allowed'}`}
+          onClick={() => {
+            if (allAnswered) {
+              console.log('설문 완료!', answers);
+              router.push('/test');
+            }
+          }}
+        >
+          제출
         </div>
       </div>
     </div>

@@ -143,11 +143,8 @@ export default function RegisterPage() {
 
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen"
-      style={{
-        background: 'linear-gradient(rgba(89,192,238,1), rgba(78,89,244,1))',
-      }}
-    >
+      className="flex flex-col items-center justify-center min-h-screen bg-[#F9FAFB]  0"
+      >
       <div className="mt-[190px] bg-white shadow-lg rounded-4xl p-8 w-[500px] h-auto mb-[110px]">
         <Image
           src={logo}
