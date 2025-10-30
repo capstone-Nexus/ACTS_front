@@ -13,25 +13,24 @@ export default function Test5() {
         return (
             <div className="w-full h-screen flex flex-col items-center bg-gray-50">
                 <div className="mt-[150px] w-[900px] h-[753px] flex flex-col items-center bg-white border border-[#CDD0D4]">
-                    <p className="text-[32px] font-bold mt-12">단순 선택 주의력 검사</p>
-                    <p className="mt-2 tex`t-[18px] text-[#737373]">Simple Selective Attention</p>
+                    <p className="text-[32px] font-bold mt-12">작업 기억력 검사</p>
+                    <p className="mt-2 tex`t-[18px] text-[#737373]">Working Memory</p>
                     <div className="mt-10 w-[800px] h-[1px] bg-[#CDD0D4]" />
                     <div className="mt-13 w-[800px] h-[410px] bg-[#F9FAFB] border border-[#E4E7EB]">
                         <div className="ml-10 mt-9">
                             <p className="text-[18px] font-bold">🎯 검사 목적</p>
-                            <p className="mt-2 text-[14px] font-medium text-[#474747]">시각 및 청각 자극에 대한 기본적인 반응 속도와 정확도를 평가합니다.</p>
+                            <p className="mt-2 text-[14px] font-medium text-[#474747]">단기 기억을 유지하고 조작하는 능력을 측정합니다.</p>
                         </div>
                         <div className="ml-10 mt-9 mb-5">
                             <p className="text-[18px] font-bold">📋 검사 방법</p>
                             <div className="mt-2 ml-7 text-[14px] font-medium text-[#474747] leading-7">
-                                <li>화면에 <span className="text-[#4A8AEE] font-bold">파란색 원</span>이 나타나면 즉시 스페이스바를 클릭하세요</li>
-                                <li>또는 <span className="text-[#4A8AEE] font-bold">소리</span>가 들릴 때마다 스페이스바를 클릭하세요</li>
-                                <li>자극이 제시될 때 빠르고 정확하게 반응해야 합니다</li>
+                                <li>8개의 박스가 순서대로 제시됩니다</li>
+                                <li>제시가 끝난 후, 방금 본 순서를 '반대로' 클릭하세요</li>
                             </div>
                         </div>
                         <div className="w-[720px] h-[100px] bg-[#EBEDEF] ml-10 border-l-3 border-[#4A8AEE] p-4">
                             <p className="text-[14px] font-semibold ml-1 mt-2">💡 예시</p>
-                            <p className="mt-2 ml-3">파란색 원 나타나거나 종소리가 들린다면 → 즉시 스페이스바 클릭</p>
+                            <p className="mt-2 ml-3">제시: [1] [2] [3] 순서로 제시됨 → 응답: [3] [2] [1] 순서로 클릭</p>
                         </div>
 
                     </div>
