@@ -1,89 +1,152 @@
 'use client';
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 
 export default function Test1() {
     const TOTAL_TRIALS = 20;
-    const STIMULUS_TIME = 1000; // 1초 동안 자극 표시
+    const STIMULUS_TIME = 300; // 300ms 동안 자극 표시
+    const INTER_TRIAL_MIN = 1500; // 최소 1.5초 간격
+    const INTER_TRIAL_MAX = 3000; // 최대 3초 간격
+    
     const [currentScreen, setCurrentScreen] = useState<"intro" | "test">("intro");
     const [progress, setProgress] = useState(0);
-    const [stimuli, setStimuli] = useState<("blue-circle" | "sound")[]>([]);
-    const [currentStimulus, setCurrentStimulus] = useState<"blue-circle" | "sound" | "">("");
-    const [showNext, setShowNext] = useState(false);
-    const [responses, setResponses] = useState<{ stimulus: string; time: number }[]>([]);
-    const stimulusTimeout = useRef<NodeJS.Timeout | null>(null);
-    const autoNextTimeout = useRef<NodeJS.Timeout | null>(null);
+    const [currentStimulus, setCurrentStimulus] = useState<"blue-circle" | "sound" | null>(null);
+    const [isWaiting, setIsWaiting] = useState(false);
+    const [isTestComplete, setIsTestComplete] = useState(false);
+    const [results, setResults] = useState<{ type: string; reactionTime: number | null; correct: boolean }[]>([]);
+    
     const stimulusStartTime = useRef<number>(0);
-
-    // 오디오 객체 생성
+    const trialTimeout = useRef<NodeJS.Timeout | null>(null);
+    const stimulusTimeout = useRef<NodeJS.Timeout | null>(null);
+    const hasResponded = useRef(false);
+    const currentTrialType = useRef<"blue-circle" | "sound" | null>(null);
+    
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    
     useEffect(() => {
-        audioRef.current = new Audio("/sounds/bell.mp3"); // public/sounds/bell.mp3 파일 필요
+        // 간단한 beep 소리 생성
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        gainNode.gain.value = 0.3;
+        
+        return () => {
+            audioContext.close();
+        };
     }, []);
+
+    const playBeep = () => {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.3);
+    };
 
     const handleStartTest = () => {
         setCurrentScreen("test");
-
-        const stim: ("blue-circle" | "sound")[] = Array.from({ length: TOTAL_TRIALS }, () =>
-            Math.random() < 0.5 ? "blue-circle" : "sound"
-        );
-        setStimuli(stim);
         setProgress(0);
-        setShowNext(false);
-
+        setResults([]);
+        setIsTestComplete(false);
+        setIsWaiting(true);
+        
         setTimeout(() => {
-            nextStimulus(0);
-        }, 500); // 잠시 지연 후 첫 자극
+            runTrial(0);
+        }, 1000);
     };
 
-    const nextStimulus = (index: number) => {
-        const stim = stimuli[index];
-        setCurrentStimulus(stim);
-        stimulusStartTime.current = Date.now();
-
-        // 소리 자극이면 오디오 재생
-        if (stim === "sound" && audioRef.current) {
-            audioRef.current.currentTime = 0;
-            audioRef.current.play();
+    const runTrial = (trialIndex: number) => {
+        if (trialIndex >= TOTAL_TRIALS) {
+            setIsTestComplete(true);
+            return;
         }
 
-        // 1초 후 자극 사라짐
-        stimulusTimeout.current = setTimeout(() => {
-            setCurrentStimulus("");
-        }, STIMULUS_TIME);
-
-        // 2초 동안 반응 없으면 자동 기록 후 다음
-        autoNextTimeout.current = setTimeout(() => {
-            recordResponse("");
-            if (index < TOTAL_TRIALS - 1) {
-                setProgress(index + 1);
-                nextStimulus(index + 1);
-            } else {
-                setShowNext(true);
+        hasResponded.current = false;
+        setIsWaiting(true);
+        
+        const waitTime = Math.random() * (INTER_TRIAL_MAX - INTER_TRIAL_MIN) + INTER_TRIAL_MIN;
+        
+        trialTimeout.current = setTimeout(() => {
+            const stimType = Math.random() < 0.5 ? "blue-circle" : "sound";
+            currentTrialType.current = stimType;
+            
+            setCurrentStimulus(stimType);
+            setIsWaiting(false);
+            stimulusStartTime.current = performance.now();
+            
+            if (stimType === "sound") {
+                playBeep();
             }
-        }, 2000);
+            
+            stimulusTimeout.current = setTimeout(() => {
+                setCurrentStimulus(null);
+                
+                // 반응이 없었다면 기록
+                if (!hasResponded.current) {
+                    setResults(prev => [...prev, {
+                        type: stimType,
+                        reactionTime: null,
+                        correct: false
+                    }]);
+                    
+                    setProgress(trialIndex + 1);
+                    runTrial(trialIndex + 1);
+                }
+            }, STIMULUS_TIME);
+        }, waitTime);
     };
 
-    const recordResponse = (clicked: "clicked" | "") => {
+    const handleResponse = () => {
+        if (hasResponded.current || isWaiting) return;
+        
+        hasResponded.current = true;
+        
+        if (trialTimeout.current) clearTimeout(trialTimeout.current);
         if (stimulusTimeout.current) clearTimeout(stimulusTimeout.current);
-        if (autoNextTimeout.current) clearTimeout(autoNextTimeout.current);
-
-        const time = Date.now() - stimulusStartTime.current;
-        setResponses(prev => [...prev, { stimulus: currentStimulus || "none", time }]);
-        setCurrentStimulus("");
+        
+        const reactionTime = performance.now() - stimulusStartTime.current;
+        const stimType = currentTrialType.current;
+        
+        setResults(prev => [...prev, {
+            type: stimType || 'none',
+            reactionTime: reactionTime,
+            correct: true
+        }]);
+        
+        setCurrentStimulus(null);
+        setProgress(progress + 1);
+        
+        setTimeout(() => {
+            runTrial(progress + 1);
+        }, 500);
     };
 
-    const handleClick = () => {
-        recordResponse("clicked");
-        if (progress < TOTAL_TRIALS - 1) {
-            const nextIndex = progress + 1;
-            setProgress(nextIndex);
-            nextStimulus(nextIndex);
-        } else {
-            setShowNext(true);
-        }
-    };
+    useEffect(() => {
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.code === 'Space' && currentScreen === 'test') {
+                e.preventDefault();
+                handleResponse();
+            }
+        };
+        
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, [currentScreen, isWaiting, progress]);
 
     if (currentScreen === "intro") {
         return (
@@ -100,17 +163,18 @@ export default function Test1() {
                         <p className="mt-6 text-[18px] font-bold">📋 검사 방법</p>
                         <ul className="mt-2 ml-7 text-[14px] font-medium text-[#474747] leading-7 list-disc">
                             <li>
-                                화면에 <span className="text-[#4A8AEE] font-bold">파란색 원</span>이 나타나면 즉시 스페이스바를 클릭
+                                화면에 <span className="text-[#4A8AEE] font-bold">파란색 원</span>이 나타나면 즉시 스페이스바를 누르세요
                             </li>
                             <li>
-                                또는 <span className="text-[#4A8AEE] font-bold">소리</span>가 들릴 때마다 스페이스바 클릭
+                                또는 <span className="text-[#4A8AEE] font-bold">소리</span>가 들리면 즉시 스페이스바를 누르세요
                             </li>
-                            <li>자극이 제시될 때 빠르고 정확하게 반응</li>
+                            <li>가능한 한 빠르고 정확하게 반응하세요</li>
+                            <li>자극이 나타나기 전에 미리 누르지 마세요</li>
                         </ul>
-                        <div className="w-[720px] h-[100px] bg-[#EBEDEF] mt-6 border-l-3 border-[#4A8AEE] p-4">
-                            <p className="text-[14px] font-semibold ml-1 mt-2">💡 예시</p>
-                            <p className="mt-2 ml-3">
-                                파란색 원 나타나거나 종소리가 들린다면 → 즉시 스페이스바 클릭
+                        <div className="w-[720px] h-[100px] bg-[#EBEDEF] mt-6 border-l-4 border-[#4A8AEE] p-4">
+                            <p className="text-[14px] font-semibold ml-1 mt-2">💡 주의사항</p>
+                            <p className="mt-2 ml-3 text-[14px]">
+                                자극이 나타날 때만 반응하세요. 각 자극은 짧게 나타나므로 집중해야 합니다.
                             </p>
                         </div>
                     </div>
@@ -130,34 +194,40 @@ export default function Test1() {
         <div className="w-full min-h-screen flex justify-center items-center bg-[#F9FAFB]">
             <div className="mt-[130px] mb-10 w-[900px] h-[751px] bg-[#ffffff] border border-[#CCCCCC] flex flex-col items-center">
                 <div className="mt-8 text-[32px] font-bold">단순 선택 주의력 검사</div>
-                <div className="mt-1 text-[18px] text-[#737373]">진행 중...</div>
+                <div className="mt-1 text-[18px] text-[#737373]">
+                    {isWaiting ? "준비..." : "반응하세요!"}
+                </div>
                 <div className="mt-8 w-[800px] h-[1px] bg-[#CDD0D4]" />
 
                 <div
                     className="relative w-[800px] h-[330px] bg-[#F9FAFB] flex justify-center items-center border border-[#CDD0D4] mt-12 cursor-pointer"
-                    onClick={handleClick}
+                    onClick={handleResponse}
                 >
                     <div className="absolute top-4 right-4 w-[100px] h-[30px] bg-white text-[12px] font-medium flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
-                        진행률 : {Math.min(progress + 1, TOTAL_TRIALS)}/{TOTAL_TRIALS}
+                        진행률 : {progress}/{TOTAL_TRIALS}
                     </div>
 
                     {currentStimulus === "blue-circle" && (
-                        <div className="w-[100px] h-[100px] rounded-full bg-[#4A8AEE]"></div>
+                        <div className="w-[120px] h-[120px] rounded-full bg-[#4A8AEE] animate-pulse"></div>
                     )}
-                    {currentStimulus === "sound" && (
-                        <div className="text-[48px] font-bold animate-pulse">🔔</div>
+                    {isWaiting && (
+                        <div className="text-[24px] text-[#CCCCCC]">+</div>
                     )}
                 </div>
 
-                {showNext && (
-                    <Link
+                <div className="mt-8 text-[14px] text-[#737373]">
+                    스페이스바를 누르거나 화면을 클릭하세요
+                </div>
+
+                {isTestComplete && (
+                    <a
                         href="/cat/test2"
                         className="mt-10 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group"
                     >
                         <p className="text-[14px] font-medium text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
                             다음 →
                         </p>
-                    </Link>
+                    </a>
                 )}
             </div>
         </div>

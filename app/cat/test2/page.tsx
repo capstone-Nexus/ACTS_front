@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const SHAPES = ["○", "△", "□", "X"];
 const TOTAL_TRIALS = 20;
-const STIMULUS_TIME = 2000; // 2초
+const STIMULUS_TIME = 1000;
 
 export default function Test2() {
   const [currentScreen, setCurrentScreen] = useState<"intro" | "test">("intro");
@@ -52,7 +52,7 @@ export default function Test2() {
       setProgress(nextIndex);
       nextStimulus();
     } else {
-      setTestFinished(true); // 테스트 종료 표시
+      setTestFinished(true);
     }
   };
 
@@ -92,7 +92,6 @@ export default function Test2() {
     );
   }
 
-  // Test 화면
   return (
     <div className="w-full min-h-screen flex justify-center items-center bg-[#F9FAFB]">
       <div className="mt-[130px] mb-10 w-[900px] h-[751px] bg-[#ffffff] border border-[#CCCCCC] flex flex-col items-center">
@@ -119,7 +118,6 @@ export default function Test2() {
           </p>
         </div>
 
-        {/* 테스트 끝나면 다음 버튼 노출 */}
         {testFinished && (
           <Link
             href="/cat/test3"
