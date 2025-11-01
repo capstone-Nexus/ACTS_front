@@ -17,7 +17,6 @@
     "@prisma/client": "^6.17.1",
     "bcrypt": "^6.0.0",
     "chart.js": "^4.5.0",
-    "framer-motion": "^12.23.22",
     "lucide-react": "^0.546.0",
     "next": "15.5.3",
     "nodemailer": "^6.10.1",

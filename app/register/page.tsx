@@ -171,7 +171,7 @@ export default function RegisterPage() {
               minLength={5}
               maxLength={16}
               placeholder='5~16글자 사이로 입력해주세요'
-              className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE]"
+              className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2"
             />
             {form.user_id && (form.user_id.length < 5 || form.user_id.length > 16) && (
               <p className="text-xs mt-1 text-red-600">
@@ -192,7 +192,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 required
                 placeholder='example@gmail.com'
-                className="border-1 px-3 rounded-[10px] w-full h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE]"
+                className="border-1 px-3 rounded-[10px] w-full h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2"
               />
               <button
                 type="button"
@@ -214,7 +214,7 @@ export default function RegisterPage() {
                 value={form.code}
                 onChange={handleChange}
                 required
-                className="border-1 px-3 rounded-[10px] w-full h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE]"
+                className="border-1 px-3 rounded-[10px] w-full h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2"
               />
               <button
                 type="button"
@@ -240,7 +240,7 @@ export default function RegisterPage() {
                 required
                 minLength={7}
                 placeholder="대문자, 숫자, 특수문자 포함 7자 이상"
-                className="border-1 px-3 pr-12 rounded-[10px] w-full h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE]"
+                className="border-1 px-3 pr-12 rounded-[10px] w-full h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2"
               />
               <button
                 type="button"
@@ -273,7 +273,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 autoComplete="off"
                 required
-                className="border-1 px-3 pr-12 rounded-[10px] w-full h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE]"
+                className="border-1 px-3 pr-12 rounded-[10px] w-full h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2"
               />
               <button
                 type="button"
@@ -333,7 +333,7 @@ export default function RegisterPage() {
               onChange={handleChange}
               required
               max={new Date().toISOString().split('T')[0]}
-              className="border-1 px-3 text-[#737373] rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE]"
+              className="border-1 px-3 text-[#737373] rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2"
             />
           </div>
 
@@ -345,7 +345,7 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        <div className="text-center mt-4">
+        <div className="text-center mt-7">
           <span className="text-[#737373] text-[16px]">이미 계정이 있으신가요?</span>{' '}
           <button
             type="button"

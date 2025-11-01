@@ -82,7 +82,7 @@ export default function SignInPage() {
               name="email"
               value={form.email}
               onChange={handleChange}
-              className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE]"
+              className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2"
             />
           </div>
 
@@ -95,7 +95,7 @@ export default function SignInPage() {
               type="password"
               value={form.password}
               onChange={handleChange}
-              className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE]"
+              className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2"
             />
           </div>
 
@@ -104,7 +104,7 @@ export default function SignInPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="mt-[7px] px-4 py-2 w-[400px] h-[47px] bg-[#4A8AEE] font-bold text-white rounded-[10px] hover:bg-[#4077CE] transition disabled:opacity-50"
+            className="mt-[7px] px-4 py-2 w-[400px] h-[47px] bg-[#4A8AEE] font-bold text-white rounded-[10px] hover:bg-[#4077CE] transition disabled:opacity-50 cp"
           >
             {isSubmitting ? '로그인 중...' : '로그인'}
           </button>
@@ -123,7 +123,7 @@ export default function SignInPage() {
             {SOCIAL_PROVIDERS.map(({ id, icon, alt }) => (
               <button
                 key={id}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 cp"
                 aria-label={alt}
                 disabled={isSubmitting}
               >

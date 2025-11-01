@@ -4,6 +4,10 @@
   @apply flex items-center justify-center;  
 }
 
+.cp {
+  @apply cursor-pointer;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }

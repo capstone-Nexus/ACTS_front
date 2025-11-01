@@ -59,7 +59,7 @@ export default function Home() {
         <Image src={Background1} alt="background1" fill className="object-cover object-[center_35%]" />
         <div className="absolute inset-0 bg-black/40 flex flex-col items-center">
           <p className="text-[70px] text-white font-medium mt-[214px]">
-            <span className="font-black">ADHD</span> 자가진단의
+            <span className="font-black">ADHD</span> 자가진단의 
           </p>
           <p className="text-[70px] text-white font-medium">새로운 기준</p>
           <p className="text-[22px] font-medium text-white mt-8">과학적이고 정확한 진단을 위한 종합적인 테스트와</p>
