@@ -4,7 +4,7 @@ import Link from 'next/link';
 import MainHeader from '@/components/MainHeader';
 import Background1 from '../public/images/background1.jpg';
 import Image from 'next/image';
-import Footer from '@/components/Footer';
+import Footer from '@/components/footer';
 import Dotbogi from '@/public/images/dotbogi.png';
 import Mockup from '@/public/images/mockup.png';
 import Right from '@/public/images/right.svg';

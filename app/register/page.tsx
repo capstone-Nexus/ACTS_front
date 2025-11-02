@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Eye, EyeOff } from 'lucide-react';
 import logo from '../../public/images/logo.png';
+import axios from 'axios';
 
 interface RegisterForm {
   user_id: string;
@@ -19,6 +20,7 @@ interface RegisterForm {
 export default function RegisterPage() {
   const router = useRouter();
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
   const [form, setForm] = useState<RegisterForm>({
     user_id: '',
     email: '',
@@ -41,17 +43,11 @@ export default function RegisterPage() {
     if (!form.email) return alert('이메일을 입력해주세요.');
 
     try {
-      const res = await fetch(`${API_URL}/auth/code/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: form.email }),
-      });
-
-      const data = await res.json();
-      if (res.ok) alert('인증번호가 이메일로 전송되었습니다.');
-      else alert(data.message || '전송 실패');
-    } catch {
-      alert('이메일 전송 중 오류가 발생했습니다.');
+      const res = await axios.post(`${API_URL}/auth/send-code`, { email: form.email });
+      alert(res.data.message || '인증번호가 이메일로 전송되었습니다.');
+    } catch (err: any) {
+      console.error('이메일 전송 에러:', err);
+      alert(err.response?.data?.message || '이메일 전송 중 오류가 발생했습니다.');
     }
   };
 
@@ -59,17 +55,14 @@ export default function RegisterPage() {
     if (!form.code) return alert('인증번호를 입력해주세요.');
 
     try {
-      const res = await fetch(`${API_URL}/auth/code/verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: form.email, code: form.code }),
+      const res = await axios.post(`${API_URL}/auth/verify-code`, {
+        email: form.email,
+        code: form.code,
       });
-
-      const data = await res.json();
-      if (res.ok) alert('이메일 인증이 완료되었습니다.');
-      else alert(data.message || '인증 실패');
-    } catch {
-      alert('인증 중 오류가 발생했습니다.');
+      alert(res.data.message || '이메일 인증이 완료되었습니다.');
+    } catch (err: any) {
+      console.error('이메일 인증 에러:', err);
+      alert(err.response?.data?.message || '이메일 인증 중 오류가 발생했습니다.');
     }
   };
 
@@ -86,63 +79,22 @@ export default function RegisterPage() {
       return;
     }
 
-    const payload = {
-      user_id: form.user_id,
-      email: form.email,
-      password: form.password,
-      confirmPassword: form.confirmPassword,
-      gender: form.gender,
-      birth: form.birth,
-    };
-
     try {
-      const res = await fetch(`${API_URL}/user/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+      const res = await axios.post(`${API_URL}/user/signup`, {
+        ...form,
       });
 
-      const text = await res.text();
-
-      if (!text || text.trim() === '') {
-        if (res.status === 200 || res.status === 201) {
-          alert('회원가입 완료! 로그인 페이지로 이동합니다.');
-          router.push('/signin');
-          return;
-        }
-        throw new Error('서버에서 응답이 없습니다.');
-      }
-
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        if (res.status === 200 || res.status === 201) {
-          alert('회원가입 완료! 로그인 페이지로 이동합니다.');
-          router.push('/signin');
-          return;
-        }
-        throw new Error('서버 응답을 읽을 수 없습니다.');
-      }
-
-      if (!res.ok) {
-        if (Array.isArray(data.message)) {
-          throw new Error(data.message.join(', '));
-        } else {
-          throw new Error(data.message || '회원가입 실패');
-        }
-      }
-
-      alert('회원가입 완료! 로그인 페이지로 이동합니다.');
+      alert(res.data.message || '회원가입 완료! 로그인 페이지로 이동합니다.');
       router.push('/signin');
-    } catch (error: any) {
-      console.error('회원가입 에러:', error);
-      alert(`회원가입 실패: ${error.message}`);
+    } catch (err: any) {
+      console.error('회원가입 에러:', err);
+      alert(err.response?.data?.message || '회원가입 실패');
     }
   };
 
   return (
     <div
+<<<<<<< HEAD
       className="flex flex-col items-center justify-center min-h-screen bg-[#F9FAFB]  0"
       >
       <div className="mt-[190px] bg-white shadow-lg rounded-4xl p-8 w-[500px] h-auto mb-[110px]">
@@ -153,6 +105,13 @@ export default function RegisterPage() {
           height={120}
           className="mx-auto mt-5 mb-4"
         />
+=======
+      className="flex flex-col items-center justify-center min-h-screen"
+      style={{ background: 'linear-gradient(rgba(89,192,238,1), rgba(78,89,244,1))' }}
+    >
+      <div className="mt-[160px] bg-white shadow-lg rounded-4xl p-8 w-[500px] h-auto mb-[110px]">
+        <Image src={logo} alt="Logo" width={180} height={120} className="mx-auto mt-5 mb-4" />
+>>>>>>> 93bb9070cc69af9b165dc9068a7ddd5ec73d81c5
         <h1 className="text-[40px] font-bold text-center mb-2">회원가입</h1>
         <p className="text-[#000000] font-medium opacity-70 text-[18px] text-center mb-6">
           다양한 기능을 경험해보세요!
@@ -170,8 +129,13 @@ export default function RegisterPage() {
               required
               minLength={5}
               maxLength={16}
+<<<<<<< HEAD
               placeholder='5~16글자 사이로 입력해주세요'
               className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2"
+=======
+              placeholder="5~16글자 사이로 입력해주세요"
+              className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE]"
+>>>>>>> 93bb9070cc69af9b165dc9068a7ddd5ec73d81c5
             />
             {form.user_id && (form.user_id.length < 5 || form.user_id.length > 16) && (
               <p className="text-xs mt-1 text-red-600">
@@ -181,9 +145,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="mb-[30px]">
-            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">
-              이메일
-            </label>
+            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">이메일</label>
             <div className="relative w-[400px]">
               <input
                 name="email"
@@ -191,8 +153,13 @@ export default function RegisterPage() {
                 value={form.email}
                 onChange={handleChange}
                 required
+<<<<<<< HEAD
                 placeholder='example@gmail.com'
                 className="border-1 px-3 rounded-[10px] w-full h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2"
+=======
+                placeholder="example@gmail.com"
+                className="border-1 px-3 rounded-[10px] w-full h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE]"
+>>>>>>> 93bb9070cc69af9b165dc9068a7ddd5ec73d81c5
               />
               <button
                 type="button"
@@ -205,9 +172,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="mb-[30px]">
-            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">
-              인증번호
-            </label>
+            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">인증번호</label>
             <div className="relative w-[400px]">
               <input
                 name="code"
@@ -227,9 +192,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="mb-[30px]">
-            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">
-              비밀번호
-            </label>
+            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">비밀번호</label>
             <div className="relative w-[400px]">
               <input
                 name="password"
@@ -247,11 +210,7 @@ export default function RegisterPage() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition"
               >
-                {showPassword ? (
-                  <EyeOff size={20} />
-                ) : (
-                  <Eye size={20} />
-                )}
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
             {form.password && form.password.length < 7 && (
@@ -262,9 +221,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="mb-[30px]">
-            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">
-              비밀번호 확인
-            </label>
+            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">비밀번호 확인</label>
             <div className="relative w-[400px]">
               <input
                 name="confirmPassword"
@@ -280,30 +237,23 @@ export default function RegisterPage() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition"
               >
-                {showConfirmPassword ? (
-                  <EyeOff size={20} />
-                ) : (
-                  <Eye size={20} />
-                )}
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
             {form.confirmPassword && (
-              <p className={`text-xs mt-1 font-medium ${
-                form.password === form.confirmPassword 
-                  ? 'text-green-600' 
-                  : 'text-red-600'
-              }`}>
-                {form.password === form.confirmPassword 
-                  ? '✓ 비밀번호가 일치합니다' 
-                  : '✗ 비밀번호가 일치하지 않습니다'}
+              <p
+                className={`text-xs mt-1 font-medium ${
+                  form.password === form.confirmPassword ? 'text-green-600' : 'text-red-600'
+                }`}
+              >
+                {form.password === form.confirmPassword ? '✓ 비밀번호가 일치합니다' : '✗ 비밀번호가 일치하지 않습니다'}
               </p>
             )}
           </div>
 
+          {/* 성별 */}
           <div className="mb-[30px]">
-            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">
-              성별
-            </label>
+            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">성별</label>
             <div className="flex gap-4 text-[14px]">
               {['male', 'female'].map(g => (
                 <button
@@ -322,10 +272,9 @@ export default function RegisterPage() {
             </div>
           </div>
 
+          {/* 생년월일 */}
           <div className="mb-[30px]">
-            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">
-              생년월일
-            </label>
+            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">생년월일</label>
             <input
               type="date"
               name="birth"
