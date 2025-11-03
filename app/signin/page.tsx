@@ -41,21 +41,18 @@ export default function SignInPage() {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
-  
+
     try {
       const res = await fetch(`${API_URL}/auth/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       });
-  
+
       const data = await res.json();
-  
+
       if (!res.ok) throw new Error(data.message || '로그인 실패');
-  
-      // ✅ 서버에서 내려준 값을 콘솔에 출력
-      console.log('로그인 성공:', data);
-  
+
       alert('로그인 성공!');
       router.push('/');
     } catch (err: any) {
@@ -64,7 +61,6 @@ export default function SignInPage() {
       setIsSubmitting(false);
     }
   };
-  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#F9FAFB]">
