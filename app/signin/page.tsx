@@ -17,7 +17,7 @@ interface SocialProvider {
 const SOCIAL_PROVIDERS: SocialProvider[] = [
   { id: 'google', icon: googleIcon, alt: 'Google 로그인' },
   { id: 'naver', icon: naverIcon, alt: 'Naver 로그인' },
-  { id: 'kakao', icon: kakaoIcon, alt: 'Kakao 로그인' },
+  { id: 'kakao', icon: kakaoIcon, alt: 'Kakao 로그인' }
 ];
 
 interface SignInForm {
@@ -41,18 +41,21 @@ export default function SignInPage() {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
-
+  
     try {
       const res = await fetch(`${API_URL}/auth/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(form)
       });
-
+  
       const data = await res.json();
-
+  
       if (!res.ok) throw new Error(data.message || '로그인 실패');
-
+  
+      // ✅ 서버에서 내려준 값을 콘솔에 출력
+      console.log('로그인 성공:', data);
+  
       alert('로그인 성공!');
       router.push('/');
     } catch (err: any) {
@@ -61,51 +64,29 @@ export default function SignInPage() {
       setIsSubmitting(false);
     }
   };
+  
 
   return (
-    <div
-      className="flex flex-col items-center justify-center min-h-screen bg-[#F9FAFB]"
-    >
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#F9FAFB]">
       <div className="mt-[188px] bg-white shadow-lg rounded-4xl p-8 w-[500px] h-auto mb-[110px]">
         <Image src={logo} alt="Logo" width={180} height={120} className="mx-auto mt-5 mb-4" />
         <h1 className="text-[40px] font-bold text-center mb-2">로그인</h1>
-        <p className="text-[#000000] opacity-70 text-[18px] font-medium text-center mb-6">
-          다양한 기능을 경험해보세요!
-        </p>
+        <p className="text-[#000000] opacity-70 text-[18px] font-medium text-center mb-6">다양한 기능을 경험해보세요!</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col items-center">
           <div className="mb-[30px]">
-            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">
-              이메일
-            </label>
-            <input
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2"
-            />
+            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">이메일</label>
+            <input name="email" value={form.email} onChange={handleChange} className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2" />
           </div>
 
           <div className="mb-[30px]">
-            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">
-              비밀번호
-            </label>
-            <input
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2"
-            />
+            <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">비밀번호</label>
+            <input name="password" type="password" value={form.password} onChange={handleChange} className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2" />
           </div>
 
           {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="mt-[7px] px-4 py-2 w-[400px] h-[47px] bg-[#4A8AEE] font-bold text-white rounded-[10px] hover:bg-[#4077CE] transition disabled:opacity-50 cp"
-          >
+          <button type="submit" disabled={isSubmitting} className="mt-[7px] px-4 py-2 w-[400px] h-[47px] bg-[#4A8AEE] font-bold text-white rounded-[10px] hover:bg-[#4077CE] transition disabled:opacity-50 cp">
             {isSubmitting ? '로그인 중...' : '로그인'}
           </button>
         </form>
@@ -113,20 +94,13 @@ export default function SignInPage() {
         <div className="mt-8">
           <div className="center w-full h-auto flex-row gap-3 mb-4">
             <div className="w-[125px] h-[1px] bg-[#737373]" />
-            <div className="text-center text-[#737373] font-medium text-[14px]">
-              소셜 계정으로 로그인
-            </div>
+            <div className="text-center text-[#737373] font-medium text-[14px]">소셜 계정으로 로그인</div>
             <div className="w-[125px] h-[1px] bg-[#737373]" />
           </div>
 
           <div className="flex items-center justify-center gap-6">
             {SOCIAL_PROVIDERS.map(({ id, icon, alt }) => (
-              <button
-                key={id}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 cp"
-                aria-label={alt}
-                disabled={isSubmitting}
-              >
+              <button key={id} className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 cp" aria-label={alt} disabled={isSubmitting}>
                 <Image width={40} height={40} src={icon} alt={alt} className="rounded-full" />
               </button>
             ))}

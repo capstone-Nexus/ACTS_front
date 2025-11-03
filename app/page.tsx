@@ -4,7 +4,7 @@ import Link from 'next/link';
 import MainHeader from '@/components/MainHeader';
 import Background1 from '../public/images/background1.jpg';
 import Image from 'next/image';
-import Footer from '@/components/footer';
+import Footer from '@/components/Footer';
 import Dotbogi from '@/public/images/dotbogi.png';
 import Mockup from '@/public/images/mockup.png';
 import Right from '@/public/images/right.svg';
@@ -44,7 +44,7 @@ export default function Home() {
   );
 
   const SectionButton = ({ text, onClick }: { text: string; onClick?: () => void }) => (
-    <div onClick={onClick} className="w-[200px] h-[60px] center border-2 border-[#4A8AEE] bg-[#F9FAFB] cursor-pointer mt-[40px] duration-200 hover:bg-[#4A8AEE] hover:text-white text-[18px] text-[#4A8AEE] font-light flex items-center justify-center">
+    <div onClick={onClick} className="w-[200px] h-[60px] center border-2 border-[#4A8AEE] bg-[#F9FAFB] cursor-pointer mt-[40px] duration-200 hover:bg-[#4A8AEE] hover:text-white text-[18px] text-[#4A8AEE] font-regular flex items-center justify-center">
       {text}
     </div>
   );

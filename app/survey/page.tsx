@@ -44,7 +44,6 @@ export default function Survey() {
           </div>
         ))}
 
-<<<<<<< HEAD
         {/* 제출 버튼 */}
         <div
           className={`w-[150px] h-[55px] mt-[50px] flex items-center justify-center rounded-[60px] text-white text-[18px] font-semibold transition-all duration-200 ${allAnswered ? 'bg-[#4A8AEE] cursor-pointer hover:bg-[#4077CE]' : 'bg-gray-300 cursor-not-allowed'}`}
@@ -56,28 +55,6 @@ export default function Survey() {
           }}
         >
           제출
-=======
-        {/* 페이지 네비게이션 */}
-        <div className="w-full h-[50px] mt-[40px] flex items-center px-4 relative">
-          <p className="absolute left-1/2 -translate-x-1/2 text-[18px] font-semibold text-[#737373]">
-            {currentPage} / {totalPages}
-          </p>
-          {currentPage < totalPages ? (
-            <div onClick={() => allAnswered && setCurrentPage(prev => prev + 1)} className={`ml-auto w-[110px] h-[50px] flex items-center justify-center rounded-[60px] duration-200 ${allAnswered ? 'bg-[#4A8AEE] cursor-pointer hover:bg-[#4077CE]' : 'bg-gray-300 cursor-not-allowed'}`}>
-              <p className="text-[18px] font-semibold text-white">다음 →</p>
-            </div>
-          ) : (
-            <div
-              className="ml-auto w-[110px] h-[50px] flex items-center justify-center rounded-[60px] bg-green-500 cursor-pointer hover:bg-green-600 duration-200"
-              onClick={() => {
-                console.log('설문 완료!', answers);
-                router.push('/cat/before');
-              }}
-            >
-              <p className="text-[18px] font-semibold text-white">제출</p>
-            </div>
-          )}
->>>>>>> 93bb9070cc69af9b165dc9068a7ddd5ec73d81c5
         </div>
       </div>
     </div>
