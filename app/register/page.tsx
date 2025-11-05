@@ -102,8 +102,8 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit} className="flex flex-col items-center">
           <div className="mb-[30px]">
             <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">이름</label>
-            <input name="username" value={form.username} onChange={handleChange} required minLength={5} maxLength={16} placeholder="5~16글자 사이로 입력해주세요" className="border-1  px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2" />
-            {form.username && (form.username.length < 5 || form.username.length > 16) && <p className="text-xs mt-1 text-red-600">아이디는 5자 이상 16자 이하여야 합니다</p>}
+            <input name="username" value={form.username} onChange={handleChange} required  maxLength={10} placeholder="10글자 아래로 입력해주세요" className="border-1  px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2" />
+            {form.username && (form.username.length > 10) && <p className="text-xs mt-1 text-red-600">이름은 10자 이하여야 합니다</p>}
           </div>
 
           <div className="mb-[30px]">

@@ -12,7 +12,7 @@ export default function Test5() {
     const [score, setScore] = useState(0);
     const [isTestComplete, setIsTestComplete] = useState(false);
     
-    const totalTrials = 10;
+    const totalTrials = 3;
     const boxes = [0, 1, 2, 3, 4, 5, 6, 7];
 
     const handleStartTest = () => {

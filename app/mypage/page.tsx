@@ -1,4 +1,24 @@
+"use client";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function Mypage() {
+  const router = useRouter();
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      router.replace('/signin');
+    } else {
+      setIsAuthChecked(true);
+    }
+  }, []);
+
+  if (!isAuthChecked) return null;
+
   const mockUser = {
     userid: 'yihyle',
     username: '이현석',

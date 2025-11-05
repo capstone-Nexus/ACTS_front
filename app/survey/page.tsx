@@ -50,7 +50,7 @@ export default function Survey() {
           onClick={() => {
             if (allAnswered) {
               console.log('설문 답안 찍은거: ', answers);
-              router.push('/test');
+              router.push('/cat/before');
             }
           }}
         >
