@@ -8,7 +8,7 @@ import logo from '../../public/images/logo.png';
 import axios from 'axios';
 
 interface RegisterForm {
-  user_id: string;
+  username: string;
   email: string;
   code: string;
   password: string;
@@ -22,7 +22,7 @@ export default function RegisterPage() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const [form, setForm] = useState<RegisterForm>({
-    user_id: '',
+    username: '',
     email: '',
     code: '',
     password: '',
@@ -74,7 +74,7 @@ export default function RegisterPage() {
       return;
     }
 
-    if (!form.user_id || !form.email || !form.password || !form.gender || !form.birth) {
+    if (!form.username || !form.email || !form.password || !form.gender || !form.birth) {
       alert('모든 필드를 입력해주세요.');
       return;
     }
@@ -110,18 +110,17 @@ export default function RegisterPage() {
               이름
             </label>
             <input
-              name="user_id"
-              value={form.user_id}
+              name="username"
+              value={form.username}
               onChange={handleChange}
               required
-              minLength={5}
               maxLength={16}
-              placeholder="5~16글자 사이로 입력해주세요"
+              placeholder="10글자 아래로 입력해주세요"
               className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE]"
             />
-            {form.user_id && (form.user_id.length < 5 || form.user_id.length > 16) && (
+            {form.username && (form.username.length > 10) && (
               <p className="text-xs mt-1 text-red-600">
-                아이디는 5자 이상 16자 이하여야 합니다
+                이름은 10자 이하여야 합니다
               </p>
             )}
           </div>
@@ -228,7 +227,6 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* 성별 */}
           <div className="mb-[30px]">
             <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">성별</label>
             <div className="flex gap-4 text-[14px]">
@@ -249,7 +247,6 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* 생년월일 */}
           <div className="mb-[30px]">
             <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">생년월일</label>
             <input
@@ -285,3 +282,15 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
