@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 
 const SHAPES = ["○", "△", "□", "X"];
-const TOTAL_TRIALS = 20;
+const TOTAL_TRIALS = 10;
 const STIMULUS_TIME = 1000;
 
 export default function Test2() {

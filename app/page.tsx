@@ -44,7 +44,7 @@ export default function Home() {
   );
 
   const SectionButton = ({ text, onClick }: { text: string; onClick?: () => void }) => (
-    <div onClick={onClick} className="w-[200px] h-[60px] center border-2 border-[#4A8AEE] bg-[#F9FAFB] cursor-pointer mt-[40px] duration-200 hover:bg-[#4A8AEE] hover:text-white text-[18px] text-[#4A8AEE] font-light flex items-center justify-center">
+    <div onClick={onClick} className="w-[200px] h-[60px] center border-2 border-[#4A8AEE] bg-[#F9FAFB] cursor-pointer mt-[40px] duration-200 hover:bg-[#4A8AEE] hover:text-white text-[18px] text-[#4A8AEE] font-regular flex items-center justify-center">
       {text}
     </div>
   );
@@ -59,7 +59,7 @@ export default function Home() {
         <Image src={Background1} alt="background1" fill className="object-cover object-[center_35%]" />
         <div className="absolute inset-0 bg-black/40 flex flex-col items-center">
           <p className="text-[70px] text-white font-medium mt-[214px]">
-            <span className="font-black">ADHD</span> 자가진단의
+            <span className="font-black">ADHD</span> 자가진단의 
           </p>
           <p className="text-[70px] text-white font-medium">새로운 기준</p>
           <p className="text-[22px] font-medium text-white mt-8">과학적이고 정확한 진단을 위한 종합적인 테스트와</p>
@@ -144,7 +144,6 @@ export default function Home() {
           <Image src={Right} alt="right" className="w-[35px]" />
         </div>
       </div>
-
       <Footer />
     </>
   );

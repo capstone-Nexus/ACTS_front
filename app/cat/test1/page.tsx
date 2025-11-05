@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 
 export default function Test1() {
-    const TOTAL_TRIALS = 20;
+    const TOTAL_TRIALS = 5;
     const STIMULUS_TIME = 300; // 300ms 동안 자극 표시
     const INTER_TRIAL_MIN = 1500; // 최소 1.5초 간격
     const INTER_TRIAL_MAX = 3000; // 최대 3초 간격

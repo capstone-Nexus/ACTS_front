@@ -1,7 +1,88 @@
+"use client";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function Mypage() {
+  const router = useRouter();
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      router.replace('/signin');
+    } else {
+      setIsAuthChecked(true);
+    }
+  }, []);
+
+  if (!isAuthChecked) return null;
+
+  const mockUser = {
+    userid: 'yihyle',
+    username: '이현석',
+    email: 'son2wg@gmail.com',
+    gender: '남성',
+    birth: '2009.01.19.'
+  };
+
   return (
-    <div className="w-full h-screen center">
-      mypage
+    <div className="w-full min-h-screen p-[135px] bg-[#F9FAFB] flex flex-row justify-center gap-[60px]">
+      <div className="w-[480px] h-auto p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
+        <p className="text-[22px] text-black font-bold">최근 검사</p>
+      </div>
+
+      <div className="w-[700px] h-auto p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
+        <p className="text-[32px] text-[#4A8AEE] font-bold">{mockUser.userid}</p>
+
+        <p className="text-[22px] text-black font-bold mt-[30px]">내 정보</p>
+
+        <div className="w-auto h-[45px] flex flex-row mt-[30px] gap-[80px]">
+          <div className="flex flex-col justify-between">
+            <p className="text-[12px] text-[#474747] font-medium">이름</p>
+            <p className="text-[16px] text-black font-medium">{mockUser.username}</p>
+          </div>
+          <div className="flex flex-col justify-between">
+            <p className="text-[12px] text-[#474747] font-medium">이메일</p>
+            <p className="text-[16px] text-black font-medium">{mockUser.email}</p>
+          </div>
+          <div className="flex flex-col justify-between">
+            <p className="text-[12px] text-[#474747] font-medium">성별</p>
+            <p className="text-[16px] text-black font-medium">{mockUser.gender}</p>
+          </div>
+          <div className="flex flex-col justify-between">
+            <p className="text-[12px] text-[#474747] font-medium">생년월일</p>
+            <p className="text-[16px] text-black font-medium">{mockUser.birth}</p>
+          </div>
+        </div>
+
+        <div className="w-full h-[1px] bg-[#CDD0D4] mt-[30px]" />
+
+        {/* 비밀번호 변경 영역 */}
+        <div className="w-full flex flex-col mt-[40px] p-[30px] border border-[#A5E1FF] bg-[#F6FCFF] rounded-[10px]">
+          <p className="text-[18px] text-black font-bold">비밀번호 변경</p>
+
+          <div className="flex flex-col mt-[30px]">
+            <p className="text-[12px] text-[#474747] font-medium mb-[5px]">현재 비밀번호</p>
+            <input type="password" className="w-full h-[45px] rounded-[10px] border border-[#CDD0D4] bg-[#FDFDFD] p-[14px] text-[14px] focus:outline-none focus:border-2 focus:border-[#4A8AEE]" placeholder="현재 비밀번호 입력" />
+          </div>
+
+          <div className="flex flex-col mt-[20px]">
+            <p className="text-[12px] text-[#474747] font-medium mb-[5px]">새 비밀번호</p>
+            <input type="password" className="w-full h-[45px] rounded-[10px] border border-[#CDD0D4] bg-[#FDFDFD] p-[14px] text-[14px] focus:outline-none focus:border-2 focus:border-[#4A8AEE]" placeholder="새 비밀번호 입력" />
+          </div>
+
+          <div className="flex flex-col mt-[20px]">
+            <p className="text-[12px] text-[#474747] font-medium mb-[5px]">새 비밀번호 확인</p>
+            <input type="password" className="w-full h-[45px] rounded-[10px] border border-[#CDD0D4] bg-[#FDFDFD] p-[14px] text-[14px] focus:outline-none focus:border-2 focus:border-[#4A8AEE]" placeholder="새 비밀번호 확인" />
+          </div>
+
+          <button className="w-[130px] h-[45px] bg-[#4A8AEE] flex items-center justify-center mt-[20px] rounded-[10px] duration-200 hover:bg-[#4077CE]">
+            <p className="text-white text-[14px] font-medium">비밀번호 변경</p>
+          </button>
+        </div>
+      </div>
     </div>
-  )
+  );
 }

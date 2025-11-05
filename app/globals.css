@@ -4,9 +4,8 @@
   @apply flex items-center justify-center;  
 }
 
-::-webkit-scrollbar {
-  width: 0px;
-  background: transparent;
+.cp {
+  @apply cursor-pointer;
 }
 
 ::-webkit-scrollbar {
@@ -14,17 +13,19 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
+  background-color: rgba(100, 100, 100, 0.5);
+  border-radius: 10px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 100, 100, 0.5) transparent;
 }
+
 
 html, body {
   overscroll-behavior: none;
