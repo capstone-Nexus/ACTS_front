@@ -41,41 +41,37 @@ export default function SignInPage() {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
-
+  
     try {
       const res = await fetch(`${API_URL}/auth/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       });
-
+  
       const data = await res.json();
-
+      console.log('서버 응답 데이터:', data);
+  
       if (!res.ok) throw new Error(data.message || '로그인 실패');
-
-      // ----------------------------
-      // 토큰 저장 로직
-      // ----------------------------
-      // 백엔드 응답 구조에 따라 키가 다를 수 있으니 여러 후보를 확인합니다.
+  
       const accessToken = data.accessToken || data.token || data.access_token;
+      const username = data.username || data.user?.username || 'Unknown';
 
       if (!accessToken) {
         throw new Error('액세스 토큰이 응답에 없습니다.');
       }
-
-      // 로컬 스토리지에 저장
+  
       localStorage.setItem('accessToken', accessToken);
-
-      // (선택) 서버가 user 정보를 함께 주면 저장해두면 편합니다.
+      localStorage.setItem('username', username);
+  
       if (data.user) {
         try {
           localStorage.setItem('user', JSON.stringify(data.user));
         } catch (e) {
-          // 저장 실패해도 로그인은 계속 진행
           console.warn('user 저장 실패', e);
         }
       }
-
+  
       alert('로그인 성공!');
       router.push('/');
     } catch (err: any) {
@@ -85,6 +81,7 @@ export default function SignInPage() {
     }
   };
 
+  
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#F9FAFB]">
       <div className="mt-[188px] bg-white shadow-lg rounded-4xl p-8 w-[500px] h-auto mb-[110px]">

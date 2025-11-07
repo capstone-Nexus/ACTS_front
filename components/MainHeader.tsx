@@ -8,12 +8,18 @@ import Logo from '../public/images/logo.png';
 
 export default function MainHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
+    // 스크롤 이벤트
+    const handleScroll = () => setIsScrolled(window.scrollY > 0);
     window.addEventListener('scroll', handleScroll);
+
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -38,12 +44,18 @@ export default function MainHeader() {
       </div>
 
       <div className="w-auto h-full mr-[50px] gap-[40px] flex flex-row items-center">
-        <Link href="/signin">
-          <p className={`text-[18px] font-medium ${isScrolled ? 'text-[#4A8AEE] hover:text-[#4a76ee]' : 'text-white'}`}>로그인</p>
-        </Link>
-        <Link href="/register">
-          <p className={`text-[18px] font-medium ${isScrolled ? 'text-[#4A8AEE] hover:text-[#4a76ee]' : 'text-white'}`}>회원가입</p>
-        </Link>
+        {username ? (
+          <p className={`text-[18px] font-medium ${isScrolled ? 'text-[#3C3C3C]' : 'text-white'}`}><span className={`${isScrolled ? 'text-[#4A8AEE]' : 'text-white'}`}>{username}</span>님, 환영합니다!</p>
+        ) : (
+          <>
+            <Link href="/signin">
+              <p className={`text-[18px] font-medium ${isScrolled ? 'text-[#4A8AEE] hover:text-[#4a76ee]' : 'text-white'}`}>로그인</p>
+            </Link>
+            <Link href="/register">
+              <p className={`text-[18px] font-medium ${isScrolled ? 'text-[#4A8AEE] hover:text-[#4a76ee]' : 'text-white'}`}>회원가입</p>
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );
