@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function Test4() {
-  const [showNext, setShowNext] = useState(false);
+    const [testFinished, setTestFinished] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShowNext(true);
+      setTestFinished(true);
     });
     return () => clearTimeout(timer);
   }, []);
@@ -36,16 +36,12 @@ export default function Test4() {
           </p>
         </div>
 
-        {showNext && (
-          <Link
-            href="/cat/test5"
-            className="mt-10 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group"
-          >
+        {testFinished && (
+          <Link href="/cat/test5" className="mt-10 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
             <p className="text-[14px] font-medium text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
               다음 →
             </p>
-          </Link>
-        )}
+          </Link>)}
       </div>
     </div>
   );

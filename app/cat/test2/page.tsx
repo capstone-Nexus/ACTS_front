@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 
 const SHAPES = ["○", "△", "□", "X"];
-const TOTAL_TRIALS = 10;
+const TOTAL_TRIALS = 20;
 const STIMULUS_TIME = 1000;
 
 export default function Test2() {
@@ -13,12 +13,16 @@ export default function Test2() {
   const [currentShape, setCurrentShape] = useState<string>("");
   const [responses, setResponses] = useState<{ shape: string; clicked: boolean; time: number }[]>([]);
   const [score, setScore] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
   const [testFinished, setTestFinished] = useState(false);
   const stimulusStartTime = useRef<number>(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleStartTest = () => {
     setCurrentScreen("test");
+    setProgress(0);
+    setScore(0);
+    setCorrectCount(0);
     nextStimulus();
   };
 
@@ -28,7 +32,7 @@ export default function Test2() {
     stimulusStartTime.current = Date.now();
 
     timeoutRef.current = setTimeout(() => {
-      handleClick(false); // 2초 안에 클릭 없으면 false 처리
+      handleClick(false);
     }, STIMULUS_TIME);
   };
 
@@ -40,26 +44,32 @@ export default function Test2() {
 
     const time = Date.now() - stimulusStartTime.current;
     let newScore = score;
+    let isCorrect = false;
 
-    if (currentShape === "X" && clicked) newScore -= 1;
-    else if (currentShape !== "X" && clicked) newScore += 1;
+    if (currentShape === "X" && clicked) {
+      newScore -= 1;
+    } else if (currentShape !== "X" && clicked) {
+      newScore += 1;
+      isCorrect = true;
+    }
 
     setScore(newScore);
-    setResponses([...responses, { shape: currentShape, clicked, time }]);
+    if (isCorrect) setCorrectCount(prev => prev + 1);
+
+    setResponses(prev => [...prev, { shape: currentShape, clicked, time }]);
 
     const nextIndex = progress + 1;
-    if (nextIndex < TOTAL_TRIALS) {
+    if (nextIndex >= TOTAL_TRIALS) {
+      setTestFinished(true);
+    } else {
       setProgress(nextIndex);
       nextStimulus();
-    } else {
-      setTestFinished(true);
     }
   };
 
-  // Intro 화면
   if (currentScreen === "intro") {
     return (
-      <div className="w-full h-full flex flex-col items-center bg-gray-50">
+      <div className="w-full h-full flex flex-col items-center bg-gray-50 select-none">
         <div className="mt-[150px] mb-15 w-[900px] h-[753px] flex flex-col items-center bg-white border border-[#CDD0D4]">
           <p className="text-[32px] font-bold mt-12">억제 지속 주의력 검사</p>
           <p className="mt-2 text-[18px] text-[#737373]">Inhibitory Sustained Attention</p>
@@ -83,7 +93,7 @@ export default function Test2() {
 
           <button
             onClick={handleStartTest}
-            className="mt-12 px-[21px] py-[14px] bg-[#4A8AEE] text-white text-[14px] font-medium hover:bg-[#3A7ADE] transition-colors"
+            className="mt-12 px-[21px] py-[14px] bg-[#4A8AEE] text-white text-[14px] font-medium hover:bg-[#3A7ADE] transition-colors select-none"
           >
             테스트 시작 →
           </button>
@@ -93,39 +103,43 @@ export default function Test2() {
   }
 
   return (
-    <div className="w-full min-h-screen flex justify-center items-center bg-[#F9FAFB]">
+    <div className="w-full min-h-screen flex justify-center items-center bg-[#F9FAFB] select-none">
       <div className="mt-[130px] mb-10 w-[900px] h-[751px] bg-[#ffffff] border border-[#CCCCCC] flex flex-col items-center">
         <div className="mt-8 text-[32px] font-bold">억제 지속 주의력 검사</div>
         <div className="mt-1 text-[18px] text-[#737373]">
           {testFinished ? "테스트 완료!" : "진행 중..."}
         </div>
         <div className="mt-8 w-[800px] h-[1px] bg-[#CDD0D4]" />
+
         <div
-          className="relative w-[800px] h-[330px] bg-[#F9FAFB] text-center flex justify-center items-center border border-[#CDD0D4] mt-12 cursor-pointer"
+          className="relative w-[800px] h-[330px] bg-[#F9FAFB] text-center flex justify-center items-center border border-[#CDD0D4] mt-12 cursor-pointer select-none"
           onClick={() => !testFinished && handleClick(true)}
         >
+          <div className="absolute top-4 right-[130px] w-[100px] h-[30px] bg-white text-[12px] font-medium flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
+            맞춘개수 : {correctCount}/{progress + 1}
+          </div>
+
           <div className="absolute top-4 right-4 w-[100px] h-[30px] bg-white text-[12px] font-medium flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
             진행률 : {progress + 1}/{TOTAL_TRIALS}
           </div>
+
           <div className="w-[120px] h-[120px] border-1 border-[#CDD0D4] flex items-center justify-center text-[48px]">
             {currentShape}
           </div>
         </div>
 
-        <div className="w-[800px] h-[50px] mt-7 text-center bg-[#F9FAFB] border border-[#CDD0D4] flex justify-center items-center">
+        <div className="w-[800px] h-[50px] mt-7 text-center bg-[#F9FAFB] border border-[#CDD0D4] flex justify-center items-center select-none">
           <p className="text-[14px] font-medium text-[#474747]">
             X를 제외한 모든 도형을 클릭하세요.
           </p>
         </div>
 
         {testFinished && (
-          <Link
-            href="/cat/test3"
-            className="mt-4 px-6 py-3 bg-[#4A8AEE] text-white rounded-lg hover:bg-[#3A7ADE] transition"
-          >
-            다음 →
-          </Link>
-        )}
+          <Link href="/cat/test3" className="mt-10 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
+            <p className="text-[14px] font-medium text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
+              다음 →
+            </p>
+          </Link>)}
       </div>
     </div>
   );

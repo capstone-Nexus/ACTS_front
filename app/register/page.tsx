@@ -148,7 +148,6 @@ export default function RegisterPage() {
             {form.confirmPassword && <p className={`text-xs mt-1 font-medium ${form.password === form.confirmPassword ? 'text-green-600' : 'text-red-600'}`}>{form.password === form.confirmPassword ? '✓ 비밀번호가 일치합니다' : '✗ 비밀번호가 일치하지 않습니다'}</p>}
           </div>
 
-          {/* 성별 */}
           <div className="mb-[30px]">
             <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">성별</label>
             <div className="flex gap-4 text-[14px]">
@@ -160,7 +159,6 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* 생년월일 */}
           <div className="mb-[30px]">
             <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">생년월일</label>
             <input type="date" name="birth" value={form.birth} onChange={handleChange} required max={new Date().toISOString().split('T')[0]} className="border-1 px-3 text-[#737373] rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2" />
