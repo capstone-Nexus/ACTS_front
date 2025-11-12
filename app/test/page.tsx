@@ -71,7 +71,7 @@ export default function Test() {
         </li>
       </div>
       <Link
-        href="survey"
+        href="cam"
         className="group w-[200px] h-[60px] center bg-[#4A8AEE] rounded-[10px] my-[50px] cursor-pointer hover:border-2 border-[#4A8AEE] hover:bg-white duration-250"
       >
         <p className="text-[18px] font-bold text-white group-hover:text-[#4A8AEE]">검사 시작하기</p>
