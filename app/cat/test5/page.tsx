@@ -1,22 +1,27 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 export default function Test5() {
     const [currentScreen, setCurrentScreen] = useState<"intro" | "test" | "result">("intro");
-    const [currentTrial, setCurrentTrial] = useState(0);
+    const [progress, setProgress] = useState(0);
     const [sequence, setSequence] = useState<number[]>([]);
     const [userResponse, setUserResponse] = useState<number[]>([]);
     const [isShowing, setIsShowing] = useState(false);
     const [activeBox, setActiveBox] = useState<number | null>(null);
     const [score, setScore] = useState(0);
-    const [isTestComplete, setIsTestComplete] = useState(false);
-    
-    const totalTrials = 5;
+    const [correctCount, setCorrectCount] = useState(0);
+    const [testFinished, setTestFinished] = useState(false);
+
+    const TOTAL_TRIALS = 5;
     const boxes = [0, 1, 2, 3, 4, 5, 6, 7];
 
     const handleStartTest = () => {
         setCurrentScreen("test");
+        setProgress(0);
+        setScore(0);
+        setCorrectCount(0);
         startNewTrial();
     };
 
@@ -35,32 +40,32 @@ export default function Test5() {
 
         const newSequence = shuffleArray(boxes);
         setSequence(newSequence);
-        
+
         showSequence(newSequence);
     };
 
     const showSequence = async (seq: number[]) => {
         await new Promise(resolve => setTimeout(resolve, 300));
-        
+
         for (let i = 0; i < seq.length; i++) {
             setActiveBox(seq[i]);
             await new Promise(resolve => setTimeout(resolve, 500));
             setActiveBox(null);
             await new Promise(resolve => setTimeout(resolve, 300));
         }
-        
+
         setIsShowing(false);
     };
 
     const handleBoxClick = (index: number) => {
         if (isShowing) return;
-        
+
         const newResponse = [...userResponse, index];
         setUserResponse(newResponse);
-        
+
         setActiveBox(index);
         setTimeout(() => setActiveBox(null), 300);
-        
+
         if (newResponse.length === sequence.length) {
             checkAnswer(newResponse);
         }
@@ -68,24 +73,25 @@ export default function Test5() {
 
     const checkAnswer = (response: number[]) => {
         const isCorrect = JSON.stringify(response) === JSON.stringify(sequence);
-        
+
         if (isCorrect) {
             setScore(score + 1);
+            setCorrectCount(prev => prev + 1);
         }
-        
+
         setTimeout(() => {
-            if (currentTrial + 1 < totalTrials) {
-                setCurrentTrial(currentTrial + 1);
+            if (progress + 1 < TOTAL_TRIALS) {
+                setProgress(progress + 1);
                 startNewTrial();
             } else {
-                setIsTestComplete(true);
+                setTestFinished(true);
             }
         }, 500);
     };
 
     if (currentScreen === "intro") {
         return (
-            <div className="w-full h-screen flex flex-col items-center bg-gray-50">
+            <div className="w-full h-screen flex flex-col items-center bg-gray-50 select-none">
                 <div className="mt-[150px] w-[900px] h-[753px] flex flex-col items-center bg-white border border-[#CDD0D4]">
                     <p className="text-[32px] font-bold mt-12">작업 기억력 검사</p>
                     <p className="mt-2 text-[18px] text-[#737373]">Working Memory</p>
@@ -109,7 +115,7 @@ export default function Test5() {
                     </div>
                     <button
                         onClick={handleStartTest}
-                        className="mt-12 px-[21px] py-[14px] bg-[#4A8AEE] text-white text-[14px] font-medium hover:bg-[#3A7ADE] transition-colors">
+                        className="mt-12 px-[21px] py-[14px] bg-[#4A8AEE] text-white text-[14px] font-medium hover:bg-[#3A7ADE] transition-colors select-none">
                         테스트 시작 →
                     </button>
                 </div>
@@ -117,9 +123,8 @@ export default function Test5() {
         );
     }
 
-
     return (
-        <div className="w-full min-h-screen flex justify-center items-center bg-[#F9FAFB]">
+        <div className="w-full min-h-screen flex justify-center items-center bg-[#F9FAFB] select-none">
             <div className="mt-[130px] mb-10 w-[900px] h-[751px] bg-[#ffffff] border border-[#CCCCCC] items-center flex flex-col">
                 <div className="mt-8 text-[32px] font-bold">작업 기억력 검사</div>
                 <div className="mt-1 text-[18px] text-[#737373]">
@@ -127,18 +132,22 @@ export default function Test5() {
                 </div>
                 <div className="mt-8 w-[800px] h-[1px] bg-[#CDD0D4]" />
                 <div className="relative w-[800px] h-[330px] bg-[#F9FAFB] text-center flex flex-col justify-center items-center border border-[#CDD0D4] mt-12">
-                    <div className="absolute top-4 right-4 w-[100px] h-[30px] bg-white text-[12px] font-medium flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
-                        진행률 : {currentTrial + 1}/{totalTrials}
+                    <div className="absolute top-4 right-[130px] w-[100px] h-[30px] bg-white text-[12px] font-medium flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
+                        맞춘개수 : {correctCount}/{progress + 1}
                     </div>
-                    
-                    <div className="grid grid-cols-4 gap-4">
+
+                    <div className="absolute top-4 right-4 w-[100px] h-[30px] bg-white text-[12px] font-medium flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
+                        진행률 : {progress + 1}/{TOTAL_TRIALS}
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-4 select-none">
                         {boxes.map((box) => (
                             <div
                                 key={box}
                                 onClick={() => handleBoxClick(box)}
                                 className={`w-[80px] h-[80px] border-2 flex items-center justify-center text-[24px] font-bold transition-all duration-300 cursor-pointer
-                                    ${activeBox === box 
-                                        ? 'bg-[#4A8AEE] border-[#4A8AEE] text-white scale-110' 
+                                    ${activeBox === box
+                                        ? 'bg-[#4A8AEE] border-[#4A8AEE] text-white scale-110'
                                         : 'bg-white border-[#CDD0D4] hover:border-[#4A8AEE] hover:bg-[#F0F5FF]'
                                     }
                                     ${isShowing ? 'cursor-not-allowed' : ''}
@@ -148,24 +157,20 @@ export default function Test5() {
                             </div>
                         ))}
                     </div>
-                    
+
                     {!isShowing && userResponse.length > 0 && (
-                        <div className="absolute bottom-4 text-[14px] text-[#737373]">
+                        <div className="absolute bottom-4 text-[14px] text-[#737373] select-none">
                             선택: {userResponse.map(i => i + 1).join(' → ')}
                         </div>
                     )}
                 </div>
 
-                {isTestComplete && (
-                    <a 
-                        href="/result" 
-                        className="mt-10 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group"
-                    >
+                {testFinished && (
+                    <Link href="/result" className="mt-10 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
                         <p className="text-[14px] font-medium text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
                             다음 →
                         </p>
-                    </a>
-                )}
+                    </Link>)}
             </div>
         </div>
     );
