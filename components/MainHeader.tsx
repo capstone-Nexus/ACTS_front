@@ -11,14 +11,39 @@ export default function MainHeader() {
   const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
-    // 스크롤 이벤트
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
     window.addEventListener('scroll', handleScroll);
 
-    const storedUsername = localStorage.getItem('username');
-    if (storedUsername) {
-      setUsername(storedUsername);
-    }
+
+    const checkLoginStatus = async () => {
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) {
+          setUsername(null);
+          return;
+        }
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setUsername(data.username); // 로그인 상태 유지
+        } else {
+          // refreshToken 만료 → 로그아웃 처리
+          localStorage.removeItem('refreshToken');
+          setUsername(null);
+        }
+      } catch (err) {
+        console.error('로그인 상태 확인 중 오류:', err);
+        setUsername(null);
+      }
+    };
+
+    checkLoginStatus();
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -45,7 +70,10 @@ export default function MainHeader() {
 
       <div className="w-auto h-full mr-[50px] gap-[40px] flex flex-row items-center">
         {username ? (
-          <p className={`text-[18px] font-medium ${isScrolled ? 'text-[#3C3C3C]' : 'text-white'}`}><span className={`${isScrolled ? 'text-[#4A8AEE]' : 'text-white'}`}>{username}</span>님, 환영합니다!</p>
+          <p className={`text-[18px] font-medium ${isScrolled ? 'text-[#3C3C3C]' : 'text-white'}`}>
+            <span className={`${isScrolled ? 'text-[#4A8AEE]' : 'text-white'}`}>{username}</span>
+            님, 환영합니다!
+          </p>
         ) : (
           <>
             <Link href="/signin">
