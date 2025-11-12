@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import Loading from '@/components/Loading';
+import Loading from '@/components/loading';
 
 export default function Test() {
   const [isLoading, setIsLoading] = useState(true);

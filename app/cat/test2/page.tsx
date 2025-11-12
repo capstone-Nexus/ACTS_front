@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 
 const SHAPES = ["○", "△", "□", "X"];
-const TOTAL_TRIALS = 10;
+const TOTAL_TRIALS = 20;
 const STIMULUS_TIME = 1000;
 
 export default function Test2() {
@@ -56,7 +56,6 @@ export default function Test2() {
     }
   };
 
-  // Intro 화면
   if (currentScreen === "intro") {
     return (
       <div className="w-full h-full flex flex-col items-center bg-gray-50">

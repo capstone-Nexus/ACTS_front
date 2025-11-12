@@ -3,10 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 
 export default function Test1() {
-    const TOTAL_TRIALS = 5;
-    const STIMULUS_TIME = 300; // 300ms 동안 자극 표시
-    const INTER_TRIAL_MIN = 1500; // 최소 1.5초 간격
-    const INTER_TRIAL_MAX = 3000; // 최대 3초 간격
+    const TOTAL_TRIALS = 20;
+    const STIMULUS_TIME = 500;
+    const INTER_TRIAL_MIN = 2000;
+    const INTER_TRIAL_MAX = 5000;
     
     const [currentScreen, setCurrentScreen] = useState<"intro" | "test">("intro");
     const [progress, setProgress] = useState(0);
@@ -24,7 +24,6 @@ export default function Test1() {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     
     useEffect(() => {
-        // 간단한 beep 소리 생성
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();

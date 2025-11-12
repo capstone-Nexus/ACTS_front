@@ -12,7 +12,7 @@ export default function Test5() {
     const [score, setScore] = useState(0);
     const [isTestComplete, setIsTestComplete] = useState(false);
     
-    const totalTrials = 3;
+    const totalTrials = 5;
     const boxes = [0, 1, 2, 3, 4, 5, 6, 7];
 
     const handleStartTest = () => {
@@ -67,8 +67,7 @@ export default function Test5() {
     };
 
     const checkAnswer = (response: number[]) => {
-        const reversedSequence = [...sequence].reverse();
-        const isCorrect = JSON.stringify(response) === JSON.stringify(reversedSequence);
+        const isCorrect = JSON.stringify(response) === JSON.stringify(sequence);
         
         if (isCorrect) {
             setScore(score + 1);
@@ -100,18 +99,17 @@ export default function Test5() {
                             <p className="text-[18px] font-bold">📋 검사 방법</p>
                             <div className="mt-2 ml-7 text-[14px] font-medium text-[#474747] leading-7">
                                 <li>8개의 박스가 중복 없이 한 번씩 제시됩니다</li>
-                                <li>제시가 끝난 후, 방금 본 순서를 '반대로' 클릭하세요</li>
+                                <li>제시가 끝난 후, <span className="text-[#4A8AEE] font-bold">보여준 순서대로</span> 클릭하세요</li>
                             </div>
                         </div>
                         <div className="w-[720px] h-[100px] bg-[#EBEDEF] ml-10 border-l-4 border-[#4A8AEE] p-4">
                             <p className="text-[14px] font-semibold ml-1 mt-2">💡 예시</p>
-                            <p className="mt-2 ml-3 text-[14px]">제시: [1] [2] [3] [4] [5] [6] [7] [8] → 응답: [8] [7] [6] [5] [4] [3] [2] [1]</p>
+                            <p className="mt-2 ml-3 text-[14px]">제시: [1] [2] [3] [4] → 응답: [1] [2] [3] [4]</p>
                         </div>
                     </div>
                     <button
                         onClick={handleStartTest}
-                        className="mt-12 px-[21px] py-[14px] bg-[#4A8AEE] text-white text-[14px] font-medium hover:bg-[#3A7ADE] transition-colors"
-                    >
+                        className="mt-12 px-[21px] py-[14px] bg-[#4A8AEE] text-white text-[14px] font-medium hover:bg-[#3A7ADE] transition-colors">
                         테스트 시작 →
                     </button>
                 </div>
@@ -125,7 +123,7 @@ export default function Test5() {
             <div className="mt-[130px] mb-10 w-[900px] h-[751px] bg-[#ffffff] border border-[#CCCCCC] items-center flex flex-col">
                 <div className="mt-8 text-[32px] font-bold">작업 기억력 검사</div>
                 <div className="mt-1 text-[18px] text-[#737373]">
-                    {isShowing ? "순서를 기억하세요..." : "역순으로 클릭하세요"}
+                    {isShowing ? "순서를 기억하세요..." : "보여준 순서대로 클릭하세요"}
                 </div>
                 <div className="mt-8 w-[800px] h-[1px] bg-[#CDD0D4]" />
                 <div className="relative w-[800px] h-[330px] bg-[#F9FAFB] text-center flex flex-col justify-center items-center border border-[#CDD0D4] mt-12">
