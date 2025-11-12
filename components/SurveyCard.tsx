@@ -24,7 +24,7 @@ export default function SurveyCard({ title, selected, onSelect }: SurveyCardProp
           <p className="text-[12px] text-[#737373] font-medium ml-2">전혀 그렇지 않다</p>
           <p className="text-[12px] text-[#737373] font-medium mr-4">매우 그렇다</p>
         </div>
-        <div className="w-full h-[45px] flex flex-row items-center justify-center gap-[100px]">
+        <div className="w-full h-[45px] flex flex-row items-center justify-center gap-[100px] select-none">
           {[1, 2, 3, 4, 5, 6].map(num => (
             <div
               key={num}
