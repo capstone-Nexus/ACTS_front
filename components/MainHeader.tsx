@@ -11,11 +11,9 @@ export default function MainHeader() {
   const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
-    // 스크롤 이벤트 처리
     const handleScroll = () => setIsScrolled(window.scrollY > 0);
     window.addEventListener('scroll', handleScroll);
 
-    // 세션 스토리지에서 username 가져오기
     const storedUsername = sessionStorage.getItem('username');
     if (storedUsername) {
       setUsername(storedUsername);

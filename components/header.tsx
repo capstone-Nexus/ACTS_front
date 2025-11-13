@@ -9,7 +9,6 @@ export default function Header() {
   const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
-    // 세션 스토리지에서 username 불러오기
     const storedUsername = sessionStorage.getItem('username');
     if (storedUsername) {
       setUsername(storedUsername);
@@ -38,9 +37,9 @@ export default function Header() {
       <div className="w-auto h-full mr-[50px] gap-[40px] flex flex-row items-center">
         {username ? (
           <p className={`text-[18px] font-medium text-[#3C3C3C]`}>
-          <span className="text-[#4A8AEE]">{username}</span>
-          님, 환영합니다!
-        </p>
+            <span className="text-[#4A8AEE]">{username}</span>
+            님, 환영합니다!
+          </p>
         ) : (
           <>
             <Link href="/signin">
