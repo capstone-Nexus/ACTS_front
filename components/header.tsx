@@ -15,6 +15,12 @@ export default function Header() {
     }
   }, []);
 
+  const logoutHandler = () => {
+    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('username');
+    window.location.reload();
+  };
+
   return (
     <div className="w-full h-[80px] bg-white flex flex-row justify-between items-center fixed z-100">
       <div className="w-[600px] h-full ml-[25px] flex flex-row justify-between">
@@ -36,10 +42,13 @@ export default function Header() {
 
       <div className="w-auto h-full mr-[50px] gap-[40px] flex flex-row items-center">
         {username ? (
-          <p className={`text-[18px] font-medium text-[#3C3C3C]`}>
-            <span className="text-[#4A8AEE]">{username}</span>
-            님, 환영합니다!
-          </p>
+          <>
+            <p className={`text-[18px] font-medium text-[#3C3C3C]`}>
+              <span className="text-[#4A8AEE]">{username}</span>
+              님, 환영합니다!
+            </p>
+            <p className='text-[18px] font-medium cp text-[#3C3C3C] hover:text-[#ff5b5b] duration-200' onClick={logoutHandler}>로그아웃</p>
+          </>
         ) : (
           <>
             <Link href="/signin">

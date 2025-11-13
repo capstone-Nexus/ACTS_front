@@ -24,6 +24,12 @@ export default function MainHeader() {
     };
   }, []);
 
+  const logoutHandler = () => {
+    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('username');
+    window.location.reload();
+  };
+
   return (
     <div className={`w-full h-[80px] fixed flex flex-row justify-between items-center transition-all duration-300 z-50 ${isScrolled ? 'bg-white' : 'bg-none'}`}>
       <div className="w-[600px] h-full ml-[25px] flex flex-row justify-between">
@@ -46,10 +52,13 @@ export default function MainHeader() {
 
       <div className="w-auto h-full mr-[50px] gap-[40px] flex flex-row items-center">
         {username ? (
-          <p className={`text-[18px] font-medium ${isScrolled ? 'text-[#3C3C3C]' : 'text-white'}`}>
-            <span className={`${isScrolled ? 'text-[#4A8AEE]' : 'text-white'}`}>{username}</span>
-            님, 환영합니다!
-          </p>
+          <>
+            <p className={`text-[18px] font-medium ${isScrolled ? 'text-[#3C3C3C]' : 'text-white'}`}>
+              <span className={`${isScrolled ? 'text-[#4A8AEE]' : 'text-white'}`}>{username}</span>
+              님, 환영합니다!
+            </p>
+            <p className={`text-[18px] font-medium cp hover:text-[#ff5b5b] duration-200 ${isScrolled ? 'text-[#3C3C3C]' : 'text-white'}`} onClick={logoutHandler}>로그아웃</p>
+          </>
         ) : (
           <>
             <Link href="/signin">
