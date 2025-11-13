@@ -1,18 +1,33 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import Loading from '@/components/Loading';
 
 export default function Test() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 200);
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const token = sessionStorage.getItem('accessToken');
+
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      router.replace('/signin');
+    } else {
+      setIsAuthChecked(true);
+    }
+  }, []);
+
+  if (!isAuthChecked) return null;
   if (isLoading) return <Loading />;
 
   const cardData = [

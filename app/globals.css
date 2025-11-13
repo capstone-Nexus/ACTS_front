@@ -8,25 +8,15 @@
   @apply cursor-pointer;
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: rgba(100, 100, 100, 0.5);
-  border-radius: 10px;
-}
-
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(100, 100, 100, 0.5) transparent;
 }
 
-
 html, body {
   overscroll-behavior: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }

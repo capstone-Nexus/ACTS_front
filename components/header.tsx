@@ -9,48 +9,12 @@ export default function Header() {
   const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (!refreshToken) {
-          setUsername(null);
-          return;
-        }
-
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ refreshToken })
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          setUsername(data.username);
-          // accessToken도 필요하면 여기서 저장 가능
-          localStorage.setItem('accessToken', data.accessToken);
-        } else {
-          // refreshToken 만료 → 로그아웃 처리
-          localStorage.removeItem('refreshToken');
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('username');
-          setUsername(null);
-        }
-      } catch (err) {
-        console.error('로그인 상태 확인 중 오류:', err);
-        setUsername(null);
-      }
-    };
-
-    checkLoginStatus();
+    // 세션 스토리지에서 username 불러오기
+    const storedUsername = sessionStorage.getItem('username');
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
   }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('username');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    setUsername(null);
-    window.location.reload();
-  };
 
   return (
     <div className="w-full h-[80px] bg-white flex flex-row justify-between items-center fixed z-100">
@@ -73,21 +37,17 @@ export default function Header() {
 
       <div className="w-auto h-full mr-[50px] gap-[40px] flex flex-row items-center">
         {username ? (
-          <>
-            <p className="text-[#3C3C3C] text-[18px] font-medium">
-              <span className="text-[#4A8AEE]">{username}</span>님, 환영합니다!
-            </p>
-            <button onClick={handleLogout} className="text-[#4A8AEE] text-[18px] font-medium">
-              로그아웃
-            </button>
-          </>
+          <p className={`text-[18px] font-medium text-[#3C3C3C]`}>
+          <span className="text-[#4A8AEE]">{username}</span>
+          님, 환영합니다!
+        </p>
         ) : (
           <>
             <Link href="/signin">
-              <p className="text-[#4A8AEE] text-[18px] font-medium">로그인</p>
+              <p className="text-[#4A8AEE] text-[18px] font-medium hover:text-[#4a76ee]">로그인</p>
             </Link>
             <Link href="/register">
-              <p className="text-[#4A8AEE] text-[18px] font-medium">회원가입</p>
+              <p className="text-[#4A8AEE] text-[18px] font-medium hover:text-[#4a76ee]">회원가입</p>
             </Link>
           </>
         )}

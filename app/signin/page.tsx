@@ -61,12 +61,12 @@ export default function SignInPage() {
         throw new Error('액세스 토큰이 응답에 없습니다.');
       }
   
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('username', username);
+      sessionStorage.setItem('accessToken', accessToken);
+      sessionStorage.setItem('username', username);
   
       if (data.user) {
         try {
-          localStorage.setItem('user', JSON.stringify(data.user));
+          sessionStorage.setItem('user', JSON.stringify(data.user));
         } catch (e) {
           console.warn('user 저장 실패', e);
         }

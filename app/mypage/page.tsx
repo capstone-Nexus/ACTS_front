@@ -9,7 +9,7 @@ export default function Mypage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
+    const token = sessionStorage.getItem('accessToken');
 
     if (!token) {
       alert('로그인이 필요합니다.');
@@ -19,9 +19,14 @@ export default function Mypage() {
     }
   }, []);
 
-  if (!isAuthChecked) return null;
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 200);
+    return () => clearTimeout(timer);
+  }, []);
 
+  if (!isAuthChecked) return null;
   if (isLoading) return <Loading />;
+  
 
   const mockUser = {
     userid: 'yihyle',
@@ -30,11 +35,6 @@ export default function Mypage() {
     gender: '남성',
     birth: '2009.01.19.'
   };
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 200);
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <div className="w-full min-h-screen p-[135px] bg-[#F9FAFB] flex flex-row justify-center gap-[60px]">
