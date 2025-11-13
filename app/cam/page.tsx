@@ -10,11 +10,11 @@ export default function Cam() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-      const timer = setTimeout(() => setIsLoading(false), 200);
-      return () => clearTimeout(timer);
-    }, []);
-  
-    if (isLoading) return <Loading />;
+    const timer = setTimeout(() => setIsLoading(false), 200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) return <Loading />;
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center p-[80px]">
@@ -26,10 +26,10 @@ export default function Cam() {
       <p className="text-[32px] font-bold text-black mt-[30px]">테스트 중에는 검사를 위한 카메라가 활성화됩니다.</p>
       <p className="text-[18px] font-medium text-black mt-[10px]">자리이탈이나 고개를 기울여보세요</p>
 
-      <div className="w-[900px] h-[550px] bg-[#D9D9D9] rounded-[20px] mt-[60px] overflow-hidden relative" style={{ boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.15)' }}>
-        <div className="w-full h-[470px] bg-[#EBEDEF] flex items-center justify-center relative">
+      <div className="w-[650px] h-[430px] bg-[#D9D9D9] rounded-[20px] mt-[60px] overflow-hidden relative" style={{ boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.15)' }}>
+        <div className="w-full h-[350px] bg-[#EBEDEF] flex items-center justify-center relative">
           <Webcam ref={webcamRef} audio={false} className="absolute top-0 left-0 w-full h-full object-cover transform -scale-x-100" />
-          <div className="w-[530px] h-[330px] border-3 border-[#4A8AEE] rounded-[20px] z-10" />
+          <div className="w-[330px] h-[230px] border-3 border-[#4A8AEE] rounded-[20px] z-10" />
         </div>
 
         <div className="w-full h-[80px] bg-white flex flex-row items-center justify-center">

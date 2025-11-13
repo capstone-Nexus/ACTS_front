@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Loading from '@/components/Loading';
@@ -26,7 +26,6 @@ export default function Mypage() {
 
   if (!isAuthChecked) return null;
   if (isLoading) return <Loading />;
-  
 
   const mockUser = {
     userid: 'yihyle',
@@ -36,10 +35,39 @@ export default function Mypage() {
     birth: '2009.01.19.'
   };
 
+  const mockResult = {
+    score: 40
+  };
+
+  let message = '';
+  let imageUrl = '';
+
+  if (mockResult.score >= 80 && mockResult.score <= 100) {
+    message = '최고에요!';
+    imageUrl = 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Beaming%20Face%20with%20Smiling%20Eyes.png';
+  } else if (mockResult.score >= 50 && mockResult.score < 80) {
+    message = '그럭저럭..';
+    imageUrl = 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Face%20with%20Raised%20Eyebrow.png';
+  } else {
+    message = '별로에요..';
+    imageUrl = 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Face%20with%20Crossed-Out%20Eyes.png';
+  }
+
   return (
     <div className="w-full min-h-screen p-[135px] bg-[#F9FAFB] flex flex-row justify-center gap-[60px]">
       <div className="w-[480px] h-auto p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
         <p className="text-[22px] text-black font-bold">최근 검사</p>
+
+        <div className="w-[400px] h-[130px] bg-[#F9FAFB] border border-[#CDD0D4] rounded-[10px] flex flex-row items-center mt-[30px]">
+          <img src={imageUrl} alt="score result emoji" width="100" height="100" className="mx-[20px]" />
+
+          <div className="w-[250px] h-full flex flex-col justify-center">
+            <p className="text-[14px] font-medium text-[#474747]">현재 나의 점수는...</p>
+            <p className="text-[32px] font-bold text-[#474747]">
+              <span className="text-[#4A8AEE]">{mockResult.score}</span>점! {message}
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="w-[700px] h-auto p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
@@ -68,7 +96,6 @@ export default function Mypage() {
 
         <div className="w-full h-[1px] bg-[#CDD0D4] mt-[30px]" />
 
-        {/* 비밀번호 변경 영역 */}
         <div className="w-full flex flex-col mt-[40px] p-[30px] border border-[#A5E1FF] bg-[#F6FCFF] rounded-[10px]">
           <p className="text-[18px] text-black font-bold">비밀번호 변경</p>
 
