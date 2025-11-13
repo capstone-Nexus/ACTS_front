@@ -1,10 +1,12 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Loading from '@/components/Loading';
 
 export default function Mypage() {
   const router = useRouter();
   const [isAuthChecked, setIsAuthChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
@@ -19,6 +21,8 @@ export default function Mypage() {
 
   if (!isAuthChecked) return null;
 
+  if (isLoading) return <Loading />;
+
   const mockUser = {
     userid: 'yihyle',
     username: '이현석',
@@ -26,6 +30,11 @@ export default function Mypage() {
     gender: '남성',
     birth: '2009.01.19.'
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 200);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="w-full min-h-screen p-[135px] bg-[#F9FAFB] flex flex-row justify-center gap-[60px]">
