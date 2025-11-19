@@ -34,17 +34,14 @@ export default function Survey() {
 
   return (
     <div className="w-full min-h-screen bg-[#F9FAFB] flex flex-col items-center py-12">
-      {/* 헤더 */}
-      <div className="w-[950px] h-[180px] bg-white mt-[100px] rounded-[30px] flex flex-col items-center justify-center gap-3 shadow-[0_4px_10px_rgba(0,0,0,0.15)]">
-        <p className="text-[32px] font-bold bg-gradient-to-r from-[#59C0EE] to-[#4E59F4] bg-clip-text text-transparent">ADHD 자가진단 설문</p>
-        <p className="text-[18px] font-medium text-[#737373]">총 20개 문항 - 약 5분 소요</p>
-        <div className="w-[90%] h-[10px] bg-[#D9D9D9] rounded-[60px] mt-3 overflow-hidden">
-          <div className="h-full rounded-[60px] bg-gradient-to-r from-[#59C0EE] to-[#4E59F4] transition-all duration-500" style={{ width: `${progress}%` }} />
+      <div className="w-[950px] bg-white rounded-[10px] mt-[80px] shadow-[0_4px_10px_rgba(0,0,0,0.15)] flex flex-col items-center p-[50px]">
+        <div className="w-full flex flex-col items-center mb-11 ">
+          <p className="text-[32px] font-bold bg-gradient-to-r from-[#59C0EE] to-[#4E59F4] bg-clip-text text-transparent">ADHD 자가진단 설문</p>
+          <p className="text-[18px] font-medium text-[#737373]">총 20개 문항 - 약 5분 소요</p>
+          <div className="w-[90%] h-[10px] bg-[#D9D9D9] rounded-[60px] mt-3 overflow-hidden">
+            <div className="h-full rounded-[60px] bg-gradient-to-r from-[#59C0EE] to-[#4E59F4] transition-all duration-500" style={{ width: `${progress}%` }} />
+          </div>
         </div>
-      </div>
-
-      {/* 본문 */}
-      <div className="w-[950px] bg-white rounded-[30px] mt-[35px] shadow-[0_4px_10px_rgba(0,0,0,0.15)] flex flex-col items-center p-[50px]">
         <p className="text-[28px] font-bold self-start mb-6">🎯 집중력 체크</p>
 
         {surveyQuestions.map((question, index) => (
@@ -53,7 +50,6 @@ export default function Survey() {
           </div>
         ))}
 
-        {/* 제출 버튼 */}
         <div
           className={`w-[150px] h-[55px] mt-[50px] flex items-center justify-center rounded-[60px] text-white text-[18px] font-semibold transition-all duration-200 ${allAnswered ? 'bg-[#4A8AEE] cursor-pointer hover:bg-[#4077CE]' : 'bg-gray-300 cursor-not-allowed'}`}
           onClick={() => {

@@ -30,7 +30,7 @@ export default function CatBefore() {
     ];
     return (
         <div className="w-full min-h-screen flex justify-center items-center bg-[#F9FAFB]">
-            <div className="mt-[150px] w-[900px] h-[850px] bg-[#ffffff] border border-[#CCCCCC] items-center flex flex-col">
+            <div className="mt-[150px] mb-[80px] w-[900px] h-[850px] bg-[#ffffff] border border-[#CCCCCC] items-center flex flex-col">
                 <div className="mt-12 text-[32px] font-bold">CAT 종합 주의력 검사</div>
                 <div className="text-[18px] text-[#737373]">comprehensive attention test</div>
                 <div className="mt-10 w-[800px] h-[1px] bg-[#CDD0D4]" />
@@ -49,12 +49,11 @@ export default function CatBefore() {
                     ))}
                 </div>
 
-                <Link href="/cat/test1" className="mt-11 w-[200px] h-[60px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
+                <Link href="/cat/test1" className="mt-8 w-[200px] h-[60px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
                     <p className="text-[18px] font-bold text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
                         검사 시작하기 →
                     </p>
                 </Link>
-
             </div>
         </div>
     )

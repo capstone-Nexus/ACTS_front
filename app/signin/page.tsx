@@ -50,7 +50,6 @@ export default function SignInPage() {
       });
   
       const data = await res.json();
-      console.log('서버 응답 데이터:', data);
   
       if (!res.ok) throw new Error(data.message || '로그인 실패');
   
@@ -72,7 +71,7 @@ export default function SignInPage() {
         }
       }
   
-      alert('로그인 성공!');
+      console.log("로그인 성공:", data);
       router.push('/');
     } catch (err: any) {
       setError(err.message);
