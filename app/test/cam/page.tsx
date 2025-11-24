@@ -37,7 +37,7 @@ export default function Cam() {
         </div>
       </div>
 
-      <Link href="/survey">
+      <Link href="/test/survey">
         <div className="w-[200px] h-[60px] rounded-[10px] bg-[#4A8AEE] text-white text-[18px] font-medium center mt-[60px] hover:bg-[#3A7ADE] cursor-pointer select-none duration-200">다음 →</div>
       </Link>
     </div>

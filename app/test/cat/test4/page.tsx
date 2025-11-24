@@ -37,7 +37,7 @@ export default function Test4() {
         </div>
 
         {testFinished && (
-          <Link href="/cat/test5" className="mt-10 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
+          <Link href="/test/cat/test5" className="mt-10 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
             <p className="text-[14px] font-medium text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
               다음 →
             </p>
