@@ -8,6 +8,8 @@ export default function Mypage() {
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const [userData, setUserData] = useState<any>(null);
+
   useEffect(() => {
     const token = sessionStorage.getItem('accessToken');
 
@@ -20,23 +22,50 @@ export default function Mypage() {
   }, []);
 
   useEffect(() => {
+    if (!isAuthChecked) return;
+
+    const token = sessionStorage.getItem('accessToken');
+
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/my`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+        console.log('서버 응답:', data); // 서버 응답 확인용
+
+        if (!res.ok) {
+          alert(data.message || '유저 정보를 불러오지 못했습니다.');
+          return;
+        }
+
+        setUserData(data);
+      } catch (err) {
+        console.error(err);
+        alert('서버 요청 실패');
+      }
+    };
+
+    fetchUser();
+  }, [isAuthChecked]);
+
+  // 로딩 처리
+  useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 200);
     return () => clearTimeout(timer);
   }, []);
 
   if (!isAuthChecked) return null;
-  if (isLoading) return <Loading />;
+  if (isLoading || !userData) return <Loading />;
 
-  const mockUser = {
-    userid: 'yihyle',
-    username: '이현석',
-    email: 'son2wg@gmail.com',
-    gender: '남성',
-    birth: '2009.01.19.'
-  };
+  const birthFormatted = userData.birth?.split('T')[0] || '';
 
   const mockResult = {
-    score: 40
+    score: 100
   };
 
   let message = '';
@@ -55,11 +84,11 @@ export default function Mypage() {
 
   return (
     <div className="w-full min-h-screen p-[135px] bg-[#F9FAFB] flex flex-row justify-center gap-[60px]">
-      <div className="w-[480px] h-auto p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
+      <div className="w-[480px] p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
         <p className="text-[22px] text-black font-bold">최근 검사</p>
 
         <div className="w-[400px] h-[130px] bg-[#F9FAFB] border border-[#CDD0D4] rounded-[10px] flex flex-row items-center mt-[30px]">
-          <img src={imageUrl} alt="score result emoji" width="100" height="100" className="mx-[20px]" />
+          <img src={imageUrl} alt="score emoji" width="100" height="100" className="mx-[20px]" />
 
           <div className="w-[250px] h-full flex flex-col justify-center">
             <p className="text-[14px] font-medium text-[#474747]">현재 나의 점수는...</p>
@@ -70,27 +99,30 @@ export default function Mypage() {
         </div>
       </div>
 
-      <div className="w-[700px] h-auto p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
-        <p className="text-[32px] text-[#4A8AEE] font-bold">{mockUser.userid}</p>
+      <div className="w-[700px] p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
+        <p className="text-[32px] text-[#4A8AEE] font-bold">{userData.username}</p>
 
         <p className="text-[22px] text-black font-bold mt-[30px]">내 정보</p>
 
         <div className="w-auto h-[45px] flex flex-row mt-[30px] gap-[80px]">
           <div className="flex flex-col justify-between">
             <p className="text-[12px] text-[#474747] font-medium">이름</p>
-            <p className="text-[16px] text-black font-medium">{mockUser.username}</p>
+            <p className="text-[16px] text-black font-medium">{userData.username}</p>
           </div>
+
           <div className="flex flex-col justify-between">
             <p className="text-[12px] text-[#474747] font-medium">이메일</p>
-            <p className="text-[16px] text-black font-medium">{mockUser.email}</p>
+            <p className="text-[16px] text-black font-medium">{userData.email}</p>
           </div>
+
           <div className="flex flex-col justify-between">
             <p className="text-[12px] text-[#474747] font-medium">성별</p>
-            <p className="text-[16px] text-black font-medium">{mockUser.gender}</p>
+            <p className="text-[16px] text-black font-medium">{userData.gender === 'male' ? '남성' : '여성'}</p>
           </div>
+
           <div className="flex flex-col justify-between">
             <p className="text-[12px] text-[#474747] font-medium">생년월일</p>
-            <p className="text-[16px] text-black font-medium">{mockUser.birth}</p>
+            <p className="text-[16px] text-black font-medium">{birthFormatted}</p>
           </div>
         </div>
 
