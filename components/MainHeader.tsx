@@ -57,7 +57,21 @@ export default function MainHeader() {
               <span className={`${isScrolled ? 'text-[#4A8AEE]' : 'text-white'}`}>{username}</span>
               님, 환영합니다!
             </p>
-            <p className={`text-[18px] font-medium cp hover:text-[#ff5b5b] duration-200 ${isScrolled ? 'text-[#3C3C3C]' : 'text-white'}`} onClick={logoutHandler}>로그아웃</p>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+              onClick={logoutHandler}
+              className={`w-6 h-6 cp duration-200 ${isScrolled ? 'text-black hover:text-[#ff5b5b]' : 'text-white hover:text-[#ff5b5b]'}`}
+            >
+              <path d="m16 17 5-5-5-5" />
+              <path d="M21 12H9" />
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            </svg>
           </>
         ) : (
           <>

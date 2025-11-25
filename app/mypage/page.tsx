@@ -36,14 +36,13 @@ export default function Mypage() {
         });
 
         const data = await res.json();
-        console.log('서버 응답:', data); // 서버 응답 확인용
 
         if (!res.ok) {
           alert(data.message || '유저 정보를 불러오지 못했습니다.');
           return;
         }
 
-        setUserData(data);
+        setUserData(data?.data);
       } catch (err) {
         console.error(err);
         alert('서버 요청 실패');

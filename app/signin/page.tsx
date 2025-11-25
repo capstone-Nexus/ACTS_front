@@ -53,8 +53,8 @@ export default function SignInPage() {
   
       if (!res.ok) throw new Error(data.message || '로그인 실패');
   
-      const accessToken = data.accessToken || data.token || data.access_token;
-      const username = data.username || data.user?.username || 'Unknown';
+      const accessToken = data.accessToken || data.token || data.access_token || data.data?.accessToken;
+      const username = data.username || data.data?.username || 'Unknown';
 
       if (!accessToken) {
         throw new Error('액세스 토큰이 응답에 없습니다.');
