@@ -53,7 +53,6 @@ export default function Mypage() {
     fetchUser();
   }, [isAuthChecked]);
 
-  // 로딩 처리
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 200);
     return () => clearTimeout(timer);
