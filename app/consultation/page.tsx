@@ -7,22 +7,18 @@ import Loading from '@/components/Loading';
 import MessageBubble from '@/app/consultation/components/MessageBubble';
 import axios from 'axios';
 
-interface ChatMessage {
-  sender: 'user' | 'bot';
-  content: string;
-}
-
 export default function Consultation() {
   const [isLoading, setIsLoading] = useState(true);
-  const [messages, setMessages] = useState<ChatMessage[]>([{ sender: 'bot', content: '안녕하세요! 무엇을 도와드릴까요?' }]);
+  const [messages, setMessages] = useState([{ sender: 'bot', content: '안녕하세요! 무엇을 도와드릴까요?' }]);
   const [input, setInput] = useState('');
+
   const chatRef = useRef<HTMLDivElement>(null);
 
   const sendToGPT = async (text: string) => {
     try {
-      const res = await axios.post('/api/chat', { message: text });
-      return res.data.reply || '응답 생성 오류';
-    } catch (error: any) {
+      const response = await axios.post('/api/chat', { message: text });
+      return response.data.reply || '응답 생성 오류';
+    } catch (error) {
       return '서버와 통신 오류';
     }
   };
@@ -30,28 +26,29 @@ export default function Consultation() {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const userMsg: ChatMessage = { sender: 'user', content: input };
-    setMessages(prev => [...prev, userMsg]);
+    const userMessage = { sender: 'user', content: input };
+    setMessages([...messages, userMessage]);
 
-    const userInputBackup = input;
+    const userInput = input;
     setInput('');
 
-    const botResponse = await sendToGPT(userInputBackup);
-    const botMsg: ChatMessage = { sender: 'bot', content: botResponse };
+    const botResponse = await sendToGPT(userInput);
 
-    setMessages(prev => [...prev, botMsg]);
+    const botMessage = { sender: 'bot', content: botResponse };
+    setMessages([...messages, userMessage, botMessage]);
   };
 
   useEffect(() => {
-    chatRef.current?.scrollTo({
-      top: chatRef.current.scrollHeight,
-      behavior: 'smooth'
-    });
+    if (chatRef.current) {
+      chatRef.current.scrollTo({
+        top: chatRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
   }, [messages]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 200);
-    return () => clearTimeout(timer);
+    setTimeout(() => setIsLoading(false), 200);
   }, []);
 
   if (isLoading) return <Loading />;
@@ -74,7 +71,9 @@ export default function Consultation() {
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyUp={e => {
-              if (e.key === 'Enter') sendMessage();
+              if (e.key === 'Enter') {
+                sendMessage();
+              }
             }}
           />
           <button className="w-[45px] h-[45px] bg-[#4A8AEE] rounded-full flex items-center justify-center hover:bg-[#3A7ADE] transition-colors flex-shrink-0" onClick={sendMessage}>

@@ -1,15 +1,15 @@
-import Image from "next/image";
-import Chatbot from "@/public/images/chatbot.png";
+import Image from 'next/image';
+import Chatbot from '@/public/images/chatbot.png';
 
-interface MessageBubbleProps {
-  sender: 'user' | 'bot';
-  content: string;
-}
+export default function MessageBubble({ sender, content }: any) {
+  // gpt응답 예쁘게 바꾸는
+  const formatText = (text: string) => {
+    let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    formatted = formatted.replace(/\n/g, '<br />');
+    return formatted;
+  };
 
-export default function MessageBubble({ sender, content }: MessageBubbleProps) {
-  const isUser = sender === 'user';
-
-  if (isUser) {
+  if (sender === 'user') {
     return (
       <div
         className="max-w-[600px] border rounded-[18px] px-[18px] py-[10px] 
@@ -19,6 +19,7 @@ export default function MessageBubble({ sender, content }: MessageBubbleProps) {
       </div>
     );
   }
+
   return (
     <div className="w-auto flex flex-row gap-4">
       <div className="w-[50px] h-[50px] rounded-full bg-black overflow-hidden flex items-center justify-center">
@@ -28,7 +29,7 @@ export default function MessageBubble({ sender, content }: MessageBubbleProps) {
         className="max-w-[600px] border rounded-[18px] px-[18px] py-[10px] 
         bg-[#DFF4FF] border-[#ADE4FF] self-start"
       >
-        <p className="text-[17px] text-black whitespace-pre-wrap">{content}</p>
+        <div className="text-[17px] text-black" dangerouslySetInnerHTML={{ __html: formatText(content) }} />
       </div>
     </div>
   );
