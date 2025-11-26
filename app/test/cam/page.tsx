@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import Link from 'next/link';
-import Loading from '@/components/Loading';
+import Loading from '@/components/loading';
 
 export default function Cam() {
   const webcamRef = useRef<Webcam>(null);

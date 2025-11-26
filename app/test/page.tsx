@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import Loading from '@/components/Loading';
+import Loading from '@/components/loading';
 
 export default function Test() {
   const router = useRouter();

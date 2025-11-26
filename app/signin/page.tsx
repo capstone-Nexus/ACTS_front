@@ -12,12 +12,14 @@ interface SocialProvider {
   id: string;
   icon: any;
   alt: string;
+  url: string;
 }
 
+const SOCIAL_BASE = process.env.NEXT_PUBLIC_API_BASE;
 const SOCIAL_PROVIDERS: SocialProvider[] = [
-  { id: 'google', icon: googleIcon, alt: 'Google 로그인' },
-  { id: 'naver', icon: naverIcon, alt: 'Naver 로그인' },
-  { id: 'kakao', icon: kakaoIcon, alt: 'Kakao 로그인' }
+  { id: 'google', icon: googleIcon, alt: 'Google 로그인', url: `${SOCIAL_BASE}/auth/oauth/google` },
+  { id: 'naver', icon: naverIcon, alt: 'Naver 로그인', url: `${SOCIAL_BASE}/auth/oauth/naver` },
+  { id: 'kakao', icon: kakaoIcon, alt: 'Kakao 로그인', url: `${SOCIAL_BASE}/auth/oauth/kakao` },
 ];
 
 interface SignInForm {
@@ -37,32 +39,31 @@ export default function SignInPage() {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
+  // 일반 로그인
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
-  
+
     try {
       const res = await fetch(`${API_URL}/auth/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify(form),
       });
-  
-      const data = await res.json();
-  
-      if (!res.ok) throw new Error(data.message || '로그인 실패');
-  
-      const accessToken = data.accessToken || data.token || data.access_token || data.data?.accessToken;
-      const username = data.username || data.data?.username || 'Unknown';
 
-      if (!accessToken) {
-        throw new Error('액세스 토큰이 응답에 없습니다.');
-      }
-  
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || '로그인 실패');
+
+      const accessToken = data.accessToken || data.token || data.access_token;
+      const username = data.username || data.user?.username || 'Unknown';
+
+      if (!accessToken) throw new Error('액세스 토큰이 응답에 없습니다.');
+
       sessionStorage.setItem('accessToken', accessToken);
       sessionStorage.setItem('username', username);
-  
+
       if (data.user) {
         try {
           sessionStorage.setItem('user', JSON.stringify(data.user));
@@ -70,7 +71,7 @@ export default function SignInPage() {
           console.warn('user 저장 실패', e);
         }
       }
-  
+
       console.log("로그인 성공:", data);
       router.push('/');
     } catch (err: any) {
@@ -80,7 +81,10 @@ export default function SignInPage() {
     }
   };
 
-  
+  const handleSocialLogin = (url: string) => {
+    window.location.href = url;
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#F9FAFB]">
       <div className="mt-[188px] bg-white shadow-lg rounded-4xl p-8 w-[500px] h-auto mb-[110px]">
@@ -129,9 +133,10 @@ export default function SignInPage() {
           </div>
 
           <div className="flex items-center justify-center gap-6">
-            {SOCIAL_PROVIDERS.map(({ id, icon, alt }) => (
+            {SOCIAL_PROVIDERS.map(({ id, icon, alt, url }) => (
               <button
                 key={id}
+                onClick={() => handleSocialLogin(url)}
                 className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 cp"
                 aria-label={alt}
                 disabled={isSubmitting}

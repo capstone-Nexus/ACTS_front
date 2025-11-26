@@ -51,7 +51,7 @@ export default function CatBefore() {
 
                 <Link href="/test/cat/test1" className="mt-8 w-[200px] h-[60px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
                     <p className="text-[18px] font-bold text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
-                        검사 시작하기 →/
+                        검사 시작하기 →
                     </p>
                 </Link>
             </div>

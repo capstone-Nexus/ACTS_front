@@ -1,7 +1,7 @@
 'use client';
 
 import './globals.css';
-import Header from '@/components/Header';
+import Header from '@/components/header';
 import TestHeader from '@/components/TestHeader';
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
