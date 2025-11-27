@@ -27,7 +27,6 @@ export async function POST(req: Request) {
 
     const botReply = response.data.choices[0].message.content;
 
-    // history에 AI 답변도 추가
     chatHistory.push({ role: 'assistant', content: botReply });
 
     return NextResponse.json({ reply: botReply });

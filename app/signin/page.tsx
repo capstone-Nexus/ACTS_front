@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, ChangeEvent, FormEvent } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import API from '@/lib/axios';
 import logo from '../../public/images/logo.png';
 import googleIcon from '../../public/images/google.png';
 import naverIcon from '../../public/images/naver.png';
@@ -19,63 +20,41 @@ const SOCIAL_BASE = process.env.NEXT_PUBLIC_API_BASE;
 const SOCIAL_PROVIDERS: SocialProvider[] = [
   { id: 'google', icon: googleIcon, alt: 'Google 로그인', url: `${SOCIAL_BASE}/auth/oauth/google` },
   { id: 'naver', icon: naverIcon, alt: 'Naver 로그인', url: `${SOCIAL_BASE}/auth/oauth/naver` },
-  { id: 'kakao', icon: kakaoIcon, alt: 'Kakao 로그인', url: `${SOCIAL_BASE}/auth/oauth/kakao` },
+  { id: 'kakao', icon: kakaoIcon, alt: 'Kakao 로그인', url: `${SOCIAL_BASE}/auth/oauth/kakao` }
 ];
-
-interface SignInForm {
-  email: string;
-  password: string;
-}
 
 export default function SignInPage() {
   const router = useRouter();
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const [form, setForm] = useState<SignInForm>({ email: '', password: '' });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  // 일반 로그인
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    setError(null);
+    setError('');
     setIsSubmitting(true);
 
     try {
-      const res = await fetch(`${API_URL}/auth/signin`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+      const response = await API.post('/auth/signin', {
+        email: email,
+        password: password
       });
 
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message || '로그인 실패');
-
-      const accessToken = data.accessToken || data.token || data.access_token;
-      const username = data.username || data.user?.username || 'Unknown';
-
-      if (!accessToken) throw new Error('액세스 토큰이 응답에 없습니다.');
+      const accessToken = response.data.data.accessToken;
+      const refreshToken = response.data.data.refreshToken;
+      const username = response.data.data.username;
 
       sessionStorage.setItem('accessToken', accessToken);
       sessionStorage.setItem('username', username);
 
-      if (data.user) {
-        try {
-          sessionStorage.setItem('user', JSON.stringify(data.user));
-        } catch (e) {
-          console.warn('user 저장 실패', e);
-        }
+      if (refreshToken) {
+        const twoWeeks = 14 * 24 * 60 * 60;
+        document.cookie = `refreshToken=${refreshToken}; path=/; max-age=${twoWeeks}; samesite=lax`;
       }
-
-      console.log("로그인 성공:", data);
       router.push('/');
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || '로그인에 실패했습니다.');
     } finally {
       setIsSubmitting(false);
     }
@@ -95,32 +74,17 @@ export default function SignInPage() {
         <form onSubmit={handleSubmit} className="flex flex-col items-center">
           <div className="mb-[30px]">
             <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">이메일</label>
-            <input
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2"
-            />
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2" />
           </div>
 
           <div className="mb-[30px]">
             <label className="block mb-1 text-sm font-medium opacity-70 text-[#000000]">비밀번호</label>
-            <input
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2"
-            />
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="border-1 px-3 rounded-[10px] w-[400px] h-[47px] border-[#D7D7D7] focus:outline-none focus:border-[#4A8AEE] focus:border-2" />
           </div>
 
           {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="mt-[7px] px-4 py-2 w-[400px] h-[47px] bg-[#4A8AEE] font-bold text-white rounded-[10px] hover:bg-[#4077CE] transition disabled:opacity-50 cp"
-          >
+          <button type="submit" disabled={isSubmitting} className="mt-[7px] px-4 py-2 w-[400px] h-[47px] bg-[#4A8AEE] font-bold text-white rounded-[10px] hover:bg-[#4077CE] transition disabled:opacity-50 cp">
             {isSubmitting ? '로그인 중...' : '로그인'}
           </button>
         </form>
@@ -134,13 +98,7 @@ export default function SignInPage() {
 
           <div className="flex items-center justify-center gap-6">
             {SOCIAL_PROVIDERS.map(({ id, icon, alt, url }) => (
-              <button
-                key={id}
-                onClick={() => handleSocialLogin(url)}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 cp"
-                aria-label={alt}
-                disabled={isSubmitting}
-              >
+              <button key={id} onClick={() => handleSocialLogin(url)} className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 cp" aria-label={alt} disabled={isSubmitting}>
                 <Image width={40} height={40} src={icon} alt={alt} className="rounded-full" />
               </button>
             ))}
