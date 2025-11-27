@@ -140,9 +140,9 @@ export default function Home() {
           <p className="text-[24px] text-white mt-[35px]">최신 정보를 바탕으로 정확하고 빠른 답변을 제공합니다.</p>
         </div>
         <Image src={Robot} alt="robot" className="w-[470px] h-[470px] mt-[100px] ml-[70px]" />
-        <div className="w-[80px] h-[80px] rounded-[80px] bg-white center ml-auto mr-[50px] mt-auto mb-[60px] cursor-pointer">
+        <Link href="/consultation" className="w-[80px] h-[80px] rounded-[80px] bg-white center ml-auto mr-[50px] mt-auto mb-[60px] cursor-pointer">
           <Image src={Right} alt="right" className="w-[35px]" />
-        </div>
+        </Link>
       </div>
       <Footer />
     </>

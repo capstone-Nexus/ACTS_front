@@ -76,7 +76,7 @@ export default function RegisterPage() {
         birth: birth
       });
 
-      alert(response.data.message || '회원가입 완료! 로그인 페이지로 이동합니다.');
+      alert(response.data.message || '회원가입 완료');
       router.push('/signin');
     } catch (err: any) {
       alert(err.response?.data?.message || '회원가입 실패');
