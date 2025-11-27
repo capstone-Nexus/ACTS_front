@@ -93,7 +93,8 @@ export default function Test1() {
     };
 
     const handleResponse = () => {
-        if (hasResponded.current || isWaiting) return;
+        if (hasResponded.current) return;
+        if (isWaiting) return;
 
         hasResponded.current = true;
 
@@ -120,15 +121,18 @@ export default function Test1() {
 
     useEffect(() => {
         const handleKeyPress = (e: KeyboardEvent) => {
-            if (e.code === 'Space' && currentScreen === 'test') {
-                e.preventDefault();
-                handleResponse();
-            }
+            if (e.code !== 'Space') return;
+            if (currentScreen !== 'test') return;
+            if (hasResponded.current) return;
+            if (isWaiting) return;
+
+            e.preventDefault();
+            handleResponse();
         };
 
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [currentScreen, isWaiting, progress]);
+    }, [currentScreen]);
 
     if (currentScreen === "intro") {
         return (
@@ -137,32 +141,32 @@ export default function Test1() {
                     <p className="text-[32px] font-bold mt-12">단순 선택 주의력 검사</p>
                     <p className="mt-2 text-[18px] text-[#737373]">Simple Selective Attention</p>
                     <div className="mt-10 w-[800px] h-[1px] bg-[#CDD0D4]" />
+                    
                     <div className="mt-13 w-[800px] h-[410px] bg-[#F9FAFB] border border-[#E4E7EB] p-10">
                         <p className="text-[18px] font-bold">🎯 검사 목적</p>
-                        <p className="mt-2 text-[14px] font-medium text-[#474747]">
+                        <p className="mt-2 text-[14px] text-[#474747]">
                             시각 및 청각 자극에 대한 기본적인 반응 속도와 정확도를 평가합니다.
                         </p>
+
                         <p className="mt-6 text-[18px] font-bold">📋 검사 방법</p>
-                        <ul className="mt-2 ml-7 text-[14px] font-medium text-[#474747] leading-7 list-disc">
-                            <li>
-                                화면에 <span className="text-[#4A8AEE] font-bold">파란색 원</span>이 나타나면 즉시 스페이스바를 누르세요
-                            </li>
-                            <li>
-                                또는 <span className="text-[#4A8AEE] font-bold">소리</span>가 들리 때마다 스페이스바를 누르세요
-                            </li>
+                        <ul className="mt-2 ml-7 text-[14px] text-[#474747] leading-7 list-disc">
+                            <li>화면에 <span className="text-[#4A8AEE] font-bold">파란색 원</span>이 나타나면 즉시 스페이스바를 누르세요</li>
+                            <li>또는 <span className="text-[#4A8AEE] font-bold">소리</span>가 들릴 때 즉시 스페이스바를 누르세요</li>
                             <li>자극이 제시될 때 빠르고 정확하게 반응해야 합니다</li>
+                            <li>한번에 한번의 클릭과 터치만 가능합니다.</li>
                         </ul>
+
                         <div className="w-[720px] h-[100px] bg-[#EBEDEF] mt-6 border-l-4 border-[#4A8AEE] p-4">
                             <p className="text-[14px] font-semibold ml-1 mt-2">💡 주의사항</p>
                             <p className="mt-2 ml-3 text-[14px]">
-                                파란색 원 나타나거나 종소리가 들린다면 → 즉시 스페이스바 클릭
+                                파란색 원이나 소리가 나오면 즉시 스페이스바를 클릭하세요.
                             </p>
                         </div>
                     </div>
 
                     <button
                         onClick={handleStartTest}
-                        className="mt-12 px-[21px] py-[14px] bg-[#4A8AEE] text-white text-[14px] font-medium hover:bg-[#3A7ADE] transition-colors select-none"
+                        className="mt-12 px-[21px] py-[14px] bg-[#4A8AEE] text-white text-[14px] font-medium hover:bg-[#3A7ADE] transition-colors"
                     >
                         테스트 시작 →
                     </button>
@@ -181,20 +185,21 @@ export default function Test1() {
                 <div className="mt-8 w-[800px] h-[1px] bg-[#CDD0D4]" />
 
                 <div
-                    className="relative w-[800px] h-[330px] bg-[#F9FAFB] flex justify-center items-center border border-[#CDD0D4] mt-12 cursor-pointer select-none"
+                    className="relative w-[800px] h-[330px] bg-[#F9FAFB] flex justify-center items-center border border-[#CDD0D4] mt-12 cursor-pointer"
                     onClick={handleResponse}
                 >
-                    <div className="absolute top-4 right-[130px] w-[100px] h-[30px] bg-white text-[12px] font-medium flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
+                    <div className="absolute top-4 right-[130px] w-[100px] h-[30px] bg-white text-[12px] flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
                         맞춘개수 : {correctCount}/{progress > 0 ? progress : 1}
                     </div>
 
-                    <div className="absolute top-4 right-4 w-[100px] h-[30px] bg-white text-[12px] font-medium flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
+                    <div className="absolute top-4 right-4 w-[100px] h-[30px] bg-white text-[12px] flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
                         진행률 : {progress}/{TOTAL_TRIALS}
                     </div>
 
                     {currentStimulus === "blue-circle" && (
                         <div className="w-[120px] h-[120px] rounded-full bg-[#4A8AEE] animate-pulse"></div>
                     )}
+
                     {isWaiting && (
                         <div className="text-[24px] text-[#CCCCCC]">+</div>
                     )}
@@ -204,12 +209,16 @@ export default function Test1() {
                     스페이스바를 누르거나 화면을 클릭하세요
                 </div>
 
-               {TestFinished && (
-          <Link href="/test/cat/test2" className="mt-10 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
-            <p className="text-[14px] font-medium text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
-              다음 →
-            </p>
-          </Link>)}
+                {TestFinished && (
+                    <Link
+                        href="/test/cat/test2"
+                        className="mt-10 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 hover:bg-white hover:border-[#4A8AEE] duration-200 group"
+                    >
+                        <p className="text-[14px] font-medium text-white group-hover:text-[#4A8AEE]">
+                            다음 →
+                        </p>
+                    </Link>
+                )}
             </div>
         </div>
     );

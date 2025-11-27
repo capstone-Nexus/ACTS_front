@@ -9,6 +9,20 @@ import googleIcon from '../../public/images/google.png';
 import naverIcon from '../../public/images/naver.png';
 import kakaoIcon from '../../public/images/kakao.png';
 
+interface SocialProvider {
+  id: string;
+  icon: any;
+  alt: string;
+  url: string;
+}
+
+const SOCIAL_BASE = process.env.NEXT_PUBLIC_API_BASE;
+const SOCIAL_PROVIDERS: SocialProvider[] = [
+  { id: 'google', icon: googleIcon, alt: 'Google 로그인', url: `${SOCIAL_BASE}/auth/oauth/google` },
+  { id: 'naver', icon: naverIcon, alt: 'Naver 로그인', url: `${SOCIAL_BASE}/auth/oauth/naver` },
+  { id: 'kakao', icon: kakaoIcon, alt: 'Kakao 로그인', url: `${SOCIAL_BASE}/auth/oauth/kakao` }
+];
+
 export default function SignInPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -46,6 +60,10 @@ export default function SignInPage() {
     }
   };
 
+  const handleSocialLogin = (url: string) => {
+    window.location.href = url;
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#F9FAFB]">
       <div className="mt-[188px] bg-white shadow-lg rounded-4xl p-8 w-[500px] h-auto mb-[110px]">
@@ -79,15 +97,11 @@ export default function SignInPage() {
           </div>
 
           <div className="flex items-center justify-center gap-6">
-            <button className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 cp" disabled={isSubmitting}>
-              <Image width={40} height={40} src={googleIcon} alt="Google 로그인" className="rounded-full" />
-            </button>
-            <button className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 cp" disabled={isSubmitting}>
-              <Image width={40} height={40} src={naverIcon} alt="Naver 로그인" className="rounded-full" />
-            </button>
-            <button className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 cp" disabled={isSubmitting}>
-              <Image width={40} height={40} src={kakaoIcon} alt="Kakao 로그인" className="rounded-full" />
-            </button>
+            {SOCIAL_PROVIDERS.map(({ id, icon, alt, url }) => (
+              <button key={id} onClick={() => handleSocialLogin(url)} className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 cp" aria-label={alt} disabled={isSubmitting}>
+                <Image width={40} height={40} src={icon} alt={alt} className="rounded-full" />
+              </button>
+            ))}
           </div>
         </div>
       </div>
