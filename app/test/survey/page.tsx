@@ -18,7 +18,6 @@ export default function Survey() {
     newAnswers[index] = value;
     setAnswers(newAnswers);
 
-    //스크롤
     window.scrollBy({ top: 200, behavior: 'smooth' });
   };
 
