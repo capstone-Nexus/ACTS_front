@@ -30,7 +30,7 @@ API.interceptors.response.use(
           { withCredentials: true }
         );
         
-        const newToken = response.data.data || response.data.accessToken;
+        const newToken = response.data.data;
         sessionStorage.setItem('accessToken', newToken);
         request.headers.Authorization = `Bearer ${newToken}`;
         
