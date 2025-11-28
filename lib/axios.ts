@@ -4,64 +4,44 @@ const API = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+  },
 });
 
-let isRefreshing = false;
+API.interceptors.request.use((config) => {
+  const token = sessionStorage.getItem('accessToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
-API.interceptors.request.use(
-  (config) => {
-    const token = sessionStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// 토큰 재발급
 API.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      if (isRefreshing) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const token = sessionStorage.getItem('accessToken');
-        originalRequest.headers.Authorization = `Bearer ${token}`;
-        return API(originalRequest);
-      }
-
-      originalRequest._retry = true;
-      isRefreshing = true;
-
+    const request = error.config;
+    if (error.response?.status === 401 && !request._retry) {
+      request._retry = true;
+      
       try {
-        // 토큰 재발급 요청
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
           {},
           { withCredentials: true }
         );
-
-        const newAccessToken = response.data.data;
-        sessionStorage.setItem('accessToken', newAccessToken);
-
-        // 원래 요청 다시 시도
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        isRefreshing = false;
-        return API(originalRequest);
-      } catch (refreshError) {
-        // 재발급 실패하면 로그아웃 처리
-        isRefreshing = false;
+        
+        const newToken = response.data.data || response.data.accessToken;
+        sessionStorage.setItem('accessToken', newToken);
+        request.headers.Authorization = `Bearer ${newToken}`;
+        
+        return API(request);
+      } catch {
         sessionStorage.clear();
-        document.cookie = 'refreshToken=; path=/auth/refresh; max-age=0';
+        document.cookie = 'refreshToken=; path=/; max-age=0';
         window.location.href = '/signin';
-        return Promise.reject(refreshError);
       }
     }
-
+    
     return Promise.reject(error);
   }
 );
