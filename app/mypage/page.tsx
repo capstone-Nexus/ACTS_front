@@ -47,10 +47,8 @@ export default function Mypage() {
     return <Loading />;
   }
 
-  // 생년월일 포맷
   const birthFormatted = userData.birth?.split('T')[0] || '';
 
-  // 검사 연동할 때 까지 임시 데이터
   const score = 100;
   let message = '';
   let imageUrl = '';

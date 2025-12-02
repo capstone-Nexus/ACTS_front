@@ -1,108 +1,143 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Test4() {
     const [testFinished, setTestFinished] = useState(false);
     const [currentScreen, setCurrentScreen] = useState<"intro" | "test">("intro");
-    const [currentCount, setCurrentCount] = useState(0);
-    const [progress, setProgress] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [showStimulus, setShowStimulus] = useState(false);
-    
-    // 자극 데이터 (이미지 모양과 소리)
+
     const shapes = ["circle", "square", "triangle"];
     const sounds = ["bell", "beep", "dong"];
-    const [currentVisual, setCurrentVisual] = useState("");
-    const [currentSound, setCurrentSound] = useState("");
-    const [prevVisual, setPrevVisual] = useState("");
-    const [prevSound, setPrevSound] = useState("");
-    
+
     const totalTrials = 20;
-    const [results, setResults] = useState<{correct: number, missed: number, falseAlarm: number}>({
+
+    type Trial = { visual: string; sound: string; isTarget: boolean };
+    const [sequence, setSequence] = useState<Trial[]>([]);
+
+    const [results, setResults] = useState<{correct: number; missed: number; falseAlarm: number; rts: number[]}>({
         correct: 0,
         missed: 0,
-        falseAlarm: 0
+        falseAlarm: 0,
+        rts: []
     });
-    const [responded, setResponded] = useState(false);
 
-    const handleStartTest = () => {
+    const respondedRef = useRef(false);
+    const startTimeRef = useRef(0);
+    const timersRef = useRef<number[]>([]);
+
+    const buildSequence = (n: number, targetProb = 0.25) => {
+        const seq: Trial[] = [];
+        for (let i = 0; i < n; i++) {
+            const visual = shapes[Math.floor(Math.random() * shapes.length)];
+            const sound = sounds[Math.floor(Math.random() * sounds.length)];
+            seq.push({ visual, sound, isTarget: false });
+        }
+
+        for (let i = 1; i < n; i++) {
+            if (Math.random() < targetProb) {
+                if (Math.random() < 0.5) seq[i].visual = seq[i - 1].visual;
+                else seq[i].sound = seq[i - 1].sound;
+                seq[i].isTarget = true;
+            } else {
+                seq[i].isTarget = (seq[i].visual === seq[i - 1].visual) || (seq[i].sound === seq[i - 1].sound);
+            }
+        }
+
+        seq[0].isTarget = false;
+        return seq;
+    };
+
+    useEffect(() => {
+        setSequence(buildSequence(totalTrials, 0.25));
+    }, []);
+
+    const clearAllTimers = () => {
+        timersRef.current.forEach(id => clearTimeout(id));
+        timersRef.current = [];
+    };
+
+    const startTest = () => {
         setCurrentScreen("test");
-        startTrial();
+        setCurrentIndex(0);
+        setResults({ correct: 0, missed: 0, falseAlarm: 0, rts: [] });
+        setTestFinished(false);
+        clearAllTimers();
+        const t = window.setTimeout(() => runTrial(0), 300);
+        timersRef.current.push(t);
     };
-    
-    const generateStimulus = () => {
-        const visual = shapes[Math.floor(Math.random() * shapes.length)];
-        const sound = sounds[Math.floor(Math.random() * sounds.length)];
-        return { visual, sound };
+
+    const playSound = (soundType: string) => {
+        try {
+            const AudioContext = (window as any).AudioContext || (window as any).webkitAudioContext;
+            const audioContext = new AudioContext();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            const frequencies: {[key: string]: number} = { bell: 800, beep: 400, dong: 300 };
+            oscillator.frequency.value = frequencies[soundType] || 400;
+            oscillator.type = 'sine';
+
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.25);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.25);
+        } catch (err) {
+            console.error('Audio error:', err);
+        }
     };
-    
-    const startTrial = () => {
-        if (currentCount >= totalTrials) {
+
+    const runTrial = (index: number) => {
+        if (index >= sequence.length) {
             setTestFinished(true);
             return;
         }
-        
-        setResponded(false);
-        const { visual, sound } = generateStimulus();
-        
-        setPrevVisual(currentVisual);
-        setPrevSound(currentSound);
-        setCurrentVisual(visual);
-        setCurrentSound(sound);
+
+        respondedRef.current = false;
+
+        const trial = sequence[index];
         setShowStimulus(true);
-        
-        // 소리 재생 (간단한 beep 구현)
-        playSound(sound);
-        
-        setTimeout(() => {
-            // 자극 표시 후 반응 체크
-            const isMatch = (visual === prevVisual || sound === prevSound) && currentCount > 0;
-            
-            if (isMatch && !responded) {
+        startTimeRef.current = performance.now();
+
+        playSound(trial.sound);
+
+        const stimDur = 1500;
+        const isi = 500;
+
+        const endId = window.setTimeout(() => {
+            if (trial.isTarget && !respondedRef.current) {
                 setResults(prev => ({ ...prev, missed: prev.missed + 1 }));
             }
-            
+
             setShowStimulus(false);
-            setCurrentCount(prev => prev + 1);
-            setProgress(Math.round(((currentCount + 1) / totalTrials) * 100));
-            
-            setTimeout(() => startTrial(), 500);
-        }, 2000);
+            setCurrentIndex(prev => prev + 1);
+
+            const nextId = window.setTimeout(() => runTrial(index + 1), isi);
+            timersRef.current.push(nextId);
+        }, stimDur);
+
+        timersRef.current.push(endId);
     };
-    
-    const playSound = (soundType: string) => {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        const frequencies: {[key: string]: number} = {
-            bell: 800,
-            beep: 400,
-            dong: 300
-        };
-        
-        oscillator.frequency.value = frequencies[soundType];
-        oscillator.type = 'sine';
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.3);
-    };
-    
+
     const handleResponse = () => {
-        if (responded || currentCount === 0) return;
-        
-        setResponded(true);
-        const isMatch = (currentVisual === prevVisual || currentSound === prevSound);
-        
-        if (isMatch) {
-            setResults(prev => ({ ...prev, correct: prev.correct + 1 }));
+        if (!showStimulus) return;
+        if (respondedRef.current) return;
+
+        respondedRef.current = true;
+        const index = currentIndex;
+        const trial = sequence[index];
+        const rt = performance.now() - startTimeRef.current;
+
+        if (!trial) return;
+
+        if (trial.isTarget) {
+            setResults(prev => ({ ...prev, correct: prev.correct + 1, rts: [...prev.rts, rt] }));
         } else {
             setResults(prev => ({ ...prev, falseAlarm: prev.falseAlarm + 1 }));
         }
@@ -110,15 +145,23 @@ export default function Test4() {
 
     useEffect(() => {
         const handleKeyPress = (e: KeyboardEvent) => {
-            if (e.code === "Space" && currentScreen === "test" && showStimulus) {
+            if (e.code === "Space" && currentScreen === "test") {
                 e.preventDefault();
                 handleResponse();
             }
         };
-        
+
         window.addEventListener("keydown", handleKeyPress);
         return () => window.removeEventListener("keydown", handleKeyPress);
-    }, [currentScreen, showStimulus, responded, currentCount, currentVisual, currentSound, prevVisual, prevSound]);
+    }, [currentScreen, showStimulus, currentIndex, sequence]);
+
+    useEffect(() => {
+        return () => clearAllTimers();
+    }, []);
+
+    const currentTrial = sequence[currentIndex] || null;
+    const progress = Math.min(currentIndex + (showStimulus ? 1 : 0), totalTrials);
+    const correctCount = results.correct;
 
     if (currentScreen === "intro") {
         return (
@@ -145,7 +188,7 @@ export default function Test4() {
                     </div>
 
                     <button
-                        onClick={handleStartTest}
+                        onClick={startTest}
                         className="mt-12 px-[21px] py-[14px] bg-[#4A8AEE] text-white text-[14px] font-medium hover:bg-[#3A7ADE] transition-colors"
                     >
                         테스트 시작 →
@@ -163,18 +206,22 @@ export default function Test4() {
                 <div className="mt-8 w-[800px] h-[1px] bg-[#CDD0D4]" />
 
                 <div className="relative w-[800px] h-[330px] bg-[#F9FAFB] text-center flex flex-col justify-center items-center border border-[#CDD0D4] mt-12">
-                    <div className="absolute top-4 right-4 w-[100px] h-[30px] bg-white text-[12px] font-medium flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
-                        진행률 : {currentCount}/{totalTrials}
+                    <div className="absolute top-4 right-[130px] w-[140px] h-[36px] bg-white text-[13px] font-medium flex items-center justify-center border border-[#CDD0D4] text-[#474747]">
+                        <div className="text-sm">맞춘개수 : {correctCount}/{progress}</div>
+                    </div>
+
+                    <div className="absolute top-4 right-4 w-[120px] h-[36px] bg-white text-[12px] font-medium flex items-center justify-center border border-[#CDD0D4] text-[#474747]">
+                        <div className="text-sm">진행률 : {progress}/{totalTrials}</div>
                     </div>
 
                     <div className="w-[120px] h-[120px] border border-[#CDD0D4] flex items-center justify-center">
-                        {showStimulus && currentVisual === "circle" && (
+                        {showStimulus && currentTrial?.visual === "circle" && (
                             <div className="w-[70px] h-[70px] rounded-full bg-white border-3 border-black"></div>
                         )}
-                        {showStimulus && currentVisual === "square" && (
+                        {showStimulus && currentTrial?.visual === "square" && (
                             <div className="w-[70px] h-[70px] bg-white border-3 border-black"></div>
                         )}
-                        {showStimulus && currentVisual === "triangle" && (
+                        {showStimulus && currentTrial?.visual === "triangle" && (
                             <div className="w-0 h-0 border-l-[35px] border-l-transparent border-r-[35px] border-r-transparent border-b-[70px] border-b-black"></div>
                         )}
                         {!showStimulus && (
@@ -182,11 +229,7 @@ export default function Test4() {
                         )}
                     </div>
                     
-                    {showStimulus && (
-                        <div className="mt-4 text-[12px] text-[#737373]">
-                            소리: {currentSound === "bell" ? "🔔 종소리" : currentSound === "beep" ? "📢 삑소리" : "🔊 딩동"}
-                        </div>
-                    )}
+                    {/* 소리 텍스트 제거: 소리는 audio로만 재생됩니다. */}
                 </div>
 
                 <div className="w-[800px] h-[50px] mt-7 text-center bg-[#F9FAFB] border border-[#CDD0D4]">
@@ -202,6 +245,11 @@ export default function Test4() {
                             <p className="mt-2 text-[14px] text-[#737373]">
                                 정답: {results.correct} / 오답: {results.falseAlarm} / 놓침: {results.missed}
                             </p>
+                            {results.rts.length > 0 && (
+                                <p className="mt-2 text-[14px] text-[#737373]">
+                                    평균 반응시간: {Math.round(results.rts.reduce((a,b)=>a+b,0)/results.rts.length)} ms
+                                </p>
+                            )}
                         </div>
                         <Link href="/test/cat/test5" className="mt-6 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
                             <p className="text-[14px] font-medium text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
