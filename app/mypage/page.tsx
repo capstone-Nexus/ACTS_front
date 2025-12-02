@@ -11,10 +11,11 @@ export default function Mypage() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-    
+
     const token = sessionStorage.getItem('accessToken');
     if (!token) {
       alert('로그인이 필요합니다.');
@@ -36,7 +37,8 @@ export default function Mypage() {
 
     getUser();
 
-    return () => {``
+    return () => {
+      ``;
       document.body.style.overflow = 'unset';
     };
   }, []);
@@ -100,6 +102,15 @@ export default function Mypage() {
             </p>
           </div>
         </div>
+
+        <button
+          onClick={() => {
+            setModalOpen(true);
+          }}
+          className="w-[120px] h-[45px] center text-white font-medium text-[14px] bg-[#4a8aee] rounded-[10px] cp duration-200 hover:bg-[#4077CE] mt-auto ml-auto"
+        >
+          상세 보기 →
+        </button>
       </div>
 
       <div className="w-[700px] p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
@@ -149,11 +160,16 @@ export default function Mypage() {
             <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="w-full h-[45px] rounded-[10px] border border-[#CDD0D4] bg-[#FDFDFD] p-[14px] text-[14px] focus:outline-none focus:border-2 focus:border-[#4A8AEE]" placeholder="새 비밀번호 확인" />
           </div>
 
-          <button onClick={handlePasswordChange} className="w-[130px] h-[45px] bg-[#4A8AEE] flex items-center justify-center mt-[20px] rounded-[10px] duration-200 hover:bg-[#4077CE]">
+          <button onClick={handlePasswordChange} className="w-[130px] h-[45px] bg-[#4A8AEE] flex items-center justify-center mt-[20px] rounded-[10px] duration-200 hover:bg-[#4077CE] cp">
             <p className="text-white text-[14px] font-medium">비밀번호 변경</p>
           </button>
         </div>
       </div>
+      {modalOpen && (
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-100">
+          <div className="w-[60%] h-[600px] bg-white rounded-[20px] p-10"></div>
+        </div>
+      )}
     </div>
   );
 }
