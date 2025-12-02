@@ -73,7 +73,7 @@ export default function Consultation() {
         </div>
       </div>
 
-      <div className="w-full flex justify-center px-4 pb-6 pt-4 bg-white border-t border-gray-100">
+      <div className="w-full flex justify-center px-4 pb-6 pt-4 bg-white">
         <div className="w-[60%] h-[60px] bg-[#F5F5F5] border border-[#D2D2D2] rounded-[60px] p-[10px] flex items-center justify-between">
           <input
             className="flex-1 bg-transparent focus:outline-none ml-2 text-base"
