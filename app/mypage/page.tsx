@@ -13,6 +13,8 @@ export default function Mypage() {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    
     const token = sessionStorage.getItem('accessToken');
     if (!token) {
       alert('로그인이 필요합니다.');
@@ -33,6 +35,10 @@ export default function Mypage() {
     };
 
     getUser();
+
+    return () => {``
+      document.body.style.overflow = 'unset';
+    };
   }, []);
 
   if (isLoading || !userData) {
