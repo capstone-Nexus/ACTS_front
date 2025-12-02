@@ -141,7 +141,7 @@ export default function Test3() {
                     </div>
 
                     <div className="absolute top-4 right-4 w-[100px] h-[30px] bg-white text-[12px] font-medium flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
-                        진행률 : {progress + 1}/{TOTAL_TRIALS}
+                        진행률 : {progress}/{TOTAL_TRIALS}
                     </div>
                     <div className="flex flex-row gap-4">
                         {arrows.map((dir, idx) => {

@@ -28,7 +28,7 @@ export default function Cam() {
 
       <div className="w-[650px] h-[430px] bg-[#D9D9D9] rounded-[20px] mt-[60px] overflow-hidden relative" style={{ boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.15)' }}>
         <div className="w-full h-[350px] bg-[#EBEDEF] flex items-center justify-center relative">
-          <Webcam ref={webcamRef} audio={false} className="absolute top-0 left-0 w-full h-full object-cover transform -scale-x-100" />
+          <iframe src='https://www.youtube.com/embed/dQw4w9WgXcQ' className='w-full h-full absolute' />
           <div className="w-[330px] h-[230px] border-3 border-[#4A8AEE] rounded-[20px] z-10" />
         </div>
 
