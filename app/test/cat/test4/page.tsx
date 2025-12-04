@@ -12,16 +12,17 @@ export default function Test4() {
     const shapes = ["circle", "square", "triangle"];
     const sounds = ["bell", "beep", "dong"];
 
-    const totalTrials = 20;
+    const TOTAL_TRIALS = 20;
 
     type Trial = { visual: string; sound: string; isTarget: boolean };
     const [sequence, setSequence] = useState<Trial[]>([]);
 
-    const [results, setResults] = useState<{correct: number; missed: number; falseAlarm: number; rts: number[]}>({
+    const [results, setResults] = useState<{correct: number; missed: number; falseAlarm: number; correctRts: number[]; falseAlarmRts: number[]}>({
         correct: 0,
         missed: 0,
         falseAlarm: 0,
-        rts: []
+        correctRts: [],
+        falseAlarmRts: []
     });
 
     const respondedRef = useRef(false);
@@ -51,7 +52,7 @@ export default function Test4() {
     };
 
     useEffect(() => {
-        setSequence(buildSequence(totalTrials, 0.25));
+        setSequence(buildSequence(TOTAL_TRIALS, 0.25));
     }, []);
 
     const clearAllTimers = () => {
@@ -62,7 +63,7 @@ export default function Test4() {
     const startTest = () => {
         setCurrentScreen("test");
         setCurrentIndex(0);
-        setResults({ correct: 0, missed: 0, falseAlarm: 0, rts: [] });
+        setResults({ correct: 0, missed: 0, falseAlarm: 0, correctRts: [], falseAlarmRts: [] });
         setTestFinished(false);
         clearAllTimers();
         const t = window.setTimeout(() => runTrial(0), 300);
@@ -137,9 +138,9 @@ export default function Test4() {
         if (!trial) return;
 
         if (trial.isTarget) {
-            setResults(prev => ({ ...prev, correct: prev.correct + 1, rts: [...prev.rts, rt] }));
+            setResults(prev => ({ ...prev, correct: prev.correct + 1, correctRts: [...prev.correctRts, rt] }));
         } else {
-            setResults(prev => ({ ...prev, falseAlarm: prev.falseAlarm + 1 }));
+            setResults(prev => ({ ...prev, falseAlarm: prev.falseAlarm + 1, falseAlarmRts: [...prev.falseAlarmRts, rt] }));
         }
     };
 
@@ -160,7 +161,7 @@ export default function Test4() {
     }, []);
 
     const currentTrial = sequence[currentIndex] || null;
-    const progress = Math.min(currentIndex + (showStimulus ? 1 : 0), totalTrials);
+    const progress = Math.min(currentIndex + (showStimulus ? 1 : 0), TOTAL_TRIALS);
     const correctCount = results.correct;
 
     if (currentScreen === "intro") {
@@ -206,12 +207,12 @@ export default function Test4() {
                 <div className="mt-8 w-[800px] h-[1px] bg-[#CDD0D4]" />
 
                 <div className="relative w-[800px] h-[330px] bg-[#F9FAFB] text-center flex flex-col justify-center items-center border border-[#CDD0D4] mt-12">
-                    <div className="absolute top-4 right-[130px] w-[140px] h-[36px] bg-white text-[13px] font-medium flex items-center justify-center border border-[#CDD0D4] text-[#474747]">
-                        <div className="text-sm">맞춘개수 : {correctCount}/{progress}</div>
+                    <div className="absolute top-4 right-[130px] w-[100px] h-[30px] bg-white text-[12px] font-medium flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
+                        맞춘개수 : {correctCount}/{progress}
                     </div>
 
-                    <div className="absolute top-4 right-4 w-[120px] h-[36px] bg-white text-[12px] font-medium flex items-center justify-center border border-[#CDD0D4] text-[#474747]">
-                        <div className="text-sm">진행률 : {progress}/{totalTrials}</div>
+                    <div className="absolute top-4 right-4 w-[100px] h-[30px] bg-white text-[12px] font-medium flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
+                        진행률 : {progress}/{TOTAL_TRIALS}
                     </div>
 
                     <div className="w-[120px] h-[120px] border border-[#CDD0D4] flex items-center justify-center">
@@ -229,7 +230,6 @@ export default function Test4() {
                         )}
                     </div>
                     
-                    {/* 소리 텍스트 제거: 소리는 audio로만 재생됩니다. */}
                 </div>
 
                 <div className="w-[800px] h-[50px] mt-7 text-center bg-[#F9FAFB] border border-[#CDD0D4]">
@@ -240,17 +240,35 @@ export default function Test4() {
 
                 {testFinished && (
                     <>
-                        <div className="mt-6 text-center">
+                        {/* <div className="mt-6 text-center">
                             <p className="text-[16px] font-bold text-[#474747]">검사 완료!</p>
-                            <p className="mt-2 text-[14px] text-[#737373]">
-                                정답: {results.correct} / 오답: {results.falseAlarm} / 놓침: {results.missed}
-                            </p>
-                            {results.rts.length > 0 && (
-                                <p className="mt-2 text-[14px] text-[#737373]">
-                                    평균 반응시간: {Math.round(results.rts.reduce((a,b)=>a+b,0)/results.rts.length)} ms
-                                </p>
-                            )}
-                        </div>
+                            <div className="mt-4 text-[14px] text-[#737373] space-y-1">
+                                <p>정답: {results.correct} / 오답: {results.falseAlarm} / 놓침: {results.missed}</p>
+                                <p className="font-bold text-[#4A8AEE]">정확도: {Math.round((results.correct / TOTAL_TRIALS) * 100)}%</p>
+                                {results.correctRts.length > 0 && (
+                                    <>
+                                        <p>
+                                            정답 반응시간: {Math.round(results.correctRts.reduce((a,b)=>a+b,0)/results.correctRts.length)} ms
+                                            {results.correctRts.length > 1 && (
+                                                <span className="ml-2">
+                                                    (±{Math.round(
+                                                        Math.sqrt(
+                                                            results.correctRts.reduce((sq, n) => {
+                                                                const mean = results.correctRts.reduce((a,b)=>a+b,0)/results.correctRts.length;
+                                                                return sq + Math.pow(n - mean, 2);
+                                                            }, 0) / results.correctRts.length
+                                                        )
+                                                    )} ms)
+                                                </span>
+                                            )}
+                                        </p>
+                                    </>
+                                )}
+                                {results.falseAlarmRts.length > 0 && (
+                                    <p>오답 반응시간: {Math.round(results.falseAlarmRts.reduce((a,b)=>a+b,0)/results.falseAlarmRts.length)} ms</p>
+                                )}
+                            </div>
+                        </div> */}
                         <Link href="/test/cat/test5" className="mt-6 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
                             <p className="text-[14px] font-medium text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
                                 다음 →
