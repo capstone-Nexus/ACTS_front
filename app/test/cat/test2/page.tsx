@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { clamp01, setCatFeatures } from "@/app/test/cat/lib/catFeatures";
 
 const SHAPES = ["○", "△", "□", "X"];
 const TOTAL_TRIALS = 20;
@@ -17,12 +18,15 @@ export default function Test2() {
   const [testFinished, setTestFinished] = useState(false);
   const stimulusStartTime = useRef<number>(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const savedFeaturesRef = useRef(false);
 
   const handleStartTest = () => {
+    savedFeaturesRef.current = false;
     setCurrentScreen("test");
     setProgress(0);
     setScore(0);
     setCorrectCount(0);
+    setResponses([]);
     nextStimulus();
   };
 
@@ -66,6 +70,33 @@ export default function Test2() {
       nextStimulus();
     }
   };
+
+  // Persist Sustained Attention features once, after test completion.
+  useEffect(() => {
+    if (!testFinished) return;
+    if (savedFeaturesRef.current) return;
+    if (responses.length !== TOTAL_TRIALS) return;
+
+    const totalTargets = responses.filter((r) => r.shape !== "X").length;
+    const totalNoGo = responses.filter((r) => r.shape === "X").length;
+
+    const omission =
+      totalTargets > 0
+        ? clamp01(responses.filter((r) => r.shape !== "X" && !r.clicked).length / totalTargets)
+        : undefined;
+
+    const commission =
+      totalNoGo > 0
+        ? clamp01(responses.filter((r) => r.shape === "X" && r.clicked).length / totalNoGo)
+        : undefined;
+
+    setCatFeatures({
+      sustained_omission: omission,
+      sustained_commission: commission,
+    });
+
+    savedFeaturesRef.current = true;
+  }, [responses, testFinished]);
 
   if (currentScreen === "intro") {
     return (

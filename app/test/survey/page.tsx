@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import SurveyCard from '@/app/test/survey/components/SurveyCard';
 import Loading from '@/components/loading';
+import { parseOptionalNumber, setCatFeatures } from '@/app/test/cat/lib/catFeatures';
 
 const surveyQuestions = ['1. 나는 중요한 일을 할 때도 쉽게 집중이 흐트러진다.', '2. 나는 과제를 끝까지 마무리하는 데 어려움을 느낀다.', '3. 나는 일을 하다가 자주 다른 생각이나 활동으로 옮겨간다.', '4. 나는 주어진 지시사항을 끝까지 따르지 못할 때가 많다.', '5. 나는 반복적이거나 지루한 작업에서 쉽게 실수를 한다.', '6. 나는 다른 사람이 말할 때 집중하지 못하고 놓칠 때가 많다.', '7. 나는 책이나 글을 읽을 때 집중력이 오래 유지되지 않는다.', '8. 나는 일이나 과제를 정리·계획하는 데 어려움이 있다.', '9. 나는 약속이나 일정을 자주 잊어버린다.', '10. 나는 물건(책, 휴대폰, 필기구 등)을 자주 잃어버리거나 잘 챙기지 못한다.', '11. 나는 대화 중 상대방의 말을 끝까지 기다리지 못하고 끼어드는 경우가 많다.', '12. 나는 즉흥적으로 행동하여 후회할 때가 많다.', '13. 나는 줄을 서거나 기다리는 상황에서 차분히 기다리기 어려움.', '14. 나는 흥분되거나 기분이 고조되면 행동을 통제하기 힘들다.', '15. 나는 위험한 행동(예: 무모한 운전, 즉흥적 지출 등)을 쉽게 한다.', '16. 나는 불필요하게 말을 많이 하거나 멈추기 어렵다.', '17. 나는 사소한 일에도 참지 못하고 쉽게 화를 낸다.', '18. 나는 어떤 일을 시작하면 중간에 충동적으로 다른 일을 벌이기도 한다.', '19. 나는 규칙이나 규율을 지켜야 하는 상황에서도 충동적으로 위반할 때가 있다.', '20. 나는 감정을 조절하지 못하고 즉각적으로 표현하는 경우가 많다.'];
 
@@ -16,6 +17,8 @@ export const metadata = {
 export default function Survey() {
   const [isLoading, setIsLoading] = useState(true);
   const [answers, setAnswers] = useState<(number | null)[]>(Array(surveyQuestions.length).fill(null));
+  const [pSurvey, setPSurvey] = useState('');
+  const [pSurveyError, setPSurveyError] = useState<string | null>(null);
   const router = useRouter();
 
   //문항 선택 로직
@@ -55,10 +58,40 @@ export default function Survey() {
           </div>
         ))}
 
+        <div className="w-full mt-10 bg-[#F9FAFB] border border-[#E4E7EB] rounded-[10px] p-6">
+          <p className="text-[16px] font-bold text-[#474747]">(+선택) 설문 기반 확률 p_survey</p>
+          <p className="mt-2 text-[13px] text-[#737373]">설문 AI가 준 ADHD 가능성 확률(0~1). 없으면 백엔드가 0.5로 보정합니다.</p>
+          <div className="mt-3 flex items-center gap-3">
+            <input
+              value={pSurvey}
+              onChange={(e) => {
+                setPSurveyError(null);
+                setPSurvey(e.target.value);
+              }}
+              placeholder="예: 0.62"
+              inputMode="decimal"
+              className={`w-[240px] h-[44px] rounded-[8px] px-3 border text-[14px] outline-none ${
+                pSurveyError ? 'border-red-400 bg-red-50' : 'border-[#CDD0D4] bg-white'
+              }`}
+            />
+            {pSurveyError && <p className="text-[12px] text-red-600">{pSurveyError}</p>}
+          </div>
+        </div>
+
         <div
           className={`w-[150px] h-[55px] mt-[50px] flex items-center justify-center rounded-[60px] text-white text-[18px] font-semibold transition-all duration-200 ${allAnswered ? 'bg-[#4A8AEE] cursor-pointer hover:bg-[#4077CE]' : 'bg-gray-300 cursor-not-allowed'}`}
           onClick={() => {
             if (allAnswered) {
+              const n = parseOptionalNumber(pSurvey);
+              if (pSurvey.trim() && n === undefined) {
+                setPSurveyError('숫자를 입력해주세요. (0~1)');
+                return;
+              }
+              if (n !== undefined && (n < 0 || n > 1)) {
+                setPSurveyError('0 ~ 1 사이여야 합니다.');
+                return;
+              }
+              if (n !== undefined) setCatFeatures({ p_survey: n });
               console.log('설문 답안 찍은거: ', answers);
               router.push('/test/cat/before');
             }

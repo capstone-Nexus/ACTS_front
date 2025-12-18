@@ -60,7 +60,7 @@ export default function Home() {
 
       <div className="w-full h-[800px] bg-black relative overflow-hidden">
         <Image src={Background1} alt="background1" fill className="object-cover object-[center_35%]" />
-        <div className="absolute inset-0 bg-black/40 flex flex-col items-center">
+        <div className="absolute inset-0 bg-black/40 flex flex-col items-center select-none">
           <p className="text-[70px] text-white font-medium mt-[214px]">
             <span className="font-black">ADHD</span> 자가진단의 
           </p>
@@ -91,7 +91,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="w-full h-[750px] bg-black/45 px-[100px] py-[80px]">
+      <div className="w-full h-[750px] bg-black/45 px-[100px] py-[80px] select-none">
         <div className="w-[900px] h-full flex flex-col">
           <p className="text-white text-[28px] font-medium">Main Service</p>
           <p className="text-white text-[55px] font-medium leading-[80px] mt-[40px]">
@@ -112,7 +112,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="w-full h-screen bg-white center">
+      <div className="w-full h-screen select-none bg-white center">
         <div className="w-[1200px] h-[500px] flex flex-row justify-between items-center">
           <div className="w-auto h-full flex flex-col justify-center gap-[30px]">
             <p className="font-bold text-[28px] text-[#4A8AEE]">나만의 ADHD 관리 시작하기</p>
@@ -129,7 +129,7 @@ export default function Home() {
       </div>
 
       <div className="w-full h-[400px] bg-[#2F2880] relative overflow-hidden flex flex-row">
-        <div className="w-[555px] h-full ml-[120px] flex flex-col justify-center">
+        <div className="select-none w-[555px] h-full ml-[120px] flex flex-col justify-center">
           <p className="text-[50px] text-white leading-[70px]">
             <span className="font-bold">AI 챗봇</span>에게
             <br />
@@ -137,7 +137,7 @@ export default function Home() {
           </p>
           <p className="text-[24px] text-white mt-[35px]">최신 정보를 바탕으로 정확하고 빠른 답변을 제공합니다.</p>
         </div>
-        <Image src={Robot} alt="robot" className="w-[470px] h-[470px] mt-[100px] ml-[70px]" />
+        <Image src={Robot} alt="robot" className="select-none w-[470px] h-[470px] mt-[100px] ml-[70px]" />
         <Link href="/consultation" className="w-[80px] h-[80px] rounded-[80px] bg-white center ml-auto mr-[50px] mt-auto mb-[60px] cursor-pointer">
           <Image src={Right} alt="right" className="w-[35px]" />
         </Link>
