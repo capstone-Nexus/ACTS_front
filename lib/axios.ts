@@ -24,11 +24,8 @@ API.interceptors.response.use(
       request._retry = true;
       
       try {
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
+        // Use same-origin proxy so the refreshToken cookie (stored on frontend origin) is included.
+        const response = await axios.post('/api/auth/refresh', {}, { withCredentials: true });
         
         const newToken = response.data.data;
         sessionStorage.setItem('accessToken', newToken);

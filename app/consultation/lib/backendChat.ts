@@ -52,14 +52,32 @@ function authHeaders(): HeadersInit {
 
 async function refreshAccessToken(b: string): Promise<string | null> {
   try {
-    const res = await fetch(joinUrl(b, '/auth/refresh'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({}),
-    });
+    // Prefer same-origin proxy so frontend-origin refreshToken cookie is included (dev setup).
+    // Fallback to direct backend refresh if proxy fails for some reason.
+    const tryProxy = async () =>
+      fetch('/api/auth/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({}),
+      });
+
+    const tryDirect = async () =>
+      fetch(joinUrl(b, '/auth/refresh'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({}),
+      });
+
+    let res: Response;
+    try {
+      res = await tryProxy();
+      // If proxy is missing/misconfigured, fall back to direct.
+      if (res.status === 404) res = await tryDirect();
+    } catch {
+      res = await tryDirect();
+    }
 
     if (!res.ok) return null;
     const json = await res.json().catch(() => null);
