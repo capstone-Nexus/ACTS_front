@@ -1,7 +1,9 @@
 'use client';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Loading from '@/components/Loading';
+import Ximg from "@/public/images/x.svg";
 import API from '@/lib/axios';
 
 export default function Mypage() {
@@ -167,7 +169,11 @@ export default function Mypage() {
       </div>
       {modalOpen && (
         <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-100">
-          <div className="w-[60%] h-[600px] bg-white rounded-[20px] p-10"></div>
+          <div className="w-[60%] h-[600px] bg-white rounded-[20px] p-[25px]">
+            <div onClick={() => setModalOpen(false)} className="w-[25px] h-[25px] text-white font-bold text-[12px] rounded-full ml-auto flex items-center justify-center cp">
+              <Image src={Ximg} alt='x' width={24} height={24} />
+            </div>
+          </div>
         </div>
       )}
     </div>

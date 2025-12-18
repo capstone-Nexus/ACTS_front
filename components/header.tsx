@@ -47,7 +47,7 @@ export default function Header() {
               <span className="text-[#4A8AEE]">{username}</span>
               님, 환영합니다!
             </p>
-            
+
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" fill="none" onClick={logoutHandler} className={`w-6 h-6 cp duration-200 text-black hover:text-[#ff5b5b]`}>
               <path d="m16 17 5-5-5-5" />
               <path d="M21 12H9" />
