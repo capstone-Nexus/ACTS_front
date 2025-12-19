@@ -14,7 +14,7 @@ export default function AuthSuccessPage() {
 
     if (accessToken) sessionStorage.setItem('accessToken', accessToken);
     if (username) sessionStorage.setItem('username', username);
-      
+    
     if (refreshToken) {
       const twoWeeks = 14 * 24 * 60 * 60;
       document.cookie = `refreshToken=${refreshToken}; path=/; max-age=${twoWeeks}; samesite=lax`;
