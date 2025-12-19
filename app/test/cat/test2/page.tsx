@@ -7,11 +7,13 @@ import { clamp01, setCatFeatures } from "@/app/test/cat/lib/catFeatures";
 const SHAPES = ["○", "△", "□", "X"];
 const TOTAL_TRIALS = 20;
 const STIMULUS_TIME = 1000;
+const ISI_TIME = 300; // ignore clicks during inter-stimulus interval (prevents click-spam)
 
 export default function Test2() {
   const [currentScreen, setCurrentScreen] = useState<"intro" | "test">("intro");
   const [progress, setProgress] = useState(0);
   const [currentShape, setCurrentShape] = useState<string>("");
+  const [isStimulusOn, setIsStimulusOn] = useState(false);
   const [responses, setResponses] = useState<{ shape: string; clicked: boolean; time: number }[]>([]);
   const [score, setScore] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
@@ -19,20 +21,36 @@ export default function Test2() {
   const stimulusStartTime = useRef<number>(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const savedFeaturesRef = useRef(false);
+  const trialIndexRef = useRef(0);
+  const currentShapeRef = useRef<string>("");
 
   const handleStartTest = () => {
     savedFeaturesRef.current = false;
+    trialIndexRef.current = 0;
     setCurrentScreen("test");
     setProgress(0);
     setScore(0);
     setCorrectCount(0);
     setResponses([]);
+    setTestFinished(false);
     nextStimulus();
+  };
+
+  const startISIThenNext = () => {
+    setIsStimulusOn(false);
+    setCurrentShape("");
+    currentShapeRef.current = "";
+    window.setTimeout(() => {
+      if (trialIndexRef.current >= TOTAL_TRIALS) return;
+      nextStimulus();
+    }, ISI_TIME);
   };
 
   const nextStimulus = () => {
     const randomShape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
     setCurrentShape(randomShape);
+    currentShapeRef.current = randomShape;
+    setIsStimulusOn(true);
     stimulusStartTime.current = Date.now();
 
     timeoutRef.current = setTimeout(() => {
@@ -41,41 +59,42 @@ export default function Test2() {
   };
 
   const handleClick = (clicked: boolean) => {
+    if (testFinished) return;
+    // Prevent holding mouse / spam-click from being counted when no stimulus is on screen.
+    if (!isStimulusOn) return;
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
 
     const time = Date.now() - stimulusStartTime.current;
-    let newScore = score;
-    let isCorrect = false;
+    const shape = currentShapeRef.current || currentShape;
 
-    if (currentShape === "X" && clicked) {
-      newScore -= 1;
-    } else if (currentShape !== "X" && clicked) {
-      newScore += 1;
-      isCorrect = true;
+    // Score/correctCount updates should be functional to avoid stale closures (timeouts).
+    if (shape === "X" && clicked) {
+      setScore((prev) => prev - 1);
+    } else if (shape !== "X" && clicked) {
+      setScore((prev) => prev + 1);
+      setCorrectCount((prev) => prev + 1);
     }
 
-    setScore(newScore);
-    if (isCorrect) setCorrectCount(prev => prev + 1);
+    setResponses((prev) => [...prev, { shape, clicked, time }]);
 
-    setResponses(prev => [...prev, { shape: currentShape, clicked, time }]);
+    trialIndexRef.current += 1;
+    setProgress(trialIndexRef.current);
 
-    const nextIndex = progress + 1;
-    if (nextIndex >= TOTAL_TRIALS) {
+    if (trialIndexRef.current >= TOTAL_TRIALS) {
       setTestFinished(true);
-    } else {
-      setProgress(nextIndex);
-      nextStimulus();
+      return;
     }
+
+    startISIThenNext();
   };
 
-  // Persist Sustained Attention features once, after test completion.
   useEffect(() => {
     if (!testFinished) return;
     if (savedFeaturesRef.current) return;
-    if (responses.length !== TOTAL_TRIALS) return;
+    if (responses.length < TOTAL_TRIALS) return;
 
     const totalTargets = responses.filter((r) => r.shape !== "X").length;
     const totalNoGo = responses.filter((r) => r.shape === "X").length;
@@ -83,12 +102,12 @@ export default function Test2() {
     const omission =
       totalTargets > 0
         ? clamp01(responses.filter((r) => r.shape !== "X" && !r.clicked).length / totalTargets)
-        : undefined;
+        : 0;
 
     const commission =
       totalNoGo > 0
         ? clamp01(responses.filter((r) => r.shape === "X" && r.clicked).length / totalNoGo)
-        : undefined;
+        : 0;
 
     setCatFeatures({
       sustained_omission: omission,
@@ -97,6 +116,12 @@ export default function Test2() {
 
     savedFeaturesRef.current = true;
   }, [responses, testFinished]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   if (currentScreen === "intro") {
     return (
@@ -155,7 +180,7 @@ export default function Test2() {
           </div>
 
           <div className="w-[120px] h-[120px] border-1 border-[#CDD0D4] flex items-center justify-center text-[48px]">
-            {currentShape}
+            {isStimulusOn ? currentShape : "+"}
           </div>
         </div>
 
