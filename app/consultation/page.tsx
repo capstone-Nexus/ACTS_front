@@ -5,9 +5,9 @@
   import { useRouter } from 'next/navigation';
   import Up from '@/public/images/up.svg';
   import Loading from '@/components/loading';
-  import MessageBubble from '@/app/consultation/components/MessageBubble';
   import axios from 'axios';
   import Write from '@/public/images/write.svg';
+  import MessageBubble from './components/MessageBubble';
    import {
      getChatMessages,
       deleteChat,
@@ -136,7 +136,6 @@
     };
 
     const sendViaLocalApi = async (text: string) => {
-      // Fallback: existing local proxy (non-SSE)
       try {
         const res = await axios.post('/api/chat', { message: text });
         return res.data?.reply ?? '응답 생성 오류';
@@ -216,7 +215,6 @@
         return;
       }
 
-      // 2) Fallback to local /api/chat (no DB, no SSE).
       setIsStreaming(true);
       const reply = await sendViaLocalApi(text);
       setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, content: reply } : m)));
@@ -231,8 +229,6 @@
      useEffect(() => {
       setTimeout(() => setIsLoading(false), 200);
     }, []);
-
-    // Initial load: chat list + (optionally) latest chat messages.
      useEffect(() => {
       if (!backendConfigured) {
         setMessages([{ id: makeId(), sender: 'bot', content: '백엔드 API 설정이 없어 임시 채팅만 가능합니다.' }]);
@@ -242,7 +238,6 @@
       void (async () => {
         await refreshChatList();
       })();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (isLoading) return <Loading />;
@@ -457,16 +452,18 @@
             <div className="flex-1 w-full overflow-y-auto px-6" ref={scrollRef}>
               <div className="max-w-[900px] mx-auto flex flex-col gap-[22px] py-6">
                 {messages.length === 0 ? (
-                  <MessageBubble sender="bot" content="메시지를 입력하면 대화가 시작됩니다." />
-                ) : (
-                  messages.map((msg) => <MessageBubble key={msg.id} sender={msg.sender} content={msg.content} />)
-                )}
-                {isStreaming && <MessageBubble sender="bot" content="..." />}
+  <MessageBubble sender="bot" content="저에게 무엇이든 물어보세요!" />
+) : (
+  messages.map((msg) => (
+    <MessageBubble key={msg.id} sender={msg.sender} content={msg.content} />
+  ))
+)}
+
               </div>
             </div>
 
             <div className="w-full flex justify-center px-6 pb-6 bg-white border-t border-[#E5E7EB]">
-              <div className="w-full max-w-[900px] h-[60px] bg-[#F5F5F5] border border-[#D2D2D2] rounded-[60px] p-[10px] flex items-center justify-between">
+              <div className="mt-5 w-full max-w-[900px] h-[60px] bg-[#F5F5F5] border border-[#D2D2D2] rounded-[60px] p-[10px] flex items-center justify-between">
                 <input
                   className="flex-1 bg-transparent focus:outline-none ml-2 text-base"
                   placeholder="무엇을 알고 싶으세요?"
