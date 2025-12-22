@@ -12,7 +12,7 @@ export default function MessageBubble({ sender, content }: any) {
   if (sender === 'user') {
     return (
       <div
-        className="max-w-[600px] border rounded-[18px] px-[18px] py-[10px] 
+        className="max-w-[600px] border rounded-tl-xl rounded-tr-xl rounded-bl-xl px-[18px] py-[10px] 
           bg-[#F5F5F5] border-[#D2D2D2] self-end"
       >
         <p className="text-[17px] text-black whitespace-pre-wrap">{content}</p>
@@ -26,7 +26,7 @@ export default function MessageBubble({ sender, content }: any) {
         <Image src={Chatbot} alt="chatbot" width={50} height={50} />
       </div>
       <div
-        className="max-w-[600px] border rounded-[18px] px-[18px] py-[10px] 
+        className="max-w-[600px] border rounded-tl-xl rounded-tr-xl rounded-br-xl px-[18px] py-[10px] 
         bg-[#DFF4FF] border-[#ADE4FF] self-start"
       >
         <div className="text-[17px] text-black" dangerouslySetInnerHTML={{ __html: formatText(content) }} />

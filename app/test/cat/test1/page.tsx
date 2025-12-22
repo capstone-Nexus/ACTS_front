@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { clearCatFeatures, mean, sd, setCatFeatures } from "@/app/test/cat/lib/catFeatures";
 
 export default function Test1() {
     const TOTAL_TRIALS = 20;
@@ -22,6 +23,7 @@ export default function Test1() {
     const stimulusTimeout = useRef<NodeJS.Timeout | null>(null);
     const hasResponded = useRef(false);
     const currentTrialType = useRef<"blue-circle" | "sound" | null>(null);
+    const savedFeaturesRef = useRef(false);
 
     const playBeep = () => {
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -41,6 +43,8 @@ export default function Test1() {
     };
 
     const handleStartTest = () => {
+        clearCatFeatures({ keepSurvey: true });
+        savedFeaturesRef.current = false;
         setCurrentScreen("test");
         setProgress(0);
         setCorrectCount(0);
@@ -133,6 +137,25 @@ export default function Test1() {
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, [currentScreen]);
+
+    useEffect(() => {
+        if (!TestFinished) return;
+        if (savedFeaturesRef.current) return;
+
+        const rtsSec = results
+            .filter((r) => r.correct && r.reactionTime != null)
+            .map((r) => (r.reactionTime as number) / 1000);
+
+        const m = mean(rtsSec);
+        const s = sd(rtsSec);
+
+        setCatFeatures({
+            simple_sel_rt_mean: m,
+            simple_sel_rt_sd: s,
+        });
+
+        savedFeaturesRef.current = true;
+    }, [TestFinished, results]);
 
     if (currentScreen === "intro") {
         return (

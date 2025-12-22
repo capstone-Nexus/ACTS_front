@@ -89,6 +89,14 @@ export default function Test5() {
         }, 500);
     };
 
+    const handleUndo = () => {
+        if (isShowing) return;
+        if (testFinished) return;
+        if (userResponse.length === 0) return;
+        setUserResponse(prev => prev.slice(0, -1));
+        setActiveBox(null);
+    };
+
     if (currentScreen === "intro") {
         return (
             <div className="w-full h-screen flex flex-col items-center bg-gray-50 select-none">
@@ -164,6 +172,22 @@ export default function Test5() {
                         </div>
                     )}
                 </div>
+
+                {!isShowing && !testFinished && (
+                    <div className="mt-6 w-[800px] flex justify-end">
+                        <button
+                            onClick={handleUndo}
+                            disabled={userResponse.length === 0}
+                            className={`h-[42px] px-4 border text-[14px] font-medium transition-colors ${
+                                userResponse.length === 0
+                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-200'
+                                    : 'bg-white text-[#474747] border-[#CDD0D4] hover:bg-[#F9FAFB]'
+                            }`}
+                        >
+                            지우기
+                        </button>
+                    </div>
+                )}
 
                 {testFinished && (
                     <Link href="/test/result" className="mt-10 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">

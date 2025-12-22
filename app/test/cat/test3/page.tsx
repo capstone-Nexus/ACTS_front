@@ -7,6 +7,7 @@ import TestRight from "@/public/images/test_right.svg";
 import TestLeft from "@/public/images/test_left.svg";
 import TestUp from "@/public/images/test_up.svg";
 import TestDown from "@/public/images/test_down.svg";
+import { clamp01, setCatFeatures } from "@/app/test/cat/lib/catFeatures";
 
 const TOTAL_TRIALS = 20;
 const STIMULUS_TIME = 2000;
@@ -23,9 +24,15 @@ export default function Test3() {
     const stimulusStartTime = useRef<number>(0);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const hasResponded = useRef(false);
+    const savedFeaturesRef = useRef(false);
 
     const handleStartTest = () => {
         setCurrentScreen("test");
+        setProgress(0);
+        setCorrectCount(0);
+        setResponses([]);
+        setTestFinished(false);
+        savedFeaturesRef.current = false;
         nextStimulus();
     };
 
@@ -59,7 +66,7 @@ export default function Test3() {
         const center = arrows[2];
         if (clicked === center) setCorrectCount(prev => prev + 1);
 
-        setResponses([...responses, { center, clicked, time }]);
+        setResponses((prev) => [...prev, { center, clicked, time }]);
 
         const nextIndex = progress + 1;
         if (nextIndex < TOTAL_TRIALS) {
@@ -70,6 +77,23 @@ export default function Test3() {
             setTestFinished(true);
         }
     };
+
+    useEffect(() => {
+        if (!testFinished) return;
+        if (savedFeaturesRef.current) return;
+        if (responses.length !== TOTAL_TRIALS) return;
+
+        const total = responses.length;
+        const omission = clamp01(responses.filter((r) => r.clicked === "").length / total);
+        const commission = clamp01(responses.filter((r) => r.clicked !== "" && r.clicked !== r.center).length / total);
+
+        setCatFeatures({
+            interference_omission: omission,
+            interference_commission: commission,
+        });
+
+        savedFeaturesRef.current = true;
+    }, [responses, testFinished]);
 
     useEffect(() => {
         if (currentScreen !== "test" || testFinished) return;
@@ -141,7 +165,7 @@ export default function Test3() {
                     </div>
 
                     <div className="absolute top-4 right-4 w-[100px] h-[30px] bg-white text-[12px] font-medium flex justify-center items-center border border-[#CDD0D4] text-[#474747]">
-                        진행률 : {progress + 1}/{TOTAL_TRIALS}
+                        진행률 : {progress}/{TOTAL_TRIALS}
                     </div>
                     <div className="flex flex-row gap-4">
                         {arrows.map((dir, idx) => {

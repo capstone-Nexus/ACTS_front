@@ -14,8 +14,6 @@ export default function Mypage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState(0);
-  const [selectedArea, setSelectedArea] = useState(0);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -51,10 +49,8 @@ export default function Mypage() {
     return <Loading />;
   }
 
-  // 생년월일 포맷
   const birthFormatted = userData.birth?.split('T')[0] || '';
 
-  // 검사 연동할 때 까지 임시 데이터
   const score = 100;
   let message = '';
   let imageUrl = '';
