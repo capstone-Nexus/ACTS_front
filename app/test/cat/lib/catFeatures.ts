@@ -37,7 +37,6 @@ export function setCatFeatures(patch: CatFeatures): void {
   const prev = getCatFeatures();
   const next: CatFeatures = { ...prev, ...patch };
 
-  // Remove explicit undefined keys so "missing" logic works cleanly.
   (Object.keys(next) as (keyof CatFeatures)[]).forEach((k) => {
     if (next[k] === undefined) delete next[k];
   });

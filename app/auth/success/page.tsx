@@ -27,7 +27,7 @@ export default function AuthSuccessPage() {
 
   return (
     <div className="flex justify-center items-center min-h-screen text-lg font-semibold">
-      로그인 처리 중입니다
+      로그인 처리가 완료되었습니다. 잠시 후 메인 페이지로 이동합니다.
     </div>
   );
 }
