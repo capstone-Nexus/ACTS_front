@@ -21,13 +21,8 @@ export type StreamEvent =
 
 const DEFAULT_STREAM_PATH = '/chat/stream';
 const DEFAULT_LIST_PATH = '/chat/list';
-// Backend (confirmed):
-// - GET /chat/{chatIdx} -> message history array
-// Override with NEXT_PUBLIC_CHAT_MESSAGES_PATH if your backend differs.
 const DEFAULT_MESSAGES_PATH_TEMPLATE = '/chat/{chatIdx}';
-// Backend: PATCH /api/chat/{chatIdx} with body { title }
 const DEFAULT_TITLE_UPDATE_PATH_TEMPLATE = '/api/chat/{chatIdx}';
-// Backend: commonly DELETE /api/chat/{chatIdx}
 const DEFAULT_DELETE_PATH_TEMPLATE = '/api/chat/{chatIdx}';
 
 function baseUrl(): string | undefined {
@@ -52,8 +47,7 @@ function authHeaders(): HeadersInit {
 
 async function refreshAccessToken(b: string): Promise<string | null> {
   try {
-    // Prefer same-origin proxy so frontend-origin refreshToken cookie is included (dev setup).
-    // Fallback to direct backend refresh if proxy fails for some reason.
+
     const tryProxy = async () =>
       fetch('/api/auth/refresh', {
         method: 'POST',
@@ -73,7 +67,6 @@ async function refreshAccessToken(b: string): Promise<string | null> {
     let res: Response;
     try {
       res = await tryProxy();
-      // If proxy is missing/misconfigured, fall back to direct.
       if (res.status === 404) res = await tryDirect();
     } catch {
       res = await tryDirect();
@@ -82,7 +75,6 @@ async function refreshAccessToken(b: string): Promise<string | null> {
     if (!res.ok) return null;
     const json = await res.json().catch(() => null);
 
-    // Project convention: { data: "<token>" }
     const token: unknown = json?.data ?? json?.data?.data;
     if (typeof token !== 'string' || !token) return null;
 

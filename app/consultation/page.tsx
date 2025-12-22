@@ -85,7 +85,6 @@
        };
        window.addEventListener('mousedown', onDown);
        return () => window.removeEventListener('mousedown', onDown);
-       // eslint-disable-next-line react-hooks/exhaustive-deps
      }, [menuChatIdx]);
 
      const refreshChatList = async () => {
@@ -104,7 +103,6 @@
       }
     };
 
-    // Auto-select latest chat after list loads (only when not currently in a chat).
     useEffect(() => {
       if (!backendConfigured) return;
       if (selectedChatIdx != null) return;
@@ -114,7 +112,6 @@
       const first = chatList[0];
       setSelectedChatIdx(first.idx);
       void loadChat(first.idx);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [backendConfigured, chatList]);
 
      const loadChat = async (chatIdx: number) => {
@@ -388,7 +385,6 @@
 
                                    try {
                                      await deleteChat(c.idx);
-                                     // If the current chat is deleted, reset the view.
                                      if (selectedChatIdx === c.idx) {
                                        setSelectedChatIdx(null);
                                        setMessages([]);
@@ -453,13 +449,8 @@
             </div>
           </div>
 
-          {/* Main */}
           <div className="flex-1 flex flex-col">
-            <div className="h-[60px] border-b border-[#E5E7EB] flex items-center justify-between px-6">
-              <div className="flex flex-col">
-                <p className="text-[15px] font-bold text-[#111827]">{selectedChatTitle}</p>
-                {selectedChatIdx != null && <p className="text-[11px] text-[#6B7280]">chatIdx: {selectedChatIdx}</p>}
-              </div>
+            <div className="h-[50px] flex items-center justify-between px-6">
               {error && <p className="text-[12px] text-red-600">{error}</p>}
             </div>
 
@@ -474,7 +465,7 @@
               </div>
             </div>
 
-            <div className="w-full flex justify-center px-6 pb-6 pt-4 bg-white border-t border-[#E5E7EB]">
+            <div className="w-full flex justify-center px-6 pb-6 bg-white border-t border-[#E5E7EB]">
               <div className="w-full max-w-[900px] h-[60px] bg-[#F5F5F5] border border-[#D2D2D2] rounded-[60px] p-[10px] flex items-center justify-between">
                 <input
                   className="flex-1 bg-transparent focus:outline-none ml-2 text-base"
