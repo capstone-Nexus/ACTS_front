@@ -22,7 +22,7 @@ export default function Header() {
   };
 
   return (
-    <div className="w-full h-[80px] bg-white flex flex-row justify-between items-center fixed z-100">
+    <div className="w-full h-[80px] bg-white flex flex-row justify-between items-center fixed z-100 border-b border-[#d2d2d2]">
       <div className="w-[600px] h-full ml-[25px] flex flex-row justify-between">
         <Link href="/">
           <Image src={Logo} alt="logo" className="w-[106px] h-[71px]" />

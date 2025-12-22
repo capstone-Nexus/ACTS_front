@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Loading from '@/components/Loading';
-import Ximg from "@/public/images/x.svg";
+import Ximg from '@/public/images/x.svg';
 import API from '@/lib/axios';
 
 export default function Mypage() {
@@ -14,6 +14,8 @@ export default function Mypage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
+  const [selectedArea, setSelectedArea] = useState(0);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -168,11 +170,18 @@ export default function Mypage() {
         </div>
       </div>
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-100">
-          <div className="w-[60%] h-[600px] bg-white rounded-[20px] p-[25px]">
-            <div onClick={() => setModalOpen(false)} className="w-[25px] h-[25px] text-white font-bold text-[12px] rounded-full ml-auto flex items-center justify-center cp">
-              <Image src={Ximg} alt='x' width={24} height={24} />
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-[100]">
+          <div className="w-[1200px] h-[75vh] bg-white rounded-[20px] flex flex-col overflow-hidden p-[35px]">
+            <div className="w-full flex flex-row justify-between">
+              <div className="h-full flex flex-col justify-between">
+                <p className='text-[24px] font-bold text-black'>검사 결과 상세보기</p>
+                <p className='text-[12px] font-medium text-[#737373]'>검사 일자: </p>
+              </div>
+
+              <Image src={Ximg} alt='x' className='cursor-pointer select-none mb-auto'/>
             </div>
+
+            
           </div>
         </div>
       )}
