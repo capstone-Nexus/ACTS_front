@@ -178,10 +178,10 @@ export default function Mypage() {
                 <p className='text-[12px] font-medium text-[#737373]'>검사 일자: </p>
               </div>
 
-              <Image src={Ximg} alt='x' className='cursor-pointer select-none mb-auto'/>
+              <Image src={Ximg} alt='x' className='cursor-pointer select-none mb-auto' onClick={() => {setModalOpen(false);}}/>
             </div>
 
-            
+
           </div>
         </div>
       )}
