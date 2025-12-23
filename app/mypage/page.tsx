@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Loading from '@/components/Loading';
 import Modal from './components/Modal';
 import API from '@/lib/axios';
+import toast from 'react-hot-toast';
 
 export default function Mypage() {
   const router = useRouter();
@@ -26,7 +27,7 @@ export default function Mypage() {
   useEffect(() => {
     const token = sessionStorage.getItem('accessToken');
     if (!token) {
-      alert('로그인이 필요합니다.');
+      toast.error('로그인이 필요합니다.', { duration: 2000 });
       router.replace('/signin');
       return;
     }
@@ -38,7 +39,7 @@ export default function Mypage() {
         setIsLoading(false);
       } catch (err) {
         console.error(err);
-        alert('유저 정보를 불러오지 못했습니다.');
+        toast.error('유저 정보를 불러오지 못했습니다.');
         setIsLoading(false);
       }
     };
@@ -69,7 +70,7 @@ export default function Mypage() {
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
-      alert('새 비밀번호가 일치하지 않습니다.');
+      toast.error('새 비밀번호가 일치하지 않습니다.');
       return;
     }
 
@@ -78,14 +79,14 @@ export default function Mypage() {
         currentPassword: currentPassword,
         newPassword: newPassword
       });
-      alert('비밀번호가 변경되었습니다.');
+      toast.success('비밀번호가 변경되었습니다.');
 
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
-      alert(error.response?.data?.message || '비밀번호 변경 실패');
+      toast.error(error.response?.data?.message || '비밀번호 변경 실패');
     }
   };
 

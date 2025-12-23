@@ -29,10 +29,10 @@ export default function Home() {
   ];
 
   const ProcessCard = ({ title, description, icon, mt }: { title: string; description: string; icon: string; mt?: string }) => (
-    <div className={`w-[320px] h-[370px] rounded-[20px] py-[50px] px-[40px] cursor-pointer transition-transform duration-300 hover:-translate-y-[10px] ${mt || ''}`} style={{ boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.15)' }}>
+    <div className={`w-[320px] h-92.5 rounded-[20px] py-12.5 px-10 cursor-pointer transition-transform duration-300 hover:-translate-y-[10px] ${mt || ''}`} style={{ boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.15)' }}>
       <p className="text-[24px] font-bold text-black">{title}</p>
-      <p className="text-[16px] font-medium text-[#474747] leading-[23px] mt-[10px]">{description}</p>
-      <p className="text-[100px] mt-[50px]">{icon}</p>
+      <p className="text-[16px] font-medium text-[#474747] leading-5.75 mt-2.5">{description}</p>
+      <p className="text-[100px] mt-12.5">{icon}</p>
     </div>
   );
 

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { clearCatFeatures, getCatFeatures } from '@/app/test/cat/lib/catFeatures';
 import API from '@/lib/axios';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const REQUIRED_KEYS = [
   'simple_sel_rt_mean',
@@ -92,9 +93,9 @@ export default function TestResultPage() {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-      alert('payload를 클립보드에 복사했습니다.');
+      toast.success('payload를 클립보드에 복사했습니다.');
     } catch {
-      alert('복사에 실패했습니다.');
+      toast.error('복사에 실패했습니다.');
     }
   };
 

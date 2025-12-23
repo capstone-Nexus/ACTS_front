@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import Loading from '@/components/Loading';
+import toast from 'react-hot-toast';
 
 export default function Test() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function Test() {
     const token = sessionStorage.getItem('accessToken');
 
     if (!token) {
-      alert('로그인이 필요합니다.');
+      toast.error('로그인이 필요합니다.', { duration: 2000 });
       router.replace('/signin');
     } else {
       setIsAuthChecked(true);

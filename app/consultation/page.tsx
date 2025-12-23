@@ -9,6 +9,7 @@ import MessageBubble from './components/MessageBubble';
 import axios from 'axios';
 import { getChatMessages, deleteChat, listChats, normalizeChatTitle, streamChat, updateChatTitle, type ChatListItem } from '@/app/consultation/lib/backendChat';
 import { MoreHorizontal } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function Consultation() {
   const router = useRouter();
@@ -57,7 +58,7 @@ export default function Consultation() {
     if (authHandledRef.current) return;
     authHandledRef.current = true;
     setAuthBlocked(true);
-    alert('로그인이 만료되었습니다. 다시 로그인 해주세요.');
+    toast.error('로그인이 만료되었습니다. 다시 로그인 해주세요.', { duration: 2500 });
     router.replace('/signin');
   };
 

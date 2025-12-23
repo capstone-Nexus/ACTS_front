@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import TestHeader from '@/components/TestHeader';
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
+import { Toaster } from 'react-hot-toast';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -18,6 +19,19 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         {isTestPath ? <TestHeader /> : !hideHeaderPaths.includes(pathname || '') && <Header />}
         {children}
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#FFFFFF',
+              color: '#000000',
+              borderLeft: '4px solid #4A8AEE',
+              padding: '16px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            },
+          }}
+        />
       </body>
     </html>
   );
