@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {isTestPath ? <TestHeader /> : !hideHeaderPaths.includes(pathname || '') && <Header />}
         {children}
         <Toaster
-          position="top-center"
+          position="top-right"
           toastOptions={{
             duration: 3000,
             style: {
