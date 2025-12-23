@@ -21,11 +21,11 @@
     "bcrypt": "^6.0.0",
     "chart.js": "^4.5.0",
     "lucide-react": "^0.546.0",
-    "next": "15.5.3",
+    "next": "^16.1.1",
     "nodemailer": "^6.10.1",
-    "react": "19.1.0",
+    "react": "^19.2.3",
     "react-chartjs-2": "^5.3.0",
-    "react-dom": "19.1.0",
+    "react-dom": "^19.2.3",
     "react-webcam": "^7.2.0"
   },
   "devDependencies": {
