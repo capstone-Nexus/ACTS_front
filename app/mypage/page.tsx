@@ -8,7 +8,12 @@ import API from '@/lib/axios';
 export default function Mypage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<{
+    username: string;
+    email: string;
+    gender: string;
+    birth: string;
+  } | null>(null);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -39,7 +44,7 @@ export default function Mypage() {
     };
 
     getUser();
-  }, []);
+  }, [router]);
 
   if (isLoading || !userData) {
     return <Loading />;
@@ -78,8 +83,9 @@ export default function Mypage() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (err: any) {
-      alert(err.response?.data?.message || '비밀번호 변경 실패');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      alert(error.response?.data?.message || '비밀번호 변경 실패');
     }
   };
 
@@ -89,7 +95,7 @@ export default function Mypage() {
         <p className="text-[22px] text-black font-bold">최근 검사</p>
 
         <div className="w-[400px] min-h-[130px] bg-[#F9FAFB] border border-[#CDD0D4] rounded-[10px] flex flex-row items-center mt-[30px]">
-          <img src={imageUrl} alt="score emoji" width="100" height="100" className="mx-[20px]" />
+          <img alt="score emoji" src={imageUrl} width="100" height="100" className="mx-[20px]" />
 
           <div className="flex-1 h-full flex flex-col justify-center">
             <p className="text-[14px] font-medium text-[#474747]">현재 나의 점수는...</p>

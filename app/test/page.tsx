@@ -25,7 +25,7 @@ export default function Test() {
     } else {
       setIsAuthChecked(true);
     }
-  }, []);
+  }, [router]);
 
   if (!isAuthChecked) return null;
   if (isLoading) return <Loading />;

@@ -85,12 +85,12 @@ export default function Consultation() {
     try {
       const list = await listChats();
       setChatList(list);
-    } catch (e: any) {
-      if (String(e?.message) === '401') {
+    } catch (e: unknown) {
+      if (String((e as Error)?.message) === '401') {
         handleAuthExpiredOnce();
         return;
       }
-      setError(e?.message || '채팅 목록을 불러오지 못했습니다.');
+      setError((e as Error)?.message || '채팅 목록을 불러오지 못했습니다.');
     }
   };
 
@@ -117,12 +117,12 @@ export default function Consultation() {
         content: m.content
       }));
       setMessages(ui);
-    } catch (e: any) {
-      if (String(e?.message) === '401') {
+    } catch (e: unknown) {
+      if (String((e as Error)?.message) === '401') {
         handleAuthExpiredOnce();
         return;
       }
-      setError(e?.message || '채팅 히스토리를 불러오지 못했습니다.');
+      setError((e as Error)?.message || '채팅 히스토리를 불러오지 못했습니다.');
     }
   };
 
@@ -187,13 +187,13 @@ export default function Consultation() {
         );
 
         await refreshChatList();
-      } catch (e: any) {
-        if (e?.name === 'AbortError') return;
-        if (String(e?.message) === '401') {
+      } catch (e: unknown) {
+        if ((e as Error)?.name === 'AbortError') return;
+        if (String((e as Error)?.message) === '401') {
           handleAuthExpiredOnce();
           return;
         }
-        setError(e?.message || '채팅 전송에 실패했습니다.');
+        setError((e as Error)?.message || '채팅 전송에 실패했습니다.');
       } finally {
         setIsStreaming(false);
         streamAbortRef.current = null;
@@ -292,12 +292,12 @@ export default function Consultation() {
                               setEditingChatIdx(null);
                               setEditingTitle('');
                               await refreshChatList();
-                            } catch (err: any) {
-                              if (String(err?.message) === '401') {
+                            } catch (err: unknown) {
+                              if (String((err as Error)?.message) === '401') {
                                 handleAuthExpiredOnce();
                                 return;
                               }
-                              setError(err?.message || '제목 수정에 실패했습니다.');
+                              setError((err as Error)?.message || '제목 수정에 실패했습니다.');
                             }
                           }
                         }}
@@ -314,12 +314,12 @@ export default function Consultation() {
                           try {
                             await updateChatTitle(c.idx, trimmed);
                             await refreshChatList();
-                          } catch (err: any) {
-                            if (String(err?.message) === '401') {
+                          } catch (err: unknown) {
+                            if (String((err as Error)?.message) === '401') {
                               handleAuthExpiredOnce();
                               return;
                             }
-                            setError(err?.message || '제목 수정에 실패했습니다.');
+                            setError((err as Error)?.message || '제목 수정에 실패했습니다.');
                           }
                         }}
                       />
@@ -368,12 +368,12 @@ export default function Consultation() {
                                   }
                                   closeMenu();
                                   await refreshChatList();
-                                } catch (err: any) {
-                                  if (String(err?.message) === '401') {
+                                } catch (err: unknown) {
+                                  if (String((err as Error)?.message) === '401') {
                                     handleAuthExpiredOnce();
                                     return;
                                   }
-                                  setError(err?.message || '삭제에 실패했습니다.');
+                                  setError((err as Error)?.message || '삭제에 실패했습니다.');
                                 }
                               }}
                             >

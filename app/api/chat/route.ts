@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     const botReply = response.data.choices[0].message.content;
 
     return NextResponse.json({ reply: botReply });
-  } catch (error: any) {
+  } catch {
     return NextResponse.json({ error: '에러 발생' }, { status: 500 });
   }
 }

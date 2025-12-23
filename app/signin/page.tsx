@@ -30,7 +30,7 @@ export default function SignInPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsSubmitting(true);
@@ -54,8 +54,8 @@ export default function SignInPage() {
         document.cookie = `refreshToken=${refreshToken}; path=/; max-age=${twoWeeks}; samesite=lax`;
       }
       router.push('/');
-    } catch (err: any) {
-      setError(err.message || '로그인에 실패했습니다.');
+    } catch (err: unknown) {
+      setError((err as Error).message || '로그인에 실패했습니다.');
     } finally {
       setIsSubmitting(false);
     }

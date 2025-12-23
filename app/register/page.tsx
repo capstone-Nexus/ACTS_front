@@ -30,8 +30,9 @@ export default function RegisterPage() {
     try {
       const response = await axios.post(`${API_URL}/auth/send-code`, { email: email });
       alert(response.data.message || '인증번호가 이메일로 전송되었습니다.');
-    } catch (err: any) {
-      alert(err.response?.data?.message || '이메일 전송 중 오류가 발생했습니다.');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      alert(error.response?.data?.message || '이메일 전송 중 오류가 발생했습니다.');
     }
   };
 
@@ -47,12 +48,13 @@ export default function RegisterPage() {
         code: code
       });
       alert(response.data.message || '이메일 인증이 완료되었습니다.');
-    } catch (err: any) {
-      alert(err.response?.data?.message || '이메일 인증 중 오류가 발생했습니다.');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      alert(error.response?.data?.message || '이메일 인증 중 오류가 발생했습니다.');
     }
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -78,8 +80,9 @@ export default function RegisterPage() {
 
       alert(response.data.message || '회원가입 완료');
       router.push('/signin');
-    } catch (err: any) {
-      alert(err.response?.data?.message || '회원가입 실패');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      alert(error.response?.data?.message || '회원가입 실패');
     }
   };
 
