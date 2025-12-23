@@ -72,7 +72,8 @@ export default function Test4() {
 
     const playSound = (soundType: string) => {
         try {
-            const AudioContext = (window as any).AudioContext || (window as any).webkitAudioContext;
+            const AudioContext = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+            if (!AudioContext) return;
             const audioContext = new AudioContext();
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();

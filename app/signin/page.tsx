@@ -9,9 +9,11 @@ import googleIcon from '../../public/images/google.png';
 import naverIcon from '../../public/images/naver.png';
 import kakaoIcon from '../../public/images/kakao.png';
 
+import type { StaticImageData } from 'next/image';
+
 interface SocialProvider {
   id: string;
-  icon: any;
+  icon: StaticImageData;
   alt: string;
   url: string;
 }

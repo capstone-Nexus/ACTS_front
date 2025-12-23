@@ -57,7 +57,7 @@ export default function TestResultPage() {
         setAiReply(typeof res.data === 'string' ? res.data : JSON.stringify(res.data, null, 2));
         return;
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       // Fall through to local /api/chat as a best-effort.
       console.error(e);
     }
@@ -73,9 +73,10 @@ export default function TestResultPage() {
       const res = await axios.post('/api/chat', { message: prompt });
       setSendState('success');
       setAiReply(res.data?.reply ?? null);
-    } catch (e: any) {
+    } catch (e: unknown) {
       setSendState('error');
-      setSendError(e?.response?.data?.error || e?.message || 'AI 전송 실패');
+      const error = e as { response?: { data?: { error?: string } }; message?: string };
+      setSendError(error?.response?.data?.error || error?.message || 'AI 전송 실패');
     }
   };
 
