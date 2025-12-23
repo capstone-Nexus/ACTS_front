@@ -79,7 +79,7 @@ export default function Camera({ onTurnChange, onTiltChange, onAwayChange }: Cam
       const LEFT_EYE = 33;
       const RIGHT_EYE = 263;
 
-      faceMesh.onResults((results: { image: HTMLVideoElement; multiFaceLandmarks?: Array<Array<{x: number; y: number; z: number}>> }) => {
+      faceMesh.onResults((results) => {
         canvasCtx.save();
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
         canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
