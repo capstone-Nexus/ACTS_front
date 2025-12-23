@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Footer from '@/components/Footer';
 import Dotbogi from '@/public/images/dotbogi.png';
 import Mockup from '@/public/images/mockup.png';
-import Right from '@/public/images/right.svg';
+import { Icons } from '@/icons';
 import Robot from '@/public/images/robot.png';
 
 export const metadata = {
@@ -139,7 +139,7 @@ export default function Home() {
         </div>
         <Image src={Robot} alt="robot" className="select-none w-[470px] h-[470px] mt-[100px] ml-[70px]" />
         <Link href="/consultation" className="w-[80px] h-[80px] rounded-[80px] bg-white center ml-auto mr-[50px] mt-auto mb-[60px] cursor-pointer">
-          <Image src={Right} alt="right" className="w-[35px]" />
+          <Image src={Icons.Right} alt="right" className="w-[35px]" />
         </Link>
       </div>
       <Footer />

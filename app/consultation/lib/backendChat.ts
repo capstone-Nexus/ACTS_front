@@ -143,9 +143,7 @@ async function fetchJsonWithFallback<T>(
     lastStatus = res.status;
 
     if (res.status === 401) throw new Error('401');
-    // Some backends return 400 on "wrong endpoint" (missing/invalid query params),
-    // so treat it as a candidate mismatch while we are probing paths.
-    if (res.status === 404 || res.status === 400) continue; // try next candidate
+    if (res.status === 404 || res.status === 400) continue;
     if (!res.ok) throw new Error(`요청 실패 (${res.status})`);
 
     return (await res.json()) as T;
@@ -260,7 +258,6 @@ export async function updateChatTitle(chatIdx: number, title: string): Promise<v
   const { titleUpdatePathTemplate } = getBackendChatPaths();
   const main = titleUpdatePathTemplate.replace('{chatIdx}', String(chatIdx));
 
-  // Try the configured template first, then common variants.
   const candidates = [
     main,
     `/api/chat/${chatIdx}`,

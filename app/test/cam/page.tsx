@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
-import Loading from '@/components/loading';
+import Loading from '@/components/Loading';
 import Webcam from './components/Webcam';
 
 export default function Cam() {

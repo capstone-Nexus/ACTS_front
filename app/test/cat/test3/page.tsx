@@ -3,10 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from 'next/image';
-import TestRight from "@/public/images/test_right.svg";
-import TestLeft from "@/public/images/test_left.svg";
-import TestUp from "@/public/images/test_up.svg";
-import TestDown from "@/public/images/test_down.svg";
+import { Icons } from '@/icons';
 import { clamp01, setCatFeatures } from "@/app/test/cat/lib/catFeatures";
 
 const TOTAL_TRIALS = 20;
@@ -170,9 +167,9 @@ export default function Test3() {
                     <div className="flex flex-row gap-4">
                         {arrows.map((dir, idx) => {
                             const imageSrc =
-                                dir === "left" ? TestLeft :
-                                    dir === "right" ? TestRight :
-                                        dir === "up" ? TestUp : TestDown;
+                                dir === "left" ? Icons.TestLeft :
+                                    dir === "right" ? Icons.TestRight :
+                                        dir === "up" ? Icons.TestUp : Icons.TestDown;
 
                             return (
                                 <div key={idx} className="cursor-pointer" onClick={() => idx === 2 ? handleClick(dir) : null}>

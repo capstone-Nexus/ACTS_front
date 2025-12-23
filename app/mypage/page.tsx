@@ -1,9 +1,8 @@
 'use client';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Loading from '@/components/Loading';
-import Ximg from '@/public/images/x.svg';
+import Modal from './components/Modal';
 import API from '@/lib/axios';
 
 export default function Mypage() {
@@ -16,8 +15,10 @@ export default function Mypage() {
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = modalOpen ? 'hidden' : 'unset';
+  }, [modalOpen]);
 
+  useEffect(() => {
     const token = sessionStorage.getItem('accessToken');
     if (!token) {
       alert('로그인이 필요합니다.');
@@ -38,11 +39,6 @@ export default function Mypage() {
     };
 
     getUser();
-
-    return () => {
-      ``;
-      document.body.style.overflow = 'unset';
-    };
   }, []);
 
   if (isLoading || !userData) {
@@ -89,13 +85,13 @@ export default function Mypage() {
 
   return (
     <div className="w-full min-h-screen p-[135px] bg-[#F9FAFB] flex flex-row justify-center gap-[60px]">
-      <div className="w-[480px] p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
+      <div className="w-[480px] min-h-[400px] p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
         <p className="text-[22px] text-black font-bold">최근 검사</p>
 
-        <div className="w-[400px] h-[130px] bg-[#F9FAFB] border border-[#CDD0D4] rounded-[10px] flex flex-row items-center mt-[30px]">
+        <div className="w-[400px] min-h-[130px] bg-[#F9FAFB] border border-[#CDD0D4] rounded-[10px] flex flex-row items-center mt-[30px]">
           <img src={imageUrl} alt="score emoji" width="100" height="100" className="mx-[20px]" />
 
-          <div className="w-[250px] h-full flex flex-col justify-center">
+          <div className="flex-1 h-full flex flex-col justify-center">
             <p className="text-[14px] font-medium text-[#474747]">현재 나의 점수는...</p>
             <p className="text-[32px] font-bold text-[#474747]">
               <span className="text-[#4A8AEE]">{score}</span>점! {message}
@@ -113,28 +109,28 @@ export default function Mypage() {
         </button>
       </div>
 
-      <div className="w-[700px] p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
+      <div className="w-[700px] min-h-[400px] p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
         <p className="text-[32px] text-[#4A8AEE] font-bold">{userData.username}</p>
 
         <p className="text-[22px] text-black font-bold mt-[30px]">내 정보</p>
 
-        <div className="w-auto h-[45px] flex flex-row mt-[30px] gap-[80px]">
-          <div className="flex flex-col justify-between">
+        <div className="w-full min-h-[45px] flex flex-row mt-[30px] gap-[80px]">
+          <div className="flex flex-col justify-between min-h-[45px]">
             <p className="text-[12px] text-[#474747] font-medium">이름</p>
             <p className="text-[16px] text-black font-medium">{userData.username}</p>
           </div>
 
-          <div className="flex flex-col justify-between">
+          <div className="flex flex-col justify-between min-h-[45px]">
             <p className="text-[12px] text-[#474747] font-medium">이메일</p>
             <p className="text-[16px] text-black font-medium">{userData.email}</p>
           </div>
 
-          <div className="flex flex-col justify-between">
+          <div className="flex flex-col justify-between min-h-[45px]">
             <p className="text-[12px] text-[#474747] font-medium">성별</p>
             <p className="text-[16px] text-black font-medium">{userData.gender === 'male' ? '남성' : '여성'}</p>
           </div>
 
-          <div className="flex flex-col justify-between">
+          <div className="flex flex-col justify-between min-h-[45px]">
             <p className="text-[12px] text-[#474747] font-medium">생년월일</p>
             <p className="text-[16px] text-black font-medium">{birthFormatted}</p>
           </div>
@@ -165,22 +161,8 @@ export default function Mypage() {
           </button>
         </div>
       </div>
-      {modalOpen && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-[100]">
-          <div className="w-[1200px] h-[75vh] bg-white rounded-[20px] flex flex-col overflow-hidden p-[35px]">
-            <div className="w-full flex flex-row justify-between">
-              <div className="h-full flex flex-col justify-between">
-                <p className='text-[24px] font-bold text-black'>검사 결과 상세보기</p>
-                <p className='text-[12px] font-medium text-[#737373]'>검사 일자: </p>
-              </div>
 
-              <Image src={Ximg} alt='x' className='cursor-pointer select-none mb-auto' onClick={() => {setModalOpen(false);}}/>
-            </div>
-
-
-          </div>
-        </div>
-      )}
+      <Modal isOpen={modalOpen} setModalOpen={setModalOpen} />
     </div>
   );
 }
