@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import SurveyCard from '@/app/test/survey/components/SurveyCard';
-import Loading from '@/components/loading';
+import Loading from '@/components/Loading';
 
 const surveyQuestions = [
   '1. 나는 중요한 일을 할 때도 쉽게 집중이 흐트러진다.',

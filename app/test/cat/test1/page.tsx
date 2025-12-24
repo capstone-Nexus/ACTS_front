@@ -16,7 +16,7 @@ export default function Test1() {
     const [currentStimulus, setCurrentStimulus] = useState<"blue-circle" | "sound" | null>(null);
     const [isWaiting, setIsWaiting] = useState(false);
     const [TestFinished, setTestFinished] = useState(false);
-    const [results, setResults] = useState<{ type: string; reactionTime: number | null; correct: boolean }[]>([]);
+  const [results, setResults] = useState<{ type: string; reactionTime: number | null; correct: boolean }[]>([]);
 
     const stimulusStartTime = useRef<number>(0);
     const trialTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -26,7 +26,9 @@ export default function Test1() {
     const savedFeaturesRef = useRef(false);
 
     const playBeep = () => {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!AudioContextClass) return;
+        const audioContext = new AudioContextClass();
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
 
@@ -149,36 +151,36 @@ export default function Test1() {
         }, 500);
     };
 
-    useEffect(() => {
-        const handleKeyPress = (e: KeyboardEvent) => {
-            if (e.code !== 'Space') return;
-            if (currentScreen !== 'test') return;
-            if (hasResponded.current) return;
-            if (isWaiting) return;
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.code !== 'Space') return;
+      if (currentScreen !== 'test') return;
+      if (hasResponded.current) return;
+      if (isWaiting) return;
 
-            e.preventDefault();
-            handleResponse();
-        };
+      e.preventDefault();
+      handleResponse();
+    };
 
-        window.addEventListener('keydown', handleKeyPress);
-        return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [currentScreen]);
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentScreen, handleResponse, isWaiting]);
 
-    useEffect(() => {
-        if (!TestFinished) return;
-        if (savedFeaturesRef.current) return;
+  useEffect(() => {
+    if (!TestFinished) return;
+    if (savedFeaturesRef.current) return;
 
-        const rtsSec = results
-            .filter((r) => r.correct && r.reactionTime != null)
-            .map((r) => (r.reactionTime as number) / 1000);
+    const rtsSec = results
+      .filter((r) => r.correct && r.reactionTime != null)
+      .map((r) => (r.reactionTime as number) / 1000);
 
-        const m = mean(rtsSec);
-        const s = sd(rtsSec);
+    const m = mean(rtsSec);
+    const s = sd(rtsSec);
 
-        setCatFeatures({
-            simple_sel_rt_mean: m,
-            simple_sel_rt_sd: s,
-        });
+    setCatFeatures({
+      simple_sel_rt_mean: m,
+      simple_sel_rt_sd: s,
+    });
 
         // ✅ Console 출력
         const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');

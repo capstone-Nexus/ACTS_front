@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Chatbot from '@/public/images/chatbot.png';
 
-export default function MessageBubble({ sender, content }: any) {
+export default function MessageBubble({ sender, content }: { sender: string; content: string }) {
   // gpt응답 예쁘게 바꾸는
   const formatText = (text: string) => {
     let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');

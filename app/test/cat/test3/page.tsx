@@ -3,10 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from 'next/image';
-import TestRight from "@/public/images/test_right.svg";
-import TestLeft from "@/public/images/test_left.svg";
-import TestUp from "@/public/images/test_up.svg";
-import TestDown from "@/public/images/test_down.svg";
+import { Icons } from '@/icons';
 import { clamp01, setCatFeatures } from "@/app/test/cat/lib/catFeatures";
 
 const TOTAL_TRIALS = 20;
@@ -133,7 +130,7 @@ export default function Test3() {
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [currentScreen, arrows, testFinished]);
+    }, [currentScreen, arrows, testFinished, handleClick]);
 
     if (currentScreen === "intro") {
         return (
@@ -155,7 +152,7 @@ export default function Test3() {
                         </ul>
                         <div className="w-[720px] h-[100px] bg-[#EBEDEF] mt-6 border-l-3 border-[#4A8AEE] p-4">
                             <p className="text-[14px] font-semibold ml-1 mt-2">💡 예시</p>
-                            <p className="mt-2 ml-3">← ↓ → ↑ ← 가운데가 오른쪽을 가리키므로 "→" 방향키 입력</p>
+                            <p className="mt-2 ml-3">← ↓ → ↑ ← 가운데가 오른쪽을 가리키므로 &quot;→&quot; 방향키 입력</p>
                         </div>
                     </div>
 
@@ -188,9 +185,9 @@ export default function Test3() {
                     <div className="flex flex-row gap-4">
                         {arrows.map((dir, idx) => {
                             const imageSrc =
-                                dir === "left" ? TestLeft :
-                                    dir === "right" ? TestRight :
-                                        dir === "up" ? TestUp : TestDown;
+                                dir === "left" ? Icons.TestLeft :
+                                    dir === "right" ? Icons.TestRight :
+                                        dir === "up" ? Icons.TestUp : Icons.TestDown;
 
                             return (
                                 <div key={idx} className="cursor-pointer" onClick={() => idx === 2 ? handleClick(dir) : null}>

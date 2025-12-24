@@ -35,3 +35,41 @@ html, body {
 .animate-fade-in {
   animation: fadeInUp 0.25s ease-out forwards;
 }
+
+/* React Toastify Custom Styles */
+.Toastify__toast {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+  border-left: 4px solid #4A8AEE !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 8px !important;
+  font-family: inherit !important;
+}
+
+.Toastify__toast--success {
+  border-left-color: #4A8AEE !important;
+}
+
+.Toastify__toast--error {
+  border-left-color: #EF4444 !important;
+}
+
+.Toastify__toast--warning {
+  border-left-color: #F59E0B !important;
+}
+
+.Toastify__toast--info {
+  border-left-color: #4A8AEE !important;
+}
+
+.Toastify__progress-bar {
+  background: #4A8AEE !important;
+}
+
+.Toastify__progress-bar--error {
+  background: #EF4444 !important;
+}
+
+.Toastify__progress-bar--warning {
+  background: #F59E0B !important;
+}

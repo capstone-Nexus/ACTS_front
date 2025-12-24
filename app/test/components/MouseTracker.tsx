@@ -106,7 +106,7 @@ const MouseTracker: React.FC<MouseTrackerProps> = ({
       window.removeEventListener("mouseenter", handleMouseEnter);
       if (timer.current) clearInterval(timer.current);
     };
-  }, [targetRef]);
+  }, [targetRef, interval, sendData]);
 
   return null;
 };

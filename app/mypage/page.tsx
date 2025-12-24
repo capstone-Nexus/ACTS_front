@@ -1,26 +1,37 @@
 'use client';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Loading from '@/components/loading';
-import Ximg from "@/public/images/x.svg";
+import Loading from '@/components/Loading';
+import Modal from './components/Modal';
+import RadarChart from './components/RadarChart';
 import API from '@/lib/axios';
+import toast from 'react-hot-toast';
+import Link from 'next/link';
 
 export default function Mypage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<{
+    username: string;
+    email: string;
+    gender: string;
+    birth: string;
+  } | null>(null);
+  const [testResult, setTestResult] = useState<any>(null);
+  const [previousResult, setPreviousResult] = useState<any>(null);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = modalOpen ? 'hidden' : 'unset';
+  }, [modalOpen]);
 
+  useEffect(() => {
     const token = sessionStorage.getItem('accessToken');
     if (!token) {
-      alert('로그인이 필요합니다.');
+      toast.error('로그인이 필요합니다.', { duration: 2000 });
       router.replace('/signin');
       return;
     }
@@ -29,21 +40,29 @@ export default function Mypage() {
       try {
         const response = await API.get('/user/my');
         setUserData(response.data.data);
+        
+        // localStorage에서 테스트 결과 가져오기
+        const savedResult = localStorage.getItem('latest_test_result');
+        const previousResultData = localStorage.getItem('previous_test_result');
+        
+        if (savedResult) {
+          setTestResult(JSON.parse(savedResult));
+        }
+        
+        if (previousResultData) {
+          setPreviousResult(JSON.parse(previousResultData));
+        }
+        
         setIsLoading(false);
       } catch (err) {
         console.error(err);
-        alert('유저 정보를 불러오지 못했습니다.');
+        toast.error('유저 정보를 불러오지 못했습니다.');
         setIsLoading(false);
       }
     };
 
     getUser();
-
-    return () => {
-      ``;
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
+  }, [router]);
 
   if (isLoading || !userData) {
     return <Loading />;
@@ -51,24 +70,48 @@ export default function Mypage() {
 
   const birthFormatted = userData.birth?.split('T')[0] || '';
 
-  const score = 100;
+  // AI 점수 계산
+  const score = testResult ? Math.round(testResult.p_final * 100) : 0;
   let message = '';
   let imageUrl = '';
 
   if (score >= 80) {
-    message = '최고에요!';
-    imageUrl = 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Beaming%20Face%20with%20Smiling%20Eyes.png';
-  } else if (score >= 50) {
-    message = '그럭저럭..';
+    message = '높은 경향';
+    imageUrl = 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Anxious%20Face%20with%20Sweat.png';
+  } else if (score >= 60) {
+    message = '약간 높음';
     imageUrl = 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Face%20with%20Raised%20Eyebrow.png';
+  } else if (score >= 40) {
+    message = '보통';
+    imageUrl = 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Slightly%20Smiling%20Face.png';
+  } else if (score >= 20) {
+    message = '낮음';
+    imageUrl = 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Smiling%20Face.png';
   } else {
-    message = '별로에요..';
-    imageUrl = 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Face%20with%20Crossed-Out%20Eyes.png';
+    message = '매우 낮음';
+    imageUrl = 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Beaming%20Face%20with%20Smiling%20Eyes.png';
   }
+
+  // 영역별 점수 가져오기
+  const currentDomainScores = testResult?.cat_scores_100 ? {
+    simple: testResult.cat_scores_100.simple || 0,
+    sustained: testResult.cat_scores_100.sustained || 0,
+    interference: testResult.cat_scores_100.interference || 0,
+    divided: testResult.cat_scores_100.divided || 0,
+    working_memory: testResult.cat_scores_100.working_memory || 0,
+  } : null;
+
+  const previousDomainScores = previousResult?.cat_scores_100 ? {
+    simple: previousResult.cat_scores_100.simple || 0,
+    sustained: previousResult.cat_scores_100.sustained || 0,
+    interference: previousResult.cat_scores_100.interference || 0,
+    divided: previousResult.cat_scores_100.divided || 0,
+    working_memory: previousResult.cat_scores_100.working_memory || 0,
+  } : undefined;
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
-      alert('새 비밀번호가 일치하지 않습니다.');
+      toast.error('새 비밀번호가 일치하지 않습니다.');
       return;
     }
 
@@ -77,64 +120,96 @@ export default function Mypage() {
         currentPassword: currentPassword,
         newPassword: newPassword
       });
-      alert('비밀번호가 변경되었습니다.');
+      toast.success('비밀번호가 변경되었습니다.');
 
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (err: any) {
-      alert(err.response?.data?.message || '비밀번호 변경 실패');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || '비밀번호 변경 실패');
     }
   };
 
   return (
     <div className="w-full min-h-screen p-[135px] bg-[#F9FAFB] flex flex-row justify-center gap-[60px]">
-      <div className="w-[480px] p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
+      <div className="w-[480px] min-h-[400px] p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
         <p className="text-[22px] text-black font-bold">최근 검사</p>
 
-        <div className="w-[400px] h-[130px] bg-[#F9FAFB] border border-[#CDD0D4] rounded-[10px] flex flex-row items-center mt-[30px]">
-          <img src={imageUrl} alt="score emoji" width="100" height="100" className="mx-[20px]" />
+        {testResult ? (
+          <>
+            <div className="w-[400px] min-h-[130px] bg-[#F9FAFB] border border-[#CDD0D4] rounded-[10px] flex flex-row items-center mt-[30px]">
+              <img alt="score emoji" src={imageUrl} width="100" height="100" className="mx-[20px]" />
 
-          <div className="w-[250px] h-full flex flex-col justify-center">
-            <p className="text-[14px] font-medium text-[#474747]">현재 나의 점수는...</p>
-            <p className="text-[32px] font-bold text-[#474747]">
-              <span className="text-[#4A8AEE]">{score}</span>점! {message}
+              <div className="flex-1 h-full flex flex-col justify-center">
+                <p className="text-[14px] font-medium text-[#474747]">ADHD 가능성 점수</p>
+                <p className="text-[32px] font-bold text-[#474747]">
+                  <span className="text-[#4A8AEE]">{score}</span>점
+                </p>
+                <p className="text-[14px] font-medium text-[#737373]">{message}</p>
+              </div>
+            </div>
+
+            {/* 레이더 차트 */}
+            {currentDomainScores && (
+              <div className="w-full mt-[30px] p-[20px] bg-[#F9FAFB] border border-[#CDD0D4] rounded-[10px]">
+                <p className="text-[16px] font-bold text-black mb-3">영역별 분석</p>
+                <RadarChart 
+                  currentData={currentDomainScores}
+                  previousData={previousDomainScores}
+                />
+              </div>
+            )}
+
+            <button
+              onClick={() => {
+                setModalOpen(true);
+              }}
+              className="w-[120px] h-[45px] center text-white font-medium text-[14px] bg-[#4a8aee] rounded-[10px] cp duration-200 hover:bg-[#4077CE] mt-auto ml-auto"
+            >
+              상세 보기 →
+            </button>
+          </>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center">
+            <p className="text-[18px] font-medium text-[#737373] text-center mb-6">
+              아직 테스트를 진행하지 않았습니다.
             </p>
+            <p className="text-[14px] text-[#737373] text-center mb-8">
+              테스트를 진행하고 상세정보를 받아보세요.
+            </p>
+            <Link
+              href="/test/survey"
+              className="px-6 py-3 bg-[#4A8AEE] text-white text-[14px] font-medium rounded-[10px] hover:bg-[#4077CE] transition-colors"
+            >
+              테스트 시작하기 →
+            </Link>
           </div>
-        </div>
-
-        <button
-          onClick={() => {
-            setModalOpen(true);
-          }}
-          className="w-[120px] h-[45px] center text-white font-medium text-[14px] bg-[#4a8aee] rounded-[10px] cp duration-200 hover:bg-[#4077CE] mt-auto ml-auto"
-        >
-          상세 보기 →
-        </button>
+        )}
       </div>
 
-      <div className="w-[700px] p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
+      <div className="w-[700px] min-h-[400px] p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
         <p className="text-[32px] text-[#4A8AEE] font-bold">{userData.username}</p>
 
         <p className="text-[22px] text-black font-bold mt-[30px]">내 정보</p>
 
-        <div className="w-auto h-[45px] flex flex-row mt-[30px] gap-[80px]">
-          <div className="flex flex-col justify-between">
+        <div className="w-full min-h-[45px] flex flex-row mt-[30px] gap-[80px]">
+          <div className="flex flex-col justify-between min-h-[45px]">
             <p className="text-[12px] text-[#474747] font-medium">이름</p>
             <p className="text-[16px] text-black font-medium">{userData.username}</p>
           </div>
 
-          <div className="flex flex-col justify-between">
+          <div className="flex flex-col justify-between min-h-[45px]">
             <p className="text-[12px] text-[#474747] font-medium">이메일</p>
             <p className="text-[16px] text-black font-medium">{userData.email}</p>
           </div>
 
-          <div className="flex flex-col justify-between">
+          <div className="flex flex-col justify-between min-h-[45px]">
             <p className="text-[12px] text-[#474747] font-medium">성별</p>
             <p className="text-[16px] text-black font-medium">{userData.gender === 'male' ? '남성' : '여성'}</p>
           </div>
 
-          <div className="flex flex-col justify-between">
+          <div className="flex flex-col justify-between min-h-[45px]">
             <p className="text-[12px] text-[#474747] font-medium">생년월일</p>
             <p className="text-[16px] text-black font-medium">{birthFormatted}</p>
           </div>
@@ -165,14 +240,13 @@ export default function Mypage() {
           </button>
         </div>
       </div>
-      {modalOpen && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-100">
-          <div className="w-[60%] h-[600px] bg-white rounded-[20px] p-[25px]">
-            <div onClick={() => setModalOpen(false)} className="w-[25px] h-[25px] text-white font-bold text-[12px] rounded-full ml-auto flex items-center justify-center cp">
-              <Image src={Ximg} alt='x' width={24} height={24} />
-            </div>
-          </div>
-        </div>
+
+      {testResult && (
+        <Modal 
+          isOpen={modalOpen} 
+          setModalOpen={setModalOpen}
+          testResult={testResult}
+        />
       )}
     </div>
   );

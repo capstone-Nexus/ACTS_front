@@ -2,10 +2,10 @@ import Link from 'next/link';
 import MainHeader from '@/components/MainHeader';
 import Background1 from '../public/images/background1.jpg';
 import Image from 'next/image';
-import Footer from '@/components/footer';
+import Footer from '@/components/Footer';
 import Dotbogi from '@/public/images/dotbogi.png';
 import Mockup from '@/public/images/mockup.png';
-import Right from '@/public/images/right.svg';
+import { Icons } from '@/icons';
 import Robot from '@/public/images/robot.png';
 
 export const metadata = {
@@ -29,10 +29,10 @@ export default function Home() {
   ];
 
   const ProcessCard = ({ title, description, icon, mt }: { title: string; description: string; icon: string; mt?: string }) => (
-    <div className={`w-[320px] h-[370px] rounded-[20px] py-[50px] px-[40px] cursor-pointer transition-transform duration-300 hover:-translate-y-[10px] ${mt || ''}`} style={{ boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.15)' }}>
+    <div className={`w-[320px] h-92.5 rounded-[20px] py-12.5 px-10 cursor-pointer transition-transform duration-300 hover:-translate-y-[10px] ${mt || ''}`} style={{ boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.15)' }}>
       <p className="text-[24px] font-bold text-black">{title}</p>
-      <p className="text-[16px] font-medium text-[#474747] leading-[23px] mt-[10px]">{description}</p>
-      <p className="text-[100px] mt-[50px]">{icon}</p>
+      <p className="text-[16px] font-medium text-[#474747] leading-5.75 mt-2.5">{description}</p>
+      <p className="text-[100px] mt-12.5">{icon}</p>
     </div>
   );
 
@@ -139,7 +139,7 @@ export default function Home() {
         </div>
         <Image src={Robot} alt="robot" className="select-none w-[470px] h-[470px] mt-[100px] ml-[70px]" />
         <Link href="/consultation" className="w-[80px] h-[80px] rounded-[80px] bg-white center ml-auto mr-[50px] mt-auto mb-[60px] cursor-pointer">
-          <Image src={Right} alt="right" className="w-[35px]" />
+          <Image src={Icons.Right} alt="right" className="w-[35px]" />
         </Link>
       </div>
       <Footer />
