@@ -36,8 +36,8 @@ export default function RadarChart({ previousData, currentData }: RadarChartProp
   ] : null;
 
   // SVG 좌표 계산
-  const centerX = 150;
-  const centerY = 150;
+  const centerX = 170;
+  const centerY = 170;
   const maxRadius = 120;
   const levels = 5; // 5단계 (0, 20, 40, 60, 80, 100)
 
@@ -76,8 +76,8 @@ export default function RadarChart({ previousData, currentData }: RadarChartProp
     : null;
 
   return (
-    <div className="w-full flex flex-col items-center">
-      <svg width="300" height="300" viewBox="0 0 300 300">
+    <div className="w-full flex flex-col items-center py-4">
+      <svg width="340" height="340" viewBox="0 0 340 340" className="overflow-visible">
         {/* 배경 레벨 원 */}
         {[...Array(levels)].map((_, i) => {
           const radius = (maxRadius / levels) * (i + 1);
