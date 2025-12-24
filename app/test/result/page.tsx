@@ -1,198 +1,249 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { clearCatFeatures, getCatFeatures } from '@/app/test/cat/lib/catFeatures';
-import API from '@/lib/axios';
 import axios from 'axios';
 
-const REQUIRED_KEYS = [
-  'simple_sel_rt_mean',
-  'simple_sel_rt_sd',
-  'sustained_omission',
-  'sustained_commission',
-  'interference_omission',
-  'interference_commission',
-] as const;
-
 export default function TestResultPage() {
-  const [refresh, setRefresh] = useState(0);
   const [sendState, setSendState] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [sendError, setSendError] = useState<string | null>(null);
-  const [aiReply, setAiReply] = useState<string | null>(null);
+  const [aiReply, setAiReply] = useState<any>(null);
+  const [payload, setPayload] = useState<any>(null);
   const autoSentRef = useRef(false);
 
-  const features = useMemo(() => {
-    void refresh;
-    return getCatFeatures();
-  }, [refresh]);
-
-  const payload = useMemo(() => {
-    return {
-      ...features,
-    };
-  }, [features]);
-
-  const missing = REQUIRED_KEYS.filter((k) => features[k] === undefined);
-
-  const sendToAI = async () => {
-    if (missing.length > 0) {
-      setSendState('error');
-      setSendError(`필수 피처 누락: ${missing.join(', ')}`);
-      return;
-    }
-
+  // ✅ AI 서버로 전송
+  const sendToAI = async (data: any) => {
     setSendState('sending');
     setSendError(null);
     setAiReply(null);
 
-    // 1) Prefer backend (baseURL = NEXT_PUBLIC_API_URL) if configured.
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL;
-    const backendPath = process.env.NEXT_PUBLIC_AI_REPORT_PATH || '/ai/report';
-
     try {
-      if (backendUrl) {
-        const res = await API.post(backendPath, payload);
-        setSendState('success');
-        setAiReply(typeof res.data === 'string' ? res.data : JSON.stringify(res.data, null, 2));
-        return;
-      }
-    } catch (e: any) {
-      // Fall through to local /api/chat as a best-effort.
-      console.error(e);
-    }
+      const AI_URL = process.env.NEXT_PUBLIC_AI_URL;
+      
+      console.log('📡 전송 시작:', `${AI_URL}/predict`);
+      console.log('📦 Payload 크기:', JSON.stringify(data).length, 'bytes');
+      
+      const response = await axios.post(`${AI_URL}/predict`, data, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 15000,
+      });
 
-    // 2) Fallback: send as prompt to local OpenAI chat proxy.
-    try {
-      const prompt =
-        `아래는 CAT 최소 피처(6개 + 선택 p_survey) payload입니다.\n` +
-        `각 지표를 사람이 이해하기 쉽게 해석하고, ADHD 가능성/주의력 특성을 요약해 주세요.\n` +
-        `가능하면 짧은 bullet과 권장 다음 단계(진단/상담/생활습관)를 제안해 주세요.\n\n` +
-        `${JSON.stringify(payload)}`;
-
-      const res = await axios.post('/api/chat', { message: prompt });
       setSendState('success');
-      setAiReply(res.data?.reply ?? null);
-    } catch (e: any) {
+      setAiReply(response.data);
+      
+      // ✅ 응답 확인
+      console.log('='.repeat(80));
+      console.log('✅ AI 서버 응답');
+      console.log('='.repeat(80));
+      console.log('Status:', response.status);
+      console.log('Response Data:');
+      console.log(JSON.stringify(response.data, null, 2));
+      console.log('='.repeat(80));
+
+    } catch (error: any) {
+      console.error('='.repeat(80));
+      console.error('❌ AI 전송 실패');
+      console.error('='.repeat(80));
+      console.error('Error:', error);
+      console.error('Response:', error.response?.data);
+      console.error('Status:', error.response?.status);
+      console.error('='.repeat(80));
+      
       setSendState('error');
-      setSendError(e?.response?.data?.error || e?.message || 'AI 전송 실패');
+      setSendError(error.response?.data?.message || error.message || 'AI 서버 통신 실패');
     }
   };
 
+  // ✅ 페이지 로드 시 자동 전송
   useEffect(() => {
-    // Auto-send once when payload is complete.
     if (autoSentRef.current) return;
-    if (missing.length > 0) return;
-    autoSentRef.current = true;
-    void sendToAI();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [missing.length]);
+    
+    try {
+      const finalData = JSON.parse(sessionStorage.getItem('final_test_data') || '{}');
+      
+      if (!finalData.survey || !finalData.cat_raw) {
+        setSendState('error');
+        setSendError('테스트 데이터가 없습니다. 처음부터 다시 시작해주세요.');
+        return;
+      }
+      
+      // ✅ 전송 전 데이터 확인
+      console.log('='.repeat(80));
+      console.log('📤 AI 서버로 전송할 데이터');
+      console.log('='.repeat(80));
+      console.log(JSON.stringify(finalData, null, 2));
+      console.log('='.repeat(80));
+      
+      setPayload(finalData);
+      autoSentRef.current = true;
+      void sendToAI(finalData);
+      
+    } catch (error) {
+      console.error('❌ 데이터 로드 오류:', error);
+      setSendState('error');
+      setSendError('데이터를 불러오는 중 오류가 발생했습니다.');
+    }
+  }, []);
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-      alert('payload를 클립보드에 복사했습니다.');
+      alert('데이터를 클립보드에 복사했습니다.');
     } catch {
       alert('복사에 실패했습니다.');
     }
   };
 
   const handleReset = () => {
-    clearCatFeatures();
-    setRefresh((x) => x + 1);
+    sessionStorage.removeItem('survey_answers');
+    sessionStorage.removeItem('cat_raw_data');
+    sessionStorage.removeItem('final_test_data');
+    window.location.href = '/test/survey';
+  };
+
+  const handleRetry = () => {
+    if (payload) {
+      void sendToAI(payload);
+    }
+  };
+
+  // ✅ 디버그 로그 함수
+  const handleDebugLog = () => {
+    console.clear();
+    
+    const surveyData = sessionStorage.getItem('survey_answers');
+    const rawData = sessionStorage.getItem('cat_raw_data');
+    const finalData = sessionStorage.getItem('final_test_data');
+    
+    console.log('='.repeat(100));
+    console.log('🔍 전체 SessionStorage 데이터');
+    console.log('='.repeat(100));
+    
+    console.log('\n📋 1. Survey Answers:');
+    console.log(surveyData ? JSON.parse(surveyData) : 'null');
+    
+    console.log('\n🎯 2. CAT Raw Data:');
+    if (rawData) {
+      const parsed = JSON.parse(rawData);
+      Object.keys(parsed).forEach(key => {
+        console.log(`  - ${key}:`, parsed[key]?.length || 0, '개');
+        console.log(`    첫 데이터:`, parsed[key]?.[0]);
+      });
+    } else {
+      console.log('null');
+    }
+    
+    console.log('\n📦 3. Final Test Data:');
+    console.log(finalData ? JSON.parse(finalData) : 'null');
+    
+    console.log('\n' + '='.repeat(100));
   };
 
   return (
     <div className="w-full min-h-screen bg-[#F9FAFB] flex flex-col items-center py-12">
       <div className="w-[950px] bg-white rounded-[10px] mt-[80px] shadow-[0_4px_10px_rgba(0,0,0,0.15)] flex flex-col items-center p-[50px]">
+        
+        {/* 헤더 */}
         <div className="w-full flex flex-col items-center mb-8">
-          <p className="text-[32px] font-bold">CAT 최소 피처 확인</p>
+          <p className="text-[32px] font-bold bg-gradient-to-r from-[#59C0EE] to-[#4E59F4] bg-clip-text text-transparent">
+            ADHD 테스트 결과
+          </p>
           <p className="text-[16px] font-medium text-[#737373] mt-2">
-            백엔드로 보낼 최소 세트(6개 + 선택 1) payload를 확인합니다.
+            AI가 당신의 집중력을 분석하고 있습니다
           </p>
         </div>
 
-        {missing.length > 0 ? (
-          <div className="w-full bg-[#FFFBEB] border border-[#FEF3C7] rounded-[10px] p-6">
-            <p className="text-[14px] text-[#78350F] font-semibold">누락된 필수 피처</p>
-            <ul className="mt-2 ml-5 text-[14px] text-[#78350F]">
-              {missing.map((k) => (
-                <li key={k}>{k}</li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <div className="w-full bg-[#ECFDF5] border border-[#A7F3D0] rounded-[10px] p-6">
-            <p className="text-[14px] text-[#065F46] font-semibold">필수 피처 6개가 모두 입력되었습니다.</p>
+        {/* Payload 표시 */}
+        {payload && (
+          <div className="w-full mt-8">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[18px] font-bold text-[#474747]">📊 전송 데이터</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleDebugLog}
+                  className="px-3 py-2 bg-gray-200 text-gray-700 text-[12px] font-medium rounded hover:bg-gray-300 transition-colors"
+                >
+                  🔍 Console 출력
+                </button>
+                <button
+                  onClick={handleCopy}
+                  className="px-4 py-2 bg-[#4A8AEE] text-white text-[14px] font-medium rounded-lg hover:bg-[#3A7ADE] transition-colors"
+                >
+                  JSON 복사
+                </button>
+              </div>
+            </div>
+            <pre className="w-full bg-[#111827] text-[#E5E7EB] rounded-[10px] p-4 text-[12px] overflow-x-auto max-h-[300px]">
+              {JSON.stringify(payload, null, 2)}
+            </pre>
           </div>
         )}
 
+        {/* AI 응답 */}
         <div className="w-full mt-8">
-          <div className="flex items-center justify-between">
-            <p className="text-[16px] font-bold text-[#474747]">payload</p>
-            <button
-              onClick={handleCopy}
-              className="w-[140px] h-[40px] bg-[#4A8AEE] text-white text-[14px] font-medium hover:bg-[#3A7ADE] transition-colors"
-            >
-              JSON 복사
-            </button>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[18px] font-bold text-[#474747]">🤖 AI 분석 결과</p>
+            {sendState !== 'sending' && sendState !== 'idle' && (
+              <button
+                onClick={handleRetry}
+                className="px-4 py-2 bg-[#4A8AEE] text-white text-[14px] font-medium rounded-lg hover:bg-[#3A7ADE] transition-colors"
+              >
+                다시 전송
+              </button>
+            )}
           </div>
-          <pre className="mt-3 w-full bg-[#111827] text-[#E5E7EB] rounded-[10px] p-4 text-[12px] overflow-x-auto">
-            {JSON.stringify(payload, null, 2)}
-          </pre>
-        </div>
 
-        <div className="w-full mt-8">
-          <div className="flex items-center justify-between">
-            <p className="text-[16px] font-bold text-[#474747]">AI 전송</p>
-            <button
-              onClick={sendToAI}
-              disabled={sendState === 'sending'}
-              className={`w-[140px] h-[40px] text-[14px] font-medium transition-colors ${
-                sendState === 'sending'
-                  ? 'bg-gray-300 text-white cursor-not-allowed'
-                  : 'bg-[#4A8AEE] text-white hover:bg-[#3A7ADE]'
-              }`}
-            >
-              {sendState === 'sending' ? '전송 중...' : 'AI로 전송'}
-            </button>
-          </div>
+          {sendState === 'idle' && (
+            <div className="w-full bg-[#F3F4F6] border border-[#D1D5DB] rounded-[10px] p-6 text-center">
+              <p className="text-[14px] text-[#6B7280]">🔄 데이터를 준비하고 있습니다...</p>
+            </div>
+          )}
+
+          {sendState === 'sending' && (
+            <div className="w-full bg-[#F3F4F6] border border-[#D1D5DB] rounded-[10px] p-6 text-center">
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-8 h-8 border-4 border-[#4A8AEE] border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-[14px] text-[#6B7280]">⏳ AI가 분석 중입니다...</p>
+              </div>
+            </div>
+          )}
 
           {sendState === 'error' && sendError && (
-            <div className="mt-3 w-full bg-[#FEF2F2] border border-[#FECACA] rounded-[10px] p-4">
-              <p className="text-[13px] text-[#991B1B] font-semibold">전송 실패</p>
-              <p className="mt-1 text-[12px] text-[#991B1B] whitespace-pre-wrap">{sendError}</p>
+            <div className="w-full bg-[#FEF2F2] border border-[#FECACA] rounded-[10px] p-6">
+              <p className="text-[16px] text-[#991B1B] font-semibold mb-2">❌ 전송 실패</p>
+              <p className="text-[14px] text-[#991B1B] whitespace-pre-wrap">{sendError}</p>
             </div>
           )}
 
-          {sendState === 'success' && (
-            <div className="mt-3 w-full bg-[#ECFDF5] border border-[#A7F3D0] rounded-[10px] p-4">
-              <p className="text-[13px] text-[#065F46] font-semibold">전송 성공</p>
-              {aiReply && (
-                <pre className="mt-2 text-[12px] text-[#065F46] whitespace-pre-wrap">{aiReply}</pre>
-              )}
+          {sendState === 'success' && aiReply && (
+            <div className="w-full bg-[#ECFDF5] border border-[#A7F3D0] rounded-[10px] p-6">
+              <p className="text-[16px] text-[#065F46] font-semibold mb-3">✅ 분석 완료</p>
+              <div className="bg-white rounded-lg p-4">
+                <pre className="text-[13px] text-[#065F46] whitespace-pre-wrap overflow-x-auto">
+                  {JSON.stringify(aiReply, null, 2)}
+                </pre>
+              </div>
             </div>
           )}
         </div>
 
-        <div className="w-full mt-10 flex items-center justify-between">
+        {/* 하단 버튼 */}
+        <div className="w-full mt-10 flex items-center justify-between gap-4">
           <button
             onClick={handleReset}
-            className="w-[140px] h-[44px] bg-white border border-[#CDD0D4] text-[#474747] text-[14px] font-medium hover:bg-[#F9FAFB] transition-colors"
+            className="flex-1 py-3 bg-white border-2 border-[#CDD0D4] text-[#474747] text-[14px] font-semibold rounded-lg hover:bg-[#F9FAFB] transition-colors"
           >
-            입력 초기화
+            처음부터 다시하기
           </button>
 
           <Link
-            href="/test/cat/before"
-            className="w-[180px] h-[44px] flex justify-center items-center bg-[#4A8AEE] text-white text-[14px] font-medium hover:bg-[#3A7ADE] transition-colors"
+            href="/"
+            className="flex-1 py-3 text-center bg-[#4A8AEE] text-white text-[14px] font-semibold rounded-lg hover:bg-[#3A7ADE] transition-colors"
           >
-            CAT 다시하기
+            홈으로 가기
           </Link>
         </div>
       </div>
     </div>
   );
 }
-
-

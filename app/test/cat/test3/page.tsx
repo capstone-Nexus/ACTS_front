@@ -68,6 +68,19 @@ export default function Test3() {
 
         setResponses((prev) => [...prev, { center, clicked, time }]);
 
+        // ✅ Raw 데이터 저장
+        const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
+        if (!rawData.interference_trials) rawData.interference_trials = [];
+        
+        rawData.interference_trials.push({
+            trial_index: progress,
+            is_target: true,
+            clicked: clicked !== "",
+            reaction_time_ms: clicked !== "" ? time : null
+        });
+        
+        sessionStorage.setItem('cat_raw_data', JSON.stringify(rawData));
+
         const nextIndex = progress + 1;
         if (nextIndex < TOTAL_TRIALS) {
             setProgress(nextIndex);
@@ -91,6 +104,11 @@ export default function Test3() {
             interference_omission: omission,
             interference_commission: commission,
         });
+
+        // ✅ Console 출력
+        const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
+        console.log('🎯 Test3 완료 - Interference Trials:', rawData.interference_trials);
+        console.log('🎯 Test3 Features:', { interference_omission: omission, interference_commission: commission });
 
         savedFeaturesRef.current = true;
     }, [responses, testFinished]);

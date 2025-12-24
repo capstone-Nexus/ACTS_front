@@ -89,6 +89,19 @@ export default function Test1() {
                         correct: false
                     }]);
 
+                    // ✅ 무응답 Raw 데이터 저장
+                    const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
+                    if (!rawData.simple_trials) rawData.simple_trials = [];
+                    
+                    rawData.simple_trials.push({
+                        trial_index: trialIndex,
+                        is_target: false,
+                        clicked: false,
+                        reaction_time_ms: null
+                    });
+                    
+                    sessionStorage.setItem('cat_raw_data', JSON.stringify(rawData));
+
                     setProgress(prev => prev + 1);
                     runTrial(trialIndex + 1);
                 }
@@ -113,6 +126,19 @@ export default function Test1() {
             reactionTime: reactionTime,
             correct: true
         }]);
+
+        // ✅ Raw 데이터 저장
+        const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
+        if (!rawData.simple_trials) rawData.simple_trials = [];
+        
+        rawData.simple_trials.push({
+            trial_index: progress,
+            is_target: true,
+            clicked: true,
+            reaction_time_ms: Math.round(reactionTime)
+        });
+        
+        sessionStorage.setItem('cat_raw_data', JSON.stringify(rawData));
 
         setCurrentStimulus(null);
         setProgress(prev => prev + 1);
@@ -153,6 +179,11 @@ export default function Test1() {
             simple_sel_rt_mean: m,
             simple_sel_rt_sd: s,
         });
+
+        // ✅ Console 출력
+        const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
+        console.log('🎯 Test1 완료 - Simple Trials:', rawData.simple_trials);
+        console.log('🎯 Test1 Features:', { simple_sel_rt_mean: m, simple_sel_rt_sd: s });
 
         savedFeaturesRef.current = true;
     }, [TestFinished, results]);

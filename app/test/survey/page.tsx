@@ -50,20 +50,18 @@ export default function Survey() {
   const allAnswered = answers.every(a => a !== null);
   const progress = (answers.filter(a => a !== null).length / surveyQuestions.length) * 100;
 
-  // ✅ 제출 핸들러 - q1~q20 형식으로 저장
   const handleSubmit = () => {
     if (!allAnswered) return;
     
-    // q1, q2, ..., q20 형식으로 변환
     const surveyAnswers: Record<string, number> = {};
     answers.forEach((answer, index) => {
       surveyAnswers[`q${index + 1}`] = answer || 0;
     });
     
-    // sessionStorage에 저장
     sessionStorage.setItem('survey_answers', JSON.stringify(surveyAnswers));
-    
-    console.log('✅ Survey 완료:', surveyAnswers);
+
+    console.log('📋 Survey 답변:', surveyAnswers);
+    console.log('📋 Survey JSON:', JSON.stringify(surveyAnswers, null, 2));
     
     router.push('/test/cat/before');
   };

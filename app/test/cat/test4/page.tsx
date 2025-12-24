@@ -97,6 +97,11 @@ export default function Test4() {
     const runTrial = (index: number) => {
         if (index >= sequence.length) {
             setTestFinished(true);
+            
+            // ✅ Console 출력
+            const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
+            console.log('🎯 Test4 완료 - Divided Trials:', rawData.divided_trials);
+            
             return;
         }
 
@@ -114,6 +119,19 @@ export default function Test4() {
         const endId = window.setTimeout(() => {
             if (trial.isTarget && !respondedRef.current) {
                 setResults(prev => ({ ...prev, missed: prev.missed + 1 }));
+                
+                // ✅ 무응답 Raw 데이터 저장
+                const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
+                if (!rawData.divided_trials) rawData.divided_trials = [];
+                
+                rawData.divided_trials.push({
+                    trial_index: index,
+                    is_target: trial.isTarget,
+                    clicked: false,
+                    reaction_time_ms: null
+                });
+                
+                sessionStorage.setItem('cat_raw_data', JSON.stringify(rawData));
             }
 
             setShowStimulus(false);
@@ -142,6 +160,19 @@ export default function Test4() {
         } else {
             setResults(prev => ({ ...prev, falseAlarm: prev.falseAlarm + 1, falseAlarmRts: [...prev.falseAlarmRts, rt] }));
         }
+
+        // ✅ Raw 데이터 저장
+        const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
+        if (!rawData.divided_trials) rawData.divided_trials = [];
+        
+        rawData.divided_trials.push({
+            trial_index: index,
+            is_target: trial.isTarget,
+            clicked: true,
+            reaction_time_ms: Math.round(rt)
+        });
+        
+        sessionStorage.setItem('cat_raw_data', JSON.stringify(rawData));
     };
 
     useEffect(() => {
@@ -239,42 +270,11 @@ export default function Test4() {
                 </div>
 
                 {testFinished && (
-                    <>
-                        {/* <div className="mt-6 text-center">
-                            <p className="text-[16px] font-bold text-[#474747]">검사 완료!</p>
-                            <div className="mt-4 text-[14px] text-[#737373] space-y-1">
-                                <p>정답: {results.correct} / 오답: {results.falseAlarm} / 놓침: {results.missed}</p>
-                                <p className="font-bold text-[#4A8AEE]">정확도: {Math.round((results.correct / TOTAL_TRIALS) * 100)}%</p>
-                                {results.correctRts.length > 0 && (
-                                    <>
-                                        <p>
-                                            정답 반응시간: {Math.round(results.correctRts.reduce((a,b)=>a+b,0)/results.correctRts.length)} ms
-                                            {results.correctRts.length > 1 && (
-                                                <span className="ml-2">
-                                                    (±{Math.round(
-                                                        Math.sqrt(
-                                                            results.correctRts.reduce((sq, n) => {
-                                                                const mean = results.correctRts.reduce((a,b)=>a+b,0)/results.correctRts.length;
-                                                                return sq + Math.pow(n - mean, 2);
-                                                            }, 0) / results.correctRts.length
-                                                        )
-                                                    )} ms)
-                                                </span>
-                                            )}
-                                        </p>
-                                    </>
-                                )}
-                                {results.falseAlarmRts.length > 0 && (
-                                    <p>오답 반응시간: {Math.round(results.falseAlarmRts.reduce((a,b)=>a+b,0)/results.falseAlarmRts.length)} ms</p>
-                                )}
-                            </div>
-                        </div> */}
-                        <Link href="/test/cat/test5" className="mt-6 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
-                            <p className="text-[14px] font-medium text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
-                                다음 →
-                            </p>
-                        </Link>
-                    </>
+                    <Link href="/test/cat/test5" className="mt-6 w-[90px] h-[50px] flex justify-center items-center bg-[#4A8AEE] cursor-pointer border-2 border-transparent hover:border-[#4A8AEE] hover:bg-white duration-200 group">
+                        <p className="text-[14px] font-medium text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
+                            다음 →
+                        </p>
+                    </Link>
                 )}
             </div>
         </div>

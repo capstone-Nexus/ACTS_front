@@ -79,14 +79,70 @@ export default function Test5() {
             setCorrectCount(prev => prev + 1);
         }
 
+        // ✅ Raw 데이터 저장
+        const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
+        if (!rawData.wm_trials) rawData.wm_trials = [];
+        
+        rawData.wm_trials.push({
+            trial_index: progress,
+            type: "forward",
+            presented: sequence,
+            user_answer: response,
+            correct: isCorrect
+        });
+        
+        sessionStorage.setItem('cat_raw_data', JSON.stringify(rawData));
+
         setTimeout(() => {
             if (progress + 1 < TOTAL_TRIALS) {
                 setProgress(progress + 1);
                 startNewTrial();
             } else {
                 setTestFinished(true);
+                // ✅ 모든 테스트 완료 - 최종 데이터 준비
+                prepareFinalData();
             }
         }, 500);
+    };
+
+    // ✅ 최종 데이터 준비 함수
+    const prepareFinalData = () => {
+        try {
+            const surveyAnswers = JSON.parse(sessionStorage.getItem('survey_answers') || '{}');
+            const catRawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
+            
+            const finalPayload = {
+                survey: {
+                    answers: surveyAnswers
+                },
+                cat_raw: catRawData
+            };
+            
+            sessionStorage.setItem('final_test_data', JSON.stringify(finalPayload));
+            
+            // ✅ 상세 Console 출력
+            console.log('='.repeat(80));
+            console.log('🎉 모든 테스트 완료!');
+            console.log('='.repeat(80));
+            
+            console.log('\n📋 Survey 답변:');
+            console.log(JSON.stringify(surveyAnswers, null, 2));
+            
+            console.log('\n🎯 CAT Raw 데이터:');
+            console.log('- Simple Trials:', catRawData.simple_trials?.length || 0, '개');
+            console.log('- Sustained Trials:', catRawData.sustained_trials?.length || 0, '개');
+            console.log('- Interference Trials:', catRawData.interference_trials?.length || 0, '개');
+            console.log('- Divided Trials:', catRawData.divided_trials?.length || 0, '개');
+            console.log('- WM Trials:', catRawData.wm_trials?.length || 0, '개');
+            
+            console.log('\n📦 최종 Payload:');
+            console.log(JSON.stringify(finalPayload, null, 2));
+            
+            console.log('\n' + '='.repeat(80));
+            
+        } catch (error) {
+            console.error('❌ 데이터 준비 중 오류:', error);
+        }
     };
 
     const handleUndo = () => {
@@ -194,7 +250,8 @@ export default function Test5() {
                         <p className="text-[14px] font-medium text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
                             다음 →
                         </p>
-                    </Link>)}
+                    </Link>
+                )}
             </div>
         </div>
     );

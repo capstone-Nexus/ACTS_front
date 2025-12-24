@@ -7,7 +7,7 @@ import { clamp01, setCatFeatures } from "@/app/test/cat/lib/catFeatures";
 const SHAPES = ["○", "△", "□", "X"];
 const TOTAL_TRIALS = 20;
 const STIMULUS_TIME = 1000;
-const ISI_TIME = 300; // ignore clicks during inter-stimulus interval (prevents click-spam)
+const ISI_TIME = 300;
 
 export default function Test2() {
   const [currentScreen, setCurrentScreen] = useState<"intro" | "test">("intro");
@@ -60,7 +60,6 @@ export default function Test2() {
 
   const handleClick = (clicked: boolean) => {
     if (testFinished) return;
-    // Prevent holding mouse / spam-click from being counted when no stimulus is on screen.
     if (!isStimulusOn) return;
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -70,7 +69,6 @@ export default function Test2() {
     const time = Date.now() - stimulusStartTime.current;
     const shape = currentShapeRef.current || currentShape;
 
-    // Score/correctCount updates should be functional to avoid stale closures (timeouts).
     if (shape === "X" && clicked) {
       setScore((prev) => prev - 1);
     } else if (shape !== "X" && clicked) {
@@ -79,6 +77,19 @@ export default function Test2() {
     }
 
     setResponses((prev) => [...prev, { shape, clicked, time }]);
+
+    // ✅ Raw 데이터 저장
+    const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
+    if (!rawData.sustained_trials) rawData.sustained_trials = [];
+    
+    rawData.sustained_trials.push({
+      trial_index: trialIndexRef.current,
+      is_target: shape !== "X",
+      clicked: clicked,
+      reaction_time_ms: clicked ? time : null
+    });
+    
+    sessionStorage.setItem('cat_raw_data', JSON.stringify(rawData));
 
     trialIndexRef.current += 1;
     setProgress(trialIndexRef.current);
@@ -114,6 +125,11 @@ export default function Test2() {
       sustained_commission: commission,
     });
 
+    // ✅ Console 출력
+    const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
+    console.log('🎯 Test2 완료 - Sustained Trials:', rawData.sustained_trials);
+    console.log('🎯 Test2 Features:', { sustained_omission: omission, sustained_commission: commission });
+
     savedFeaturesRef.current = true;
   }, [responses, testFinished]);
 
@@ -138,7 +154,7 @@ export default function Test2() {
             <p className="mt-6 text-[18px] font-bold">📋 검사 방법</p>
             <ul className="mt-2 ml-7 text-[14px] font-medium text-[#474747] leading-7 list-disc">
               <li>다양한 모양이 순서대로 나타납니다</li>
-              <li><span className="text-[#4A8AEE] font-bold">‘X’ 모양을 제외한</span> 모든 그림에 클릭</li>
+              <li><span className="text-[#4A8AEE] font-bold">'X' 모양을 제외한</span> 모든 그림에 클릭</li>
               <li>X를 누르거나 클릭해야 할 그림을 놓치면 감점</li>
             </ul>
             <div className="w-[720px] h-[100px] bg-[#EBEDEF] mt-6 border-l-3 border-[#4A8AEE] p-4">
@@ -195,7 +211,8 @@ export default function Test2() {
             <p className="text-[14px] font-medium text-white group-hover:text-[#4A8AEE] transition-colors duration-200">
               다음 →
             </p>
-          </Link>)}
+          </Link>
+        )}
       </div>
     </div>
   );
