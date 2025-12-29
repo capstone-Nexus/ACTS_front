@@ -20,9 +20,7 @@ export default function AuthSuccessPage() {
       document.cookie = `refreshToken=${refreshToken}; path=/; max-age=${twoWeeks}; samesite=lax`;
     }
 
-    setTimeout(() => {
-      router.push('/');
-    }, 1000);
+    window.location.href = '/';
   }, [router]);
 
   return (
