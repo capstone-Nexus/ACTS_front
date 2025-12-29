@@ -8,9 +8,11 @@ export default function AuthSuccessPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const accessToken = params.get('accesstoken');
-    const refreshToken = params.get('refreshtoken');
-    const username = params.get('username');
+    const accessToken = params.get('accesstoken') || params.get('accessToken');
+    const refreshToken = params.get('refreshtoken') || params.get('refreshToken');
+    const username = params.get('username') || params.get('userName') || params.get('name');
+
+    console.log('소셜 로그인 파라미터:', { accessToken: !!accessToken, refreshToken: !!refreshToken, username });
 
     if (accessToken) sessionStorage.setItem('accessToken', accessToken);
     if (username) sessionStorage.setItem('username', username);
