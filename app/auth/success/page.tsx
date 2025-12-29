@@ -1,20 +1,28 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function AuthSuccessPage() {
-  const router = useRouter();
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const accessToken = params.get('accesstoken') || params.get('accessToken');
     const refreshToken = params.get('refreshtoken') || params.get('refreshToken');
     const username = params.get('username') || params.get('userName') || params.get('name');
 
-    console.log('소셜 로그인 파라미터:', { accessToken: !!accessToken, refreshToken: !!refreshToken, username });
+    console.log('소셜 로그인 URL:', window.location.href);
+    console.log('소셜 로그인 파라미터:', { 
+      accessToken: accessToken ? '존재' : '없음', 
+      refreshToken: refreshToken ? '존재' : '없음', 
+      username
+    });
 
-    if (accessToken) sessionStorage.setItem('accessToken', accessToken);
+    if (!accessToken) {
+      console.error('accessToken이 없습니다. 로그인 페이지로 이동합니다.');
+      window.location.href = '/signin';
+      return;
+    }
+
+    sessionStorage.setItem('accessToken', accessToken);
     if (username) sessionStorage.setItem('username', username);
     
     if (refreshToken) {
@@ -22,8 +30,9 @@ export default function AuthSuccessPage() {
       document.cookie = `refreshToken=${refreshToken}; path=/; max-age=${twoWeeks}; samesite=lax`;
     }
 
+    console.log('토큰 저장 완료, 메인 페이지로 이동');
     window.location.href = '/';
-  }, [router]);
+  }, []);
 
   return (
     <div className="flex justify-center items-center min-h-screen text-lg font-semibold">

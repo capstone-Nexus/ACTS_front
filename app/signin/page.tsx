@@ -18,7 +18,7 @@ interface SocialProvider {
   url: string;
 }
 
-const SOCIAL_BASE = process.env.NEXT_PUBLIC_API_BASE;
+const SOCIAL_BASE = process.env.NEXT_PUBLIC_API_BASE || process.env.NEXT_PUBLIC_API_URL || 'https://port-0-acts-back-mh1rgv1nf41d34bb.sel3.cloudtype.app';
 const SOCIAL_PROVIDERS: SocialProvider[] = [
   { id: 'google', icon: googleIcon, alt: 'Google 로그인', url: `${SOCIAL_BASE}/auth/oauth/google` },
   { id: 'naver', icon: naverIcon, alt: 'Naver 로그인', url: `${SOCIAL_BASE}/auth/oauth/naver` },
@@ -64,6 +64,11 @@ export default function SignInPage() {
   };
 
   const handleSocialLogin = (url: string) => {
+    console.log('소셜 로그인 URL:', url);
+    if (!url || url.includes('undefined')) {
+      alert('소셜 로그인 URL이 올바르지 않습니다. 관리자에게 문의하세요.');
+      return;
+    }
     window.location.href = url;
   };
 
