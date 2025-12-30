@@ -5,6 +5,8 @@ import Link from 'next/link';
 import axios from 'axios';
 import CircularProgress from './components/CircularProgress';
 import DomainScore from './components/DomainScore';
+import { saveReport } from '@/lib/reportApi';
+import toast from 'react-hot-toast';
 
 export default function TestResultPage() {
   const [sendState, setSendState] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
@@ -47,12 +49,29 @@ export default function TestResultPage() {
       } else {
         setAiReply(aiData);
         
-        // ✅ localStorage에 저장 (mypage에서 사용)
-        const previousResult = localStorage.getItem('latest_test_result');
-        if (previousResult) {
-          localStorage.setItem('previous_test_result', previousResult);
+        // ✅ 백엔드에 저장
+        try {
+          const dayOfWeek = new Date().getDay(); // 0~6 (0 = 일요일)
+          
+          await saveReport({
+            day_of_week: dayOfWeek,
+            p_final: aiData.p_final || 0,
+            label_final: aiData.label_final || 0,
+            cat_scores_100: {
+              simple: aiData.cat_scores_100?.simple || 0,
+              sustained: aiData.cat_scores_100?.sustained || 0,
+              interference: aiData.cat_scores_100?.interference || 0,
+              divided: aiData.cat_scores_100?.divided || 0,
+              working_memory: aiData.cat_scores_100?.working_memory || 0,
+            }
+          });
+          
+          console.log('✅ 검사 결과 백엔드 저장 완료');
+          toast.success('검사 결과가 저장되었습니다.');
+        } catch (error) {
+          console.error('❌ 검사 결과 저장 실패:', error);
+          toast.error('검사 결과 저장에 실패했습니다.');
         }
-        localStorage.setItem('latest_test_result', JSON.stringify(aiData));
       }
 
       // ✅ 응답 확인

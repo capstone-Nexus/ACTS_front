@@ -7,6 +7,7 @@ import RadarChart from './components/RadarChart';
 import API from '@/lib/axios';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+import { getReports, ReportResponse } from '@/lib/reportApi';
 
 export default function Mypage() {
   const router = useRouter();
@@ -17,8 +18,8 @@ export default function Mypage() {
     gender: string;
     birth: string;
   } | null>(null);
-  const [testResult, setTestResult] = useState<any>(null);
-  const [previousResult, setPreviousResult] = useState<any>(null);
+  const [testResult, setTestResult] = useState<ReportResponse | null>(null);
+  const [previousResult, setPreviousResult] = useState<ReportResponse | null>(null);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -36,32 +37,43 @@ export default function Mypage() {
       return;
     }
 
-    const getUser = async () => {
+    const loadData = async () => {
       try {
-        const response = await API.get('/user/my');
-        setUserData(response.data.data);
+        // 사용자 정보 가져오기
+        const userResponse = await API.get('/user/my');
+        setUserData(userResponse.data.data);
         
-        // localStorage에서 테스트 결과 가져오기
-        const savedResult = localStorage.getItem('latest_test_result');
-        const previousResultData = localStorage.getItem('previous_test_result');
+        // 백엔드에서 검사 결과 목록 가져오기
+        const reports = await getReports();
         
-        if (savedResult) {
-          setTestResult(JSON.parse(savedResult));
-        }
-        
-        if (previousResultData) {
-          setPreviousResult(JSON.parse(previousResultData));
+        if (reports && reports.length > 0) {
+          // 날짜순으로 정렬 (최신순)
+          const sortedReports = reports.sort((a, b) => 
+            new Date(b.reported_at).getTime() - new Date(a.reported_at).getTime()
+          );
+          
+          // 최신 결과
+          setTestResult(sortedReports[0]);
+          console.log('✅ 최신 검사 결과:', sortedReports[0]);
+          
+          // 이전 결과 (두 번째)
+          if (sortedReports.length > 1) {
+            setPreviousResult(sortedReports[1]);
+            console.log('✅ 이전 검사 결과:', sortedReports[1]);
+          }
+        } else {
+          console.log('ℹ️ 저장된 검사 결과가 없습니다.');
         }
         
         setIsLoading(false);
       } catch (err) {
-        console.error(err);
-        toast.error('유저 정보를 불러오지 못했습니다.');
+        console.error('데이터 로드 오류:', err);
+        toast.error('데이터를 불러오는 중 오류가 발생했습니다.');
         setIsLoading(false);
       }
     };
 
-    getUser();
+    loadData();
   }, [router]);
 
   if (isLoading || !userData) {
@@ -93,20 +105,20 @@ export default function Mypage() {
   }
 
   // 영역별 점수 가져오기
-  const currentDomainScores = testResult?.cat_scores_100 ? {
-    simple: testResult.cat_scores_100.simple || 0,
-    sustained: testResult.cat_scores_100.sustained || 0,
-    interference: testResult.cat_scores_100.interference || 0,
-    divided: testResult.cat_scores_100.divided || 0,
-    working_memory: testResult.cat_scores_100.working_memory || 0,
+  const currentDomainScores = testResult?.cat_score ? {
+    simple: testResult.cat_score.simple || 0,
+    sustained: testResult.cat_score.sustained || 0,
+    interference: testResult.cat_score.interference || 0,
+    divided: testResult.cat_score.divided || 0,
+    working_memory: testResult.cat_score.working_memory || 0,
   } : null;
 
-  const previousDomainScores = previousResult?.cat_scores_100 ? {
-    simple: previousResult.cat_scores_100.simple || 0,
-    sustained: previousResult.cat_scores_100.sustained || 0,
-    interference: previousResult.cat_scores_100.interference || 0,
-    divided: previousResult.cat_scores_100.divided || 0,
-    working_memory: previousResult.cat_scores_100.working_memory || 0,
+  const previousDomainScores = previousResult?.cat_score ? {
+    simple: previousResult.cat_score.simple || 0,
+    sustained: previousResult.cat_score.sustained || 0,
+    interference: previousResult.cat_score.interference || 0,
+    divided: previousResult.cat_score.divided || 0,
+    working_memory: previousResult.cat_score.working_memory || 0,
   } : undefined;
 
   const handlePasswordChange = async () => {

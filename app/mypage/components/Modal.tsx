@@ -3,11 +3,12 @@ import { Icons } from '@/icons';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { ReportResponse } from '@/lib/reportApi';
 
 interface ModalProps {
   isOpen: boolean;
   setModalOpen: (open: boolean) => void;
-  testResult: any;
+  testResult: ReportResponse;
 }
 
 type AnalysisType = 'simple' | 'sustained' | 'interference' | 'divided' | 'working_memory';
@@ -124,7 +125,7 @@ export default function Modal({ isOpen, setModalOpen, testResult }: ModalProps) 
   let imageUrl = '';
   let riskLevel = '';
   let riskDescription = '';
-
+  
   if (score >= 80) {
     message = '높은 경향';
     riskLevel = 'ADHD 위험도: 높음';
@@ -158,35 +159,35 @@ export default function Modal({ isOpen, setModalOpen, testResult }: ModalProps) 
       title: '단순 주의력',
       subtitle: '기본적인 자극에 대한 주의력',
       icon: '🎯',
-      score: testResult.cat_scores_100?.simple || 0,
+      score: testResult.cat_score?.simple || 0,
       evaluation: '단순한 시각 자극에 대한 반응 능력을 측정합니다.',
     },
     sustained: {
       title: '지속 주의력',
       subtitle: '장시간 집중을 유지하는 능력',
       icon: '⏱️',
-      score: testResult.cat_scores_100?.sustained || 0,
+      score: testResult.cat_score?.sustained || 0,
       evaluation: '오랜 시간 동안 주의를 유지하는 능력을 측정합니다.',
     },
     interference: {
       title: '간섭 통제',
       subtitle: '방해 요소를 무시하는 능력',
       icon: '🧠',
-      score: testResult.cat_scores_100?.interference || 0,
+      score: testResult.cat_score?.interference || 0,
       evaluation: '불필요한 자극을 무시하고 집중하는 능력을 측정합니다.',
     },
     divided: {
       title: '분할 주의력',
       subtitle: '여러 작업을 동시에 처리하는 능력',
       icon: '🔀',
-      score: testResult.cat_scores_100?.divided || 0,
+      score: testResult.cat_score?.divided || 0,
       evaluation: '여러 자극에 동시에 주의를 기울이는 능력을 측정합니다.',
     },
     working_memory: {
       title: '작업 기억력',
       subtitle: '정보를 단기적으로 유지하고 처리하는 능력',
       icon: '💭',
-      score: testResult.cat_scores_100?.working_memory || 0,
+      score: testResult.cat_score?.working_memory || 0,
       evaluation: '정보를 일시적으로 저장하고 조작하는 능력을 측정합니다.',
     },
   };
@@ -277,7 +278,9 @@ export default function Modal({ isOpen, setModalOpen, testResult }: ModalProps) 
         <div className="w-full flex flex-row justify-between px-[3%] pt-[3%] min-h-[80px]">
           <div className="h-full flex flex-col justify-between">
             <p className="text-xl md:text-2xl font-bold text-black">검사 결과 상세보기</p>
-            <p className="text-xs font-medium text-[#737373]">검사 일자: </p>
+            <p className="text-xs font-medium text-[#737373]">
+              검사 일자: {new Date(testResult.reported_at).toLocaleDateString('ko-KR')}
+            </p>
           </div>
 
           <Image

@@ -64,7 +64,19 @@ export default function SignInPage() {
   };
 
   const handleSocialLogin = (url: string) => {
-    window.location.href = url;
+    const currentOrigin = typeof window !== 'undefined' 
+      ? window.location.origin 
+      : process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000';
+    
+    const redirectUrl = `${currentOrigin}/auth/success`;
+    
+    console.log('🔗 소셜 로그인 리디렉션 URL:', redirectUrl);
+    
+    const urlWithRedirect = `${url}?redirect_uri=${encodeURIComponent(redirectUrl)}`;
+    
+    console.log('📤 백엔드 요청 URL:', urlWithRedirect);
+    
+    window.location.href = urlWithRedirect;
   };
 
   return (
