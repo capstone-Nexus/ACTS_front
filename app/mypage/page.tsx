@@ -199,7 +199,7 @@ export default function Mypage() {
                 await dispatch(fetchTestResults());
                 setModalOpen(true);
               }}
-              className="w-[120px] h-[45px] mb-[15px] center text-white font-medium text-[14px] bg-[#4a8aee] rounded-[10px] cp duration-200 hover:bg-[#4077CE] mt-auto ml-auto"
+              className="w-[120px] h-[45px] mb-[12px] center text-white font-medium text-[14px] bg-[#4a8aee] rounded-[10px] cp duration-200 hover:bg-[#4077CE] mt-auto ml-auto"
             >
               상세 보기 →
             </button>
