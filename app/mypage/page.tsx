@@ -115,11 +115,6 @@ export default function Mypage() {
     working_memory: previousResult.cat_score.working_memory || 0,
   } : undefined;
 
-  console.log('📊 Mypage - currentResult:', currentResult);
-  console.log('📊 Mypage - previousResult:', previousResult);
-  console.log('📊 Mypage - currentDomainScores:', currentDomainScores);
-  console.log('📊 Mypage - previousDomainScores:', previousDomainScores);
-
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
       toast.error('새 비밀번호가 일치하지 않습니다.');

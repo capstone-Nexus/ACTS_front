@@ -103,9 +103,6 @@ export default function Test3() {
         });
 
         // ✅ Console 출력
-        const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
-        console.log('🎯 Test3 완료 - Interference Trials:', rawData.interference_trials);
-        console.log('🎯 Test3 Features:', { interference_omission: omission, interference_commission: commission });
 
         savedFeaturesRef.current = true;
     }, [responses, testFinished]);

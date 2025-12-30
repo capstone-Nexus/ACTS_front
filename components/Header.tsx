@@ -4,16 +4,16 @@ import { useEffect, useState } from 'react';
 import Logo from '@/public/images/logo.png';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 export default function Header() {
   const [username, setUsername] = useState<string | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem('username');
-    if (storedUsername) {
-      setUsername(storedUsername);
-    }
-  }, []);
+    setUsername(storedUsername);
+  }, [pathname]);
 
   const logoutHandler = () => {
     sessionStorage.removeItem('accessToken');

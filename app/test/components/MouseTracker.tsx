@@ -91,8 +91,8 @@ const MouseTracker: React.FC<MouseTrackerProps> = ({
       positions.current.push({ x: event.clientX, y: event.clientY, t: performance.now() });
     };
 
-    const handleMouseLeave = () => console.log("커서 화면 밖으로 이동");
-    const handleMouseEnter = () => console.log("커서 화면에 복귀");
+    const handleMouseLeave = () => {};
+    const handleMouseEnter = () => {};
 
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseleave", handleMouseLeave);

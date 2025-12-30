@@ -124,9 +124,6 @@ export default function Test2() {
       sustained_commission: commission,
     });
 
-    const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
-    console.log('🎯 Test2 완료 - Sustained Trials:', rawData.sustained_trials);
-    console.log('🎯 Test2 Features:', { sustained_omission: omission, sustained_commission: commission });
 
     savedFeaturesRef.current = true;
   }, [responses, testFinished]);

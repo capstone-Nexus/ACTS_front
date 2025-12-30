@@ -103,7 +103,6 @@ export default function Camera({ onTurnChange, onTiltChange, onAwayChange }: Cam
             if (!turnDetected && (ratio > 1.5 || ratio < 0.66)) {
               setTurnCount(prev => prev + 1);
               turnDetected = true;
-              console.log('↔️ 고개 회전 감지');
             }
             // 정면 복귀 시 다시 감지 가능
             if (turnDetected && ratio > 0.9 && ratio < 1.1) {
@@ -118,7 +117,6 @@ export default function Camera({ onTurnChange, onTiltChange, onAwayChange }: Cam
             if (!tiltDetected && Math.abs(eyeDy) > 0.04) {
               setTiltCount(prev => prev + 1);
               tiltDetected = true;
-              console.log('↕️ 고개 기울임 감지');
             }
             // 수평 복귀 시 다시 감지 가능
             if (tiltDetected && Math.abs(eyeDy) < 0.02) {
@@ -144,7 +142,6 @@ export default function Camera({ onTurnChange, onTiltChange, onAwayChange }: Cam
           if (!awayDetected) {
             setAwayCount(prev => prev + 1);
             awayDetected = true;
-            console.log('🚶 자리 이탈 감지');
           }
         }
 

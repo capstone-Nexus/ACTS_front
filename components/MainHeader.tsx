@@ -36,18 +36,29 @@ export default function MainHeader() {
       });
     } catch (error) {
       console.error('로그아웃 API 호출 실패:', error);
+    } finally {
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('refreshToken');
+      sessionStorage.removeItem('username');
+      sessionStorage.clear();
+      
+      localStorage.removeItem('latest_test_result');
+      localStorage.removeItem('previous_test_result');
+      localStorage.clear();
+      
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i];
+        const eqPos = cookie.indexOf('=');
+        const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+        document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+        document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=' + window.location.hostname;
+      }
+      
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 100);
     }
-    
-    sessionStorage.clear();
-    localStorage.clear();
-    
-    document.cookie.split(";").forEach((c) => {
-      document.cookie = c
-        .replace(/^ +/, "")
-        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-    });
-    
-    window.location.href = '/';
   };
 
   return (

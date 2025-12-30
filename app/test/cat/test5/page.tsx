@@ -120,26 +120,6 @@ export default function Test5() {
             
             sessionStorage.setItem('final_test_data', JSON.stringify(finalPayload));
             
-            // ✅ 상세 Console 출력
-            console.log('='.repeat(80));
-            console.log('🎉 모든 테스트 완료!');
-            console.log('='.repeat(80));
-            
-            console.log('\n📋 Survey 답변:');
-            console.log(JSON.stringify(surveyAnswers, null, 2));
-            
-            console.log('\n🎯 CAT Raw 데이터:');
-            console.log('- Simple Trials:', catRawData.simple_trials?.length || 0, '개');
-            console.log('- Sustained Trials:', catRawData.sustained_trials?.length || 0, '개');
-            console.log('- Interference Trials:', catRawData.interference_trials?.length || 0, '개');
-            console.log('- Divided Trials:', catRawData.divided_trials?.length || 0, '개');
-            console.log('- WM Trials:', catRawData.wm_trials?.length || 0, '개');
-            
-            console.log('\n📦 최종 Payload:');
-            console.log(JSON.stringify(finalPayload, null, 2));
-            
-            console.log('\n' + '='.repeat(80));
-            
         } catch (error) {
             console.error('❌ 데이터 준비 중 오류:', error);
         }

@@ -18,9 +18,6 @@ interface RadarChartProps {
 }
 
 export default function RadarChart({ previousData, currentData }: RadarChartProps) {
-  console.log('🎯 RadarChart - currentData:', currentData);
-  console.log('🎯 RadarChart - previousData:', previousData);
-
   const labels = ['단순\n주의력', '지속\n주의력', '간섭\n통제', '분할\n주의력', '작업\n기억력'];
   const currentValues = [
     currentData.simple,
@@ -38,24 +35,17 @@ export default function RadarChart({ previousData, currentData }: RadarChartProp
     previousData.working_memory,
   ] : null;
 
-  console.log('🎯 RadarChart - currentValues:', currentValues);
-  console.log('🎯 RadarChart - previousValues:', previousValues);
-
-  // SVG 좌표 계산
-  const centerX = 150;
-  const centerY = 150;
+  const centerX = 170;
+  const centerY = 170;
   const maxRadius = 120;
-  const levels = 5; // 5단계 (0, 20, 40, 60, 80, 100)
+  const levels = 5;
 
-  // 각 축의 각도 계산 (5개 항목이므로 72도씩)
   const angleStep = (Math.PI * 2) / 5;
 
-  // 점수를 반지름으로 변환
   const scoreToRadius = (score: number) => (score / 100) * maxRadius;
 
-  // 좌표 계산 함수
   const getPoint = (value: number, index: number) => {
-    const angle = angleStep * index - Math.PI / 2; // -90도부터 시작
+    const angle = angleStep * index - Math.PI / 2;
     const radius = scoreToRadius(value);
     return {
       x: centerX + radius * Math.cos(angle),
@@ -63,7 +53,6 @@ export default function RadarChart({ previousData, currentData }: RadarChartProp
     };
   };
 
-  // 현재 데이터 경로 생성
   const currentPath = currentValues
     .map((value, index) => {
       const point = getPoint(value, index);
@@ -71,7 +60,6 @@ export default function RadarChart({ previousData, currentData }: RadarChartProp
     })
     .join(' ') + ' Z';
 
-  // 이전 데이터 경로 생성
   const previousPath = previousValues
     ? previousValues
         .map((value, index) => {
@@ -82,9 +70,8 @@ export default function RadarChart({ previousData, currentData }: RadarChartProp
     : null;
 
   return (
-    <div className="w-full flex flex-col items-center">
-      <svg width="250px" height="250px" viewBox="0 0 290 300">
-        {/* 배경 레벨 원 */}
+    <div className="w-full flex flex-col items-center py-4">
+      <svg width="340" height="340" viewBox="0 0 340 340" className="overflow-visible">
         {[...Array(levels)].map((_, i) => {
           const radius = (maxRadius / levels) * (i + 1);
           return (
@@ -100,7 +87,6 @@ export default function RadarChart({ previousData, currentData }: RadarChartProp
           );
         })}
 
-        {/* 축 선 */}
         {labels.map((_, index) => {
           const angle = angleStep * index - Math.PI / 2;
           const endX = centerX + maxRadius * Math.cos(angle);
@@ -117,8 +103,6 @@ export default function RadarChart({ previousData, currentData }: RadarChartProp
             />
           );
         })}
-
-        {/* 이전 데이터 (있는 경우) */}
         {previousPath && (
           <path
             d={previousPath}
@@ -128,7 +112,6 @@ export default function RadarChart({ previousData, currentData }: RadarChartProp
           />
         )}
 
-        {/* 현재 데이터 */}
         <path
           d={currentPath}
           fill="rgba(74, 138, 238, 0.3)"
@@ -136,7 +119,6 @@ export default function RadarChart({ previousData, currentData }: RadarChartProp
           strokeWidth="2"
         />
 
-        {/* 레이블 */}
         {labels.map((label, index) => {
           const angle = angleStep * index - Math.PI / 2;
           const labelRadius = maxRadius + 30;
@@ -162,7 +144,6 @@ export default function RadarChart({ previousData, currentData }: RadarChartProp
         })}
       </svg>
 
-      {/* 범례 */}
       <div className="flex gap-4 mt-4">
         {previousData && (
           <div className="flex items-center gap-2">

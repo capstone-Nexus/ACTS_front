@@ -179,10 +179,6 @@ export default function Test1() {
       simple_sel_rt_sd: s,
     });
 
-        const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
-        console.log('🎯 Test1 완료 - Simple Trials:', rawData.simple_trials);
-        console.log('🎯 Test1 Features:', { simple_sel_rt_mean: m, simple_sel_rt_sd: s });
-
         savedFeaturesRef.current = true;
     }, [TestFinished, results]);
 

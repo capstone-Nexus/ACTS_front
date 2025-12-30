@@ -100,8 +100,6 @@ export default function Test4() {
             setTestFinished(true);
             
             // ✅ Console 출력
-            const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
-            console.log('🎯 Test4 완료 - Divided Trials:', rawData.divided_trials);
             
             return;
         }

@@ -59,11 +59,6 @@ const testResultSlice = createSlice({
         state.allResults = action.payload;
         state.currentResult = action.payload[0] || null;
         state.previousResult = action.payload[1] || null;
-        console.log('✅ Redux - fetchTestResults success:', {
-          total: action.payload.length,
-          current: state.currentResult,
-          previous: state.previousResult
-        });
       })
       .addCase(fetchTestResults.rejected, (state, action) => {
         state.isLoading = false;
@@ -78,11 +73,6 @@ const testResultSlice = createSlice({
         state.allResults = action.payload;
         state.currentResult = action.payload[0] || null;
         state.previousResult = action.payload[1] || null;
-        console.log('✅ Redux - saveTestResult success:', {
-          total: action.payload.length,
-          current: state.currentResult,
-          previous: state.previousResult
-        });
       })
       .addCase(saveTestResult.rejected, (state, action) => {
         state.isLoading = false;

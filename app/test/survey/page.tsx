@@ -60,8 +60,6 @@ export default function Survey() {
     
     sessionStorage.setItem('survey_answers', JSON.stringify(surveyAnswers));
 
-    console.log('📋 Survey 답변:', surveyAnswers);
-    console.log('📋 Survey JSON:', JSON.stringify(surveyAnswers, null, 2));
     
     router.push('/test/cat/before');
   };

@@ -1,18 +1,21 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function AuthSuccessPage() {
-  const router = useRouter();
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const accessToken = params.get('accesstoken');
-    const refreshToken = params.get('refreshtoken');
-    const username = params.get('username');
+    const accessToken = params.get('accesstoken') || params.get('accessToken');
+    const refreshToken = params.get('refreshtoken') || params.get('refreshToken');
+    const username = params.get('username') || params.get('userName') || params.get('name');
 
-    if (accessToken) sessionStorage.setItem('accessToken', accessToken);
+    if (!accessToken) {
+      console.error('accessToken이 없습니다. 로그인 페이지로 이동합니다.');
+      window.location.href = '/signin';
+      return;
+    }
+
+    sessionStorage.setItem('accessToken', accessToken);
     if (username) sessionStorage.setItem('username', username);
     
     if (refreshToken) {
@@ -20,10 +23,8 @@ export default function AuthSuccessPage() {
       document.cookie = `refreshToken=${refreshToken}; path=/; max-age=${twoWeeks}; samesite=lax`;
     }
 
-    setTimeout(() => {
-      router.push('/');
-    }, 1000);
-  }, [router]);
+    window.location.href = '/';
+  }, []);
 
   return (
     <div className="flex justify-center items-center min-h-screen text-lg font-semibold">
