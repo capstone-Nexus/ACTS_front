@@ -24,10 +24,30 @@ export default function MainHeader() {
     };
   }, []);
 
-  const logoutHandler = () => {
-    sessionStorage.removeItem('accessToken');
-    sessionStorage.removeItem('username');
-    window.location.reload();
+  const logoutHandler = async () => {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${sessionStorage.getItem('accessToken')}`,
+          'Content-Type': 'application/json',
+        },
+      });
+    } catch (error) {
+      console.error('로그아웃 API 호출 실패:', error);
+    }
+    
+    sessionStorage.clear();
+    localStorage.clear();
+    
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    
+    window.location.href = '/';
   };
 
   return (
