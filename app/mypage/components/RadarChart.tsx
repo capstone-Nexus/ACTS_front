@@ -18,6 +18,9 @@ interface RadarChartProps {
 }
 
 export default function RadarChart({ previousData, currentData }: RadarChartProps) {
+  console.log('🎯 RadarChart - currentData:', currentData);
+  console.log('🎯 RadarChart - previousData:', previousData);
+
   const labels = ['단순\n주의력', '지속\n주의력', '간섭\n통제', '분할\n주의력', '작업\n기억력'];
   const currentValues = [
     currentData.simple,
@@ -34,6 +37,9 @@ export default function RadarChart({ previousData, currentData }: RadarChartProp
     previousData.divided,
     previousData.working_memory,
   ] : null;
+
+  console.log('🎯 RadarChart - currentValues:', currentValues);
+  console.log('🎯 RadarChart - previousValues:', previousValues);
 
   // SVG 좌표 계산
   const centerX = 150;
@@ -77,7 +83,7 @@ export default function RadarChart({ previousData, currentData }: RadarChartProp
 
   return (
     <div className="w-full flex flex-col items-center">
-      <svg width="300" height="300" viewBox="0 0 300 300">
+      <svg width="250px" height="250px" viewBox="0 0 290 300">
         {/* 배경 레벨 원 */}
         {[...Array(levels)].map((_, i) => {
           const radius = (maxRadius / levels) * (i + 1);

@@ -7,19 +7,16 @@ import RadarChart from './components/RadarChart';
 import API from '@/lib/axios';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
-import { getReports, ReportResponse } from '@/lib/reportApi';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchTestResults } from '@/store/slices/testResultSlice';
+import { fetchUserData } from '@/store/slices/userSlice';
 
 export default function Mypage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { currentResult, previousResult } = useAppSelector((state) => state.testResult);
+  const { userData } = useAppSelector((state) => state.user);
   const [isLoading, setIsLoading] = useState(true);
-  const [userData, setUserData] = useState<{
-    username: string;
-    email: string;
-    gender: string;
-    birth: string;
-  } | null>(null);
-  const [testResult, setTestResult] = useState<ReportResponse | null>(null);
-  const [previousResult, setPreviousResult] = useState<ReportResponse | null>(null);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -39,51 +36,49 @@ export default function Mypage() {
 
     const loadData = async () => {
       try {
-        // 사용자 정보 가져오기
-        const userResponse = await API.get('/user/my');
-        setUserData(userResponse.data.data);
-        
-        // 백엔드에서 검사 결과 목록 가져오기
-        const reports = await getReports();
-        
-        if (reports && reports.length > 0) {
-          // 날짜순으로 정렬 (최신순)
-          const sortedReports = reports.sort((a, b) => 
-            new Date(b.reported_at).getTime() - new Date(a.reported_at).getTime()
-          );
-          
-          // 최신 결과
-          setTestResult(sortedReports[0]);
-          console.log('✅ 최신 검사 결과:', sortedReports[0]);
-          
-          // 이전 결과 (두 번째)
-          if (sortedReports.length > 1) {
-            setPreviousResult(sortedReports[1]);
-            console.log('✅ 이전 검사 결과:', sortedReports[1]);
-          }
-        } else {
-          console.log('ℹ️ 저장된 검사 결과가 없습니다.');
-        }
-        
-        setIsLoading(false);
-      } catch (err) {
-        console.error('데이터 로드 오류:', err);
-        toast.error('데이터를 불러오는 중 오류가 발생했습니다.');
+        await Promise.all([
+          dispatch(fetchUserData()).unwrap(),
+          dispatch(fetchTestResults()).unwrap()
+        ]);
+      } catch (error) {
+        console.error('데이터 로딩 실패:', error);
+        toast.error('데이터를 불러오는데 실패했습니다.');
+      } finally {
         setIsLoading(false);
       }
     };
 
     loadData();
-  }, [router]);
+  }, [router, dispatch]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        dispatch(fetchTestResults());
+      }
+    };
+
+    const handleFocus = () => {
+      dispatch(fetchTestResults());
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [dispatch]);
 
   if (isLoading || !userData) {
     return <Loading />;
   }
 
   const birthFormatted = userData.birth?.split('T')[0] || '';
+  const dayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
 
-  // AI 점수 계산
-  const score = testResult ? Math.round(testResult.p_final * 100) : 0;
+  const score = currentResult ? Math.round(currentResult.p_final * 100) : 0;
   let message = '';
   let imageUrl = '';
 
@@ -104,13 +99,12 @@ export default function Mypage() {
     imageUrl = 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Beaming%20Face%20with%20Smiling%20Eyes.png';
   }
 
-  // 영역별 점수 가져오기
-  const currentDomainScores = testResult?.cat_score ? {
-    simple: testResult.cat_score.simple || 0,
-    sustained: testResult.cat_score.sustained || 0,
-    interference: testResult.cat_score.interference || 0,
-    divided: testResult.cat_score.divided || 0,
-    working_memory: testResult.cat_score.working_memory || 0,
+  const currentDomainScores = currentResult?.cat_score ? {
+    simple: currentResult.cat_score.simple || 0,
+    sustained: currentResult.cat_score.sustained || 0,
+    interference: currentResult.cat_score.interference || 0,
+    divided: currentResult.cat_score.divided || 0,
+    working_memory: currentResult.cat_score.working_memory || 0,
   } : null;
 
   const previousDomainScores = previousResult?.cat_score ? {
@@ -120,6 +114,11 @@ export default function Mypage() {
     divided: previousResult.cat_score.divided || 0,
     working_memory: previousResult.cat_score.working_memory || 0,
   } : undefined;
+
+  console.log('📊 Mypage - currentResult:', currentResult);
+  console.log('📊 Mypage - previousResult:', previousResult);
+  console.log('📊 Mypage - currentDomainScores:', currentDomainScores);
+  console.log('📊 Mypage - previousDomainScores:', previousDomainScores);
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
@@ -145,12 +144,12 @@ export default function Mypage() {
 
   return (
     <div className="w-full min-h-screen p-[135px] bg-[#F9FAFB] flex flex-row justify-center gap-[60px]">
-      <div className="w-[480px] min-h-[400px] p-[40px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
-        <p className="text-[22px] text-black font-bold">최근 검사</p>
+      <div className="w-[480px] min-h-[400px] px-[30px] flex flex-col bg-white border border-[#CDD0D4] rounded-[10px]">
+        <p className="text-[22px] text-black font-bold mt-[15px]">최근 검사</p>
 
-        {testResult ? (
+        {currentResult ? (
           <>
-            <div className="w-[400px] min-h-[130px] bg-[#F9FAFB] border border-[#CDD0D4] rounded-[10px] flex flex-row items-center mt-[30px]">
+            <div className="w-[400px] min-h-[130px] bg-[#F9FAFB] border border-[#CDD0D4] rounded-[10px] flex flex-row items-center mt-[15px]">
               <img alt="score emoji" src={imageUrl} width="100" height="100" className="mx-[20px]" />
 
               <div className="flex-1 h-full flex flex-col justify-center">
@@ -162,9 +161,36 @@ export default function Mypage() {
               </div>
             </div>
 
+            {/* 요일 정보 */}
+            <div className="w-full mt-[20px] p-[15px] bg-[#F0F5FF] border border-[#B2D0FF] rounded-[10px]">
+              <p className="text-[12px] font-medium text-[#4A8AEE] mb-2">
+                📅 요일별 검사 기록
+              </p>
+              {currentResult && (
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[11px] text-[#737373]">
+                    최근: <span className="font-semibold text-[#4A8AEE]">{dayNames[currentResult.day_of_week]}</span>
+                  </span>
+                  {previousResult && (
+                    <>
+                      <span className="text-[11px] text-[#737373]">•</span>
+                      <span className="text-[11px] text-[#737373]">
+                        이전: <span className="font-semibold text-[#9CA3AF]">{dayNames[previousResult.day_of_week]}</span>
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
+              <p className="text-[11px] text-[#737373] leading-relaxed">
+                {previousDomainScores 
+                  ? '서로 다른 요일의 검사 결과를 비교하고 있어요. 다른 요일에 추가로 검사해보세요!'
+                  : '다른 요일에 검사를 진행하면 이전 결과와 비교할 수 있어요.'}
+              </p>
+            </div>
+
             {/* 레이더 차트 */}
             {currentDomainScores && (
-              <div className="w-full mt-[30px] p-[20px] bg-[#F9FAFB] border border-[#CDD0D4] rounded-[10px]">
+              <div className="w-full mt-[20px] p-[20px] bg-[#F9FAFB] border border-[#CDD0D4] rounded-[10px]">
                 <p className="text-[16px] font-bold text-black mb-3">영역별 분석</p>
                 <RadarChart 
                   currentData={currentDomainScores}
@@ -174,10 +200,11 @@ export default function Mypage() {
             )}
 
             <button
-              onClick={() => {
+              onClick={async () => {
+                await dispatch(fetchTestResults());
                 setModalOpen(true);
               }}
-              className="w-[120px] h-[45px] center text-white font-medium text-[14px] bg-[#4a8aee] rounded-[10px] cp duration-200 hover:bg-[#4077CE] mt-auto ml-auto"
+              className="w-[120px] h-[45px] mb-[15px] center text-white font-medium text-[14px] bg-[#4a8aee] rounded-[10px] cp duration-200 hover:bg-[#4077CE] mt-auto ml-auto"
             >
               상세 보기 →
             </button>
@@ -253,11 +280,11 @@ export default function Mypage() {
         </div>
       </div>
 
-      {testResult && (
+      {currentResult && (
         <Modal 
           isOpen={modalOpen} 
           setModalOpen={setModalOpen}
-          testResult={testResult}
+          testResult={currentResult}
         />
       )}
     </div>

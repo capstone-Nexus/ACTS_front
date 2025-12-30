@@ -13,12 +13,10 @@ interface ModalProps {
 
 type AnalysisType = 'simple' | 'sustained' | 'interference' | 'divided' | 'working_memory';
 
-// 솔루션 카드 컴포넌트
 function SolutionCards({ content }: { content: string }) {
   const parseSolutions = (text: string) => {
     const solutions = [];
     
-    // 솔루션 구분하여 파싱
     const solutionBlocks = text.split(/솔루션\d+:/);
     
     for (let i = 1; i < solutionBlocks.length && i <= 3; i++) {
@@ -37,7 +35,6 @@ function SolutionCards({ content }: { content: string }) {
       }
     }
     
-    // 파싱 실패 시 기본 솔루션 제공
     if (solutions.length === 0) {
       return [
         {
@@ -101,25 +98,20 @@ export default function Modal({ isOpen, setModalOpen, testResult }: ModalProps) 
     working_memory: false,
   });
 
-  // 솔루션 탭 활성화시 자동 생성
   useEffect(() => {
     if (activeTab === 'solution' && !aiSolution && !solutionLoading) {
       generateSolution();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
-  // 영역별 해석 자동 생성
   useEffect(() => {
     if (activeTab === 'analysis' && !domainInterpretations[activeAnalysis] && !interpretationLoading[activeAnalysis]) {
       generateDomainInterpretation(activeAnalysis);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeAnalysis, activeTab]);
 
   if (!isOpen) return null;
 
-  // AI 점수 계산
   const score = Math.round(testResult.p_final * 100);
   let message = '';
   let imageUrl = '';
@@ -153,7 +145,6 @@ export default function Modal({ isOpen, setModalOpen, testResult }: ModalProps) 
     imageUrl = 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Beaming%20Face%20with%20Smiling%20Eyes.png';
   }
 
-  // 영역별 데이터
   const domainData = {
     simple: {
       title: '단순 주의력',
@@ -192,7 +183,6 @@ export default function Modal({ isOpen, setModalOpen, testResult }: ModalProps) 
     },
   };
 
-  // ChatGPT API로 솔루션 생성
   const generateSolution = async () => {
     setSolutionLoading(true);
     try {
@@ -237,7 +227,6 @@ export default function Modal({ isOpen, setModalOpen, testResult }: ModalProps) 
     }
   };
 
-  // 영역별 점수 해석 생성
   const generateDomainInterpretation = async (domain: AnalysisType) => {
     setInterpretationLoading(prev => ({ ...prev, [domain]: true }));
     try {

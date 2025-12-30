@@ -5,10 +5,12 @@ import Link from 'next/link';
 import axios from 'axios';
 import CircularProgress from './components/CircularProgress';
 import DomainScore from './components/DomainScore';
-import { saveReport } from '@/lib/reportApi';
+import { useAppDispatch } from '@/store/hooks';
+import { saveTestResult } from '@/store/slices/testResultSlice';
 import toast from 'react-hot-toast';
 
 export default function TestResultPage() {
+  const dispatch = useAppDispatch();
   const [sendState, setSendState] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [sendError, setSendError] = useState<string | null>(null);
   const [aiReply, setAiReply] = useState<any>(null);
@@ -22,22 +24,15 @@ export default function TestResultPage() {
     try {
       const AI_URL = process.env.NEXT_PUBLIC_AI_URL;
 
-      console.log('📡 전송 시작:', `${AI_URL}/predict`);
-      console.log('📦 Payload 크기:', JSON.stringify(data).length, 'bytes');
-
       const response = await axios.post(`${AI_URL}/predict`, data, {
         headers: { 'Content-Type': 'application/json' },
         timeout: 15000,
       });
 
       setSendState('success');
-      
-      // ✅ 임시 테스트: AI 응답이 비어있으면 테스트 데이터 사용
       const aiData = response.data;
       
-      // 테스트 데이터 (실제 AI 응답이 없을 때만 사용)
       if (!aiData || Object.keys(aiData).length === 0) {
-        console.warn('⚠️ AI 응답이 비어있어 테스트 데이터를 사용합니다.');
         setAiReply({
           p_final: 0.68,
           simple: 100,
@@ -49,11 +44,11 @@ export default function TestResultPage() {
       } else {
         setAiReply(aiData);
         
-        // ✅ 백엔드에 저장
         try {
-          const dayOfWeek = new Date().getDay(); // 0~6 (0 = 일요일)
+          const dayOfWeek = new Date().getDay();
+          const dayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
           
-          await saveReport({
+          await dispatch(saveTestResult({
             day_of_week: dayOfWeek,
             p_final: aiData.p_final || 0,
             label_final: aiData.label_final || 0,
@@ -64,53 +59,21 @@ export default function TestResultPage() {
               divided: aiData.cat_scores_100?.divided || 0,
               working_memory: aiData.cat_scores_100?.working_memory || 0,
             }
-          });
+          })).unwrap();
           
-          console.log('✅ 검사 결과 백엔드 저장 완료');
-          toast.success('검사 결과가 저장되었습니다.');
+          toast.success(`${dayNames[dayOfWeek]} 검사 결과가 저장되었습니다.`);
         } catch (error) {
-          console.error('❌ 검사 결과 저장 실패:', error);
+          console.error('검사 결과 저장 실패:', error);
           toast.error('검사 결과 저장에 실패했습니다.');
         }
       }
 
-      // ✅ 응답 확인
-      console.log('='.repeat(80));
-      console.log('✅ AI 서버 응답');
-      console.log('='.repeat(80));
-      console.log('Status:', response.status);
-      console.log('Response Data:');
-      console.log(JSON.stringify(response.data, null, 2));
-      console.log('='.repeat(80));
-      
-      // ✅ 점수 확인
-      console.log('📊 파싱된 점수:');
-      console.log('- p_final:', response.data.p_final);
-      console.log('- cat_scores_100:', response.data.cat_scores_100);
-      if (response.data.cat_scores_100) {
-        console.log('  - simple:', response.data.cat_scores_100.simple);
-        console.log('  - sustained:', response.data.cat_scores_100.sustained);
-        console.log('  - interference:', response.data.cat_scores_100.interference);
-        console.log('  - divided:', response.data.cat_scores_100.divided);
-        console.log('  - working_memory:', response.data.cat_scores_100.working_memory);
-      }
-      console.log('='.repeat(80));
-
     } catch (error: any) {
-      console.error('='.repeat(80));
-      console.error('❌ AI 전송 실패');
-      console.error('='.repeat(80));
-      console.error('Error:', error);
-      console.error('Response:', error.response?.data);
-      console.error('Status:', error.response?.status);
-      console.error('='.repeat(80));
-
       setSendState('error');
       setSendError(error.response?.data?.message || error.message || 'AI 서버 통신 실패');
     }
   };
 
-  // ✅ 페이지 로드 시 자동 전송
   useEffect(() => {
     if (autoSentRef.current) return;
 
@@ -123,21 +86,18 @@ export default function TestResultPage() {
         return;
       }
 
-      // ✅ user_info 추가
       const username = sessionStorage.getItem('username') || 'guest_user';
       const currentDate = new Date().toISOString().split('T')[0].replace(/-/g, '');
 
       const user_info = {
         user_id: `u_${username}_${currentDate}`,
-        age: 25, // 기본값 (필요시 사용자 정보에서 가져올 수 있음)
-        gender: 1, // 기본값 (0: 여성, 1: 남성)
+        age: 25,
+        gender: 1,
         test_id: `t_${currentDate}_${Date.now()}`
       };
 
-      // ✅ full4_iq 추가 (sessionStorage에서 가져오거나 기본값 사용)
       const full4_iq = parseInt(sessionStorage.getItem('full4_iq') || '100', 10);
 
-      // ✅ 최종 데이터 구성
       const completeData = {
         user_info,
         survey: {
@@ -147,25 +107,16 @@ export default function TestResultPage() {
         cat_raw: finalData.cat_raw
       };
 
-      // ✅ 전송 전 데이터 확인
-      console.log('='.repeat(80));
-      console.log('📤 AI 서버로 전송할 데이터');
-      console.log('='.repeat(80));
-      console.log(JSON.stringify(completeData, null, 2));
-      console.log('='.repeat(80));
-
       autoSentRef.current = true;
       void sendToAI(completeData);
 
     } catch (error) {
-      console.error('❌ 데이터 로드 오류:', error);
       setSendState('error');
       setSendError('데이터를 불러오는 중 오류가 발생했습니다.');
     }
   }, []);
 
   const handleRetry = () => {
-    // 재전송을 위해 다시 데이터 준비
     try {
       const finalData = JSON.parse(sessionStorage.getItem('final_test_data') || '{}');
       
@@ -250,19 +201,12 @@ export default function TestResultPage() {
     };
   };
 
-  // 영역별 점수 가져오기
   const getDomainScores = () => {
     if (!aiReply) return null;
     
-    // cat_scores_100 객체에서 점수 가져오기
     const catScores = aiReply.cat_scores_100;
     
-    if (!catScores) {
-      console.warn('⚠️ cat_scores_100 데이터가 없습니다.');
-      return null;
-    }
-    
-    console.log('✅ 영역별 점수:', catScores);
+    if (!catScores) return null;
     
     return {
       simple: Math.round(catScores.simple || 0),
@@ -349,7 +293,7 @@ export default function TestResultPage() {
             )}
 
             {/* 안내 박스 */}
-            <div className="w-[600px] min-h-[200px] border border-[#B2D0FF] bg-[#EDF9FF] rounded-[20px] p-6 mb-8">
+            <div className="w-[600px] min-h-[200px] border border-[#B2D0FF] bg-[#EDF9FF] rounded-[20px] p-6 mb-4">
               <p className="text-[14px] font-medium mb-3">이 결과는 무엇을 의미하나요?</p>
               <div className="flex flex-col gap-2 text-[12px] font-medium text-[#737373] ml-4">
                 <li>이 분석은 AI가 당신의 응답과 게임 데이터를 바탕으로 만든 참고용 리포트예요.</li>
@@ -357,6 +301,18 @@ export default function TestResultPage() {
                 <li>높은 점수가 나왔다고 해서 무조건 ADHD인 것은 아니에요. 스트레스, 수면 부족, 환경 등도 집중력에 영향을 줄 수 있어요.</li>
               </div>
               <p className='mt-4 text-[12px] font-bold text-[#4A8AEE]'>→ 정확한 상태를 알고 싶다면 정신건강의학과 전문의와 상담해보는 것을 추천해요.</p>
+            </div>
+
+            {/* 요일별 검사 안내 */}
+            <div className="w-[600px] border border-[#C7E0C7] bg-[#F0F9F0] rounded-[20px] p-6 mb-8">
+              <p className="text-[14px] font-medium mb-2 flex items-center gap-2">
+                <span>📅</span> 다른 요일에 검사해서 비교하기
+              </p>
+              <p className="text-[12px] text-[#4A7C59] leading-relaxed">
+                검사 결과는 <span className="font-bold">요일별로 저장</span>돼요. 
+                다른 요일에 검사하면 마이페이지에서 이전 결과와 비교할 수 있어요. 
+                컨디션이나 환경에 따른 변화를 확인해보세요!
+              </p>
             </div>
 
             {/* 버튼 */}

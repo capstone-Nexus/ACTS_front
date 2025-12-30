@@ -90,8 +90,6 @@ export default function Test1() {
                         reactionTime: null,
                         correct: false
                     }]);
-
-                    // ✅ 무응답 Raw 데이터 저장
                     const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
                     if (!rawData.simple_trials) rawData.simple_trials = [];
                     
@@ -129,7 +127,6 @@ export default function Test1() {
             correct: true
         }]);
 
-        // ✅ Raw 데이터 저장
         const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
         if (!rawData.simple_trials) rawData.simple_trials = [];
         
@@ -182,7 +179,6 @@ export default function Test1() {
       simple_sel_rt_sd: s,
     });
 
-        // ✅ Console 출력
         const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
         console.log('🎯 Test1 완료 - Simple Trials:', rawData.simple_trials);
         console.log('🎯 Test1 Features:', { simple_sel_rt_mean: m, simple_sel_rt_sd: s });

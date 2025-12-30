@@ -78,7 +78,6 @@ export default function Test2() {
 
     setResponses((prev) => [...prev, { shape, clicked, time }]);
 
-    // ✅ Raw 데이터 저장
     const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
     if (!rawData.sustained_trials) rawData.sustained_trials = [];
     
@@ -125,7 +124,6 @@ export default function Test2() {
       sustained_commission: commission,
     });
 
-    // ✅ Console 출력
     const rawData = JSON.parse(sessionStorage.getItem('cat_raw_data') || '{}');
     console.log('🎯 Test2 완료 - Sustained Trials:', rawData.sustained_trials);
     console.log('🎯 Test2 Features:', { sustained_omission: omission, sustained_commission: commission });
