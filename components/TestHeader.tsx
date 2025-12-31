@@ -17,9 +17,9 @@ export default function TestHeader() {
   };
 
   return (
-    <div className="w-full h-[80px] bg-white flex flex-row items-center justify-between fixed top-0 left-0 z-[9999] shadow-sm">
+    <div className="w-full h-20 bg-white flex flex-row items-center justify-between fixed top-0 left-0 z-9999 shadow-sm">
       <Link href={'/'}>
-        <Image src={Logo} alt="logo" className="w-[106px] h-[71px] ml-[25px]" />
+        <Image src={Logo} alt="logo" className="w-26.5 h-17.75 ml-6.25" />
       </Link>
 
       <button onClick={handleExit} className="text-[18px] font-medium text-[#FF0000] mr-[50px] hover:text-[#ff5b5b] duration-200 cp">
