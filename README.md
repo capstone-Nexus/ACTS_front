@@ -10,7 +10,7 @@ ADHD 자가진단 및 행동 코칭 플랫폼입니다. 과학적 설문조사, 
 |------|------|
 | **프레임워크** | Next.js 16.1.1, React 19.2.3 |
 | **언어** | TypeScript 5.9.2 |
-| **스타일링** | Tailwind CSS 4, PostCSS |
+| **스타일링** | Tailwind CSS 4|
 | **상태관리** | Redux Toolkit 2.11.2, React-Redux 9.2.0 |
 | **HTTP 클라이언트** | Axios 1.13.1 |
 | **아이콘** | Lucide React, FontAwesome 7 |
@@ -298,12 +298,3 @@ ACTS_front/
 | POST | `/predict` | ADHD 예측 분석 |
 
 ---
-
-## 스크립트
-
-```bash
-npm run dev      # 개발 서버 실행 (Turbopack)
-npm run build    # 프로덕션 빌드
-npm run start    # 프로덕션 서버 실행
-npm run lint     # ESLint 검사
-```
