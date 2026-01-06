@@ -1,4 +1,4 @@
-# ACTS - ADHD Comprehensive Test System
+# ACTS
 
 ADHD 자가진단 및 행동 코칭 플랫폼입니다. 과학적 설문조사, 인지능력검사(CAT), AI 기반 분석, 그리고 대화형 AI 챗봇을 통해 사용자가 자신의 ADHD 성향을 이해할 수 있도록 돕습니다.
 
@@ -38,21 +38,6 @@ OPENAI_API_KEY=sk-proj-xxxxx
 
 # 프론트엔드 URL
 NEXT_PUBLIC_FRONTEND_URL=http://localhost:3000
-```
-
-### 채팅 SSE 설정 (선택)
-
-```env
-NEXT_PUBLIC_CHAT_STREAM_PATH=/chat        # 메시지 스트리밍 경로
-NEXT_PUBLIC_CHAT_LIST_PATH=/chat          # 채팅 목록 경로
-NEXT_PUBLIC_CHAT_MESSAGES_PATH=/chat/{chatIdx}  # 메시지 조회 경로
-```
-
-**SSE 이벤트 형식:**
-```
-data: {"type":"chatIdx","chatIdx":123}\n\n
-data: {"type":"content","content":"안녕"}\n\n
-data: {"type":"done"}\n\n
 ```
 
 ### 설치 및 실행
