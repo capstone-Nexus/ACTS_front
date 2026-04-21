@@ -22,11 +22,9 @@ export default function TestResultPage() {
     setAiReply(null);
 
     try {
-      const AI_URL = process.env.NEXT_PUBLIC_AI_URL;
-
-      const response = await axios.post(`${AI_URL}/predict`, data, {
+      const response = await axios.post('/api/result', data, {
         headers: { 'Content-Type': 'application/json' },
-        timeout: 15000,
+        timeout: 30000,
       });
 
       setSendState('success');
