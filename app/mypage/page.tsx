@@ -14,8 +14,8 @@ import { fetchUserData } from '@/store/slices/userSlice';
 export default function Mypage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { currentResult, previousResult } = useAppSelector((state) => state.testResult);
-  const { userData } = useAppSelector((state) => state.user);
+  const { currentResult, previousResult } = useAppSelector(state => state.testResult);
+  const { userData } = useAppSelector(state => state.user);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -36,10 +36,7 @@ export default function Mypage() {
 
     const loadData = async () => {
       try {
-        await Promise.all([
-          dispatch(fetchUserData()).unwrap(),
-          dispatch(fetchTestResults()).unwrap()
-        ]);
+        await Promise.all([dispatch(fetchUserData()).unwrap(), dispatch(fetchTestResults()).unwrap()]);
       } catch (error) {
         console.error('데이터 로딩 실패:', error);
         toast.error('데이터를 불러오는데 실패했습니다.');
@@ -99,21 +96,25 @@ export default function Mypage() {
     imageUrl = 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Beaming%20Face%20with%20Smiling%20Eyes.png';
   }
 
-  const currentDomainScores = currentResult?.cat_score ? {
-    simple: currentResult.cat_score.simple || 0,
-    sustained: currentResult.cat_score.sustained || 0,
-    interference: currentResult.cat_score.interference || 0,
-    divided: currentResult.cat_score.divided || 0,
-    working_memory: currentResult.cat_score.working_memory || 0,
-  } : null;
+  const currentDomainScores = currentResult?.cat_score
+    ? {
+        simple: currentResult.cat_score.simple || 0,
+        sustained: currentResult.cat_score.sustained || 0,
+        interference: currentResult.cat_score.interference || 0,
+        divided: currentResult.cat_score.divided || 0,
+        working_memory: currentResult.cat_score.working_memory || 0
+      }
+    : null;
 
-  const previousDomainScores = previousResult?.cat_score ? {
-    simple: previousResult.cat_score.simple || 0,
-    sustained: previousResult.cat_score.sustained || 0,
-    interference: previousResult.cat_score.interference || 0,
-    divided: previousResult.cat_score.divided || 0,
-    working_memory: previousResult.cat_score.working_memory || 0,
-  } : undefined;
+  const previousDomainScores = previousResult?.cat_score
+    ? {
+        simple: previousResult.cat_score.simple || 0,
+        sustained: previousResult.cat_score.sustained || 0,
+        interference: previousResult.cat_score.interference || 0,
+        divided: previousResult.cat_score.divided || 0,
+        working_memory: previousResult.cat_score.working_memory || 0
+      }
+    : undefined;
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
@@ -158,9 +159,7 @@ export default function Mypage() {
 
             {/* 요일 정보 */}
             <div className="w-full mt-[20px] p-[15px] bg-[#F0F5FF] border border-[#B2D0FF] rounded-[10px]">
-              <p className="text-[12px] font-medium text-[#4A8AEE] mb-2">
-                📅 요일별 검사 기록
-              </p>
+              <p className="text-[12px] font-medium text-[#4A8AEE] mb-2">📅 요일별 검사 기록</p>
               {currentResult && (
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-[11px] text-[#737373]">
@@ -176,21 +175,14 @@ export default function Mypage() {
                   )}
                 </div>
               )}
-              <p className="text-[11px] text-[#737373] leading-relaxed">
-                {previousDomainScores 
-                  ? '서로 다른 요일의 검사 결과를 비교하고 있어요. 다른 요일에 추가로 검사해보세요!'
-                  : '다른 요일에 검사를 진행하면 이전 결과와 비교할 수 있어요.'}
-              </p>
+              <p className="text-[11px] text-[#737373] leading-relaxed">{previousDomainScores ? '서로 다른 요일의 검사 결과를 비교하고 있어요. 다른 요일에 추가로 검사해보세요!' : '다른 요일에 검사를 진행하면 이전 결과와 비교할 수 있어요.'}</p>
             </div>
 
             {/* 레이더 차트 */}
             {currentDomainScores && (
               <div className="w-full mt-[20px] p-[20px] bg-[#F9FAFB] border border-[#CDD0D4] rounded-[10px]">
                 <p className="text-[16px] font-bold text-black mb-3">영역별 분석</p>
-                <RadarChart 
-                  currentData={currentDomainScores}
-                  previousData={previousDomainScores}
-                />
+                <RadarChart currentData={currentDomainScores} previousData={previousDomainScores} />
               </div>
             )}
 
@@ -206,16 +198,9 @@ export default function Mypage() {
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center">
-            <p className="text-[18px] font-medium text-[#737373] text-center mb-6">
-              아직 테스트를 진행하지 않았습니다.
-            </p>
-            <p className="text-[14px] text-[#737373] text-center mb-8">
-              테스트를 진행하고 상세정보를 받아보세요.
-            </p>
-            <Link
-              href="/test/survey"
-              className="px-6 py-3 bg-[#4A8AEE] text-white text-[14px] font-medium rounded-[10px] hover:bg-[#4077CE] transition-colors"
-            >
+            <p className="text-[18px] font-medium text-[#737373] text-center mb-6">아직 테스트를 진행하지 않았습니다.</p>
+            <p className="text-[14px] text-[#737373] text-center mb-8">테스트를 진행하고 상세정보를 받아보세요.</p>
+            <Link href="/test/survey" className="px-6 py-3 bg-[#4A8AEE] text-white text-[14px] font-medium rounded-[10px] hover:bg-[#4077CE] transition-colors">
               테스트 시작하기 →
             </Link>
           </div>
@@ -275,13 +260,7 @@ export default function Mypage() {
         </div>
       </div>
 
-      {currentResult && (
-        <Modal 
-          isOpen={modalOpen} 
-          setModalOpen={setModalOpen}
-          testResult={currentResult}
-        />
-      )}
+      {currentResult && <Modal isOpen={modalOpen} setModalOpen={setModalOpen} testResult={currentResult} />}
     </div>
   );
 }

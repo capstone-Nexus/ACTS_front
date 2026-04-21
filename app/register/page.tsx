@@ -103,13 +103,15 @@ export default function RegisterPage() {
         draggable
         pauseOnHover
         theme="light"
-        style={{
-          '--toastify-color-light': '#FFFFFF',
-          '--toastify-text-color-light': '#000000',
-        } as React.CSSProperties}
+        style={
+          {
+            '--toastify-color-light': '#FFFFFF',
+            '--toastify-text-color-light': '#000000'
+          } as React.CSSProperties
+        }
         toastStyle={{
           borderLeft: '4px solid #4A8AEE',
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
         }}
       />
       <div className="flex flex-col items-center justify-center min-h-screen bg-[#F9FAFB]">
