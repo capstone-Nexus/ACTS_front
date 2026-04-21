@@ -20,16 +20,26 @@ export default function MessageBubble({ sender, content }: { sender: string; con
     );
   }
 
+  const isEmpty = !content || content.length === 0;
+
   return (
     <div className="w-auto flex flex-row gap-4">
       <div className="w-[50px] h-[50px] rounded-full bg-black overflow-hidden flex items-center justify-center">
         <Image src={Chatbot} alt="chatbot" width={50} height={50} />
       </div>
       <div
-        className="max-w-[600px] border rounded-tl-xl rounded-tr-xl rounded-br-xl px-[18px] py-[10px] 
+        className="max-w-[600px] border rounded-tl-xl rounded-tr-xl rounded-br-xl px-[18px] py-[10px]
         bg-[#DFF4FF] border-[#ADE4FF] self-start"
       >
-        <div className="text-[17px] text-black" dangerouslySetInnerHTML={{ __html: formatText(content) }} />
+        {isEmpty ? (
+          <div className="flex items-center gap-[6px] h-[26px]" aria-label="AI가 응답을 생성하는 중입니다">
+            <span className="w-[7px] h-[7px] rounded-full bg-[#4A8AEE] animate-typing-dot [animation-delay:0ms]" />
+            <span className="w-[7px] h-[7px] rounded-full bg-[#4A8AEE] animate-typing-dot [animation-delay:200ms]" />
+            <span className="w-[7px] h-[7px] rounded-full bg-[#4A8AEE] animate-typing-dot [animation-delay:400ms]" />
+          </div>
+        ) : (
+          <div className="text-[17px] text-black" dangerouslySetInnerHTML={{ __html: formatText(content) }} />
+        )}
       </div>
     </div>
   );
