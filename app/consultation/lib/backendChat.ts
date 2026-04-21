@@ -132,6 +132,22 @@ export function normalizeChatTitle(title: string | null | undefined): string {
   return t;
 }
 
+const USER_PROMPT_END_MARKERS = [
+  '이 아래부터는 사용자의 메시지와 채팅 기록입니다. 기존 흐름을 참고해 사용자의 메시지에 대해서 응답해주세요.',
+  '이 아래부터는 사용자의 메시지와 채팅 기록입니다.'
+];
+
+export function stripUserPromptWrapper(content: string): string {
+  if (!content) return content;
+  for (const marker of USER_PROMPT_END_MARKERS) {
+    const idx = content.lastIndexOf(marker);
+    if (idx !== -1) {
+      return content.slice(idx + marker.length).trimStart();
+    }
+  }
+  return content;
+}
+
 async function fetchJsonWithFallback<T>(
   b: string,
   paths: string[],
@@ -182,13 +198,17 @@ export async function getChatMessages(chatIdx: number): Promise<ChatMessageItem[
     `/chat/${chatIdx}`,
   ].filter(Boolean);
 
-  return await fetchJsonWithFallback<ChatMessageItem[]>(b, candidates, {
+  const raw = await fetchJsonWithFallback<ChatMessageItem[]>(b, candidates, {
     method: 'GET',
     headers: {
       'Cache-Control': 'no-cache',
     },
     credentials: 'include',
   });
+
+  return raw.map((m) =>
+    m.role === 'user' ? { ...m, content: stripUserPromptWrapper(m.content) } : m
+  );
 }
 
 export async function streamChat(
